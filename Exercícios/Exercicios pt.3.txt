@@ -1,0 +1,50 @@
+1. (F)
+   (d)
+   (c)
+   (a)
+   (b)
+   (e)
+
+2. a)ASKIP
+   b)(PROT,BRT)
+   c)(UNPROT,DRK)
+   d)(UNPROT,NUM,FSET,IC)
+
+3. a) COLOR=RED,
+      HILIGTH=BLINK
+   b) COLOR=BLUE,
+      HILIGHT=UNDERLINE
+   c) COLOR=YELLOW,
+      HILIGHT=REVERSE
+   d) COLOR=PINK
+      HILIGHT=OFF
+   e) COLOR=TURQUOISE,
+      HILIGHT=REVERSE
+
+4. a) 8
+   b) coluna 1
+   c) campo 3
+   d) campos 2 e 3 
+   e) o campo 1 começa na linha 10, coluna 1, que está posicionado depois do campo 2 (linha 4 coluna 10). O correto é trocar os campos 1 e 2 de lugar
+   
+5. a) DFHMDF         1 - DFHMSD - 
+   b) DFHMDF         2 - DFHMSD - TYPE=FINAL
+   c) DFHMDF         3 - DFHMSD - LANG=COBOL
+   d) DFHMSD         4 - DFHMDF - POS
+   e) DFHMSD         5 - DFHMDI - LINE
+   f) DFHMDF         6 - DFHMDF - JUSTIFY (LEFT,BLANK)
+   g) DFHMDI         7 - DFHMDI - SIZE
+   h) DFHMDF         8 - DFHMSD - TYPE=MAP
+   j) DFHMDF         9 - DFHMDI - COLLUMN 
+   k) DFHMDI        10 - DFHMSD = MODE
+   l) DFHMDI        11 - 
+   m) DFHMSD
+   n) DFHMSD
+   o) DFHMSD
+   p) DFHMSD
+   q) DFHMSD
+   r) DFHMSD
+   s) DFHMDF
+   t) DFHMDF
+   
+6. 

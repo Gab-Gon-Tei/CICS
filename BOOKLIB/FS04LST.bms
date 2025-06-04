@@ -1,0 +1,215 @@
+FS04LST  DFHMSD TYPE=(MAP,DSECT),                                      X
+               MODE=INOUT,                                             X
+               LANG=COBOL,                                             X
+               STORAGE=AUTO,                                           X
+               CTRL=(FREEKB,ALARM,FRSET),                              X
+               TIOAPFX=YES
+MAPALST  DFHMDI SIZE=(24,80),                                          X
+               LINE=1,                                                 X
+               COLUMN=1
+*
+* CAMPO CONSTANTE
+*
+         DFHMDF POS=(01,01),                                           X
+               LENGTH=10,                                              X
+               ATTRB=ASKIP,                                            X
+               INITIAL='TERMINAL.:'
+*
+* CAMPO VARIAVEL
+*
+T3TERM   DFHMDF POS=(01,12),                                           X
+               LENGTH=4,                                               X
+               ATTRB=(UNPROT,BRT,FSET),                                X
+               PICOUT='X(04)'
+*
+* CAMPO CONSTANTE
+*
+         DFHMDF POS=(01,33),                                           X
+               LENGTH=13,                                              X
+               ATTRB=ASKIP,                                            X
+               INITIAL='HALF MOON INC'
+*
+* CAMPO VARIAVEL
+*
+T3DATA   DFHMDF POS=(01,69),                                           X
+               LENGTH=10,                                              X
+               ATTRB=(ASKIP,BRT,FSET),                                 X
+               PICOUT='X(10)'
+*
+* CAMPO CONSTANTE
+*
+         DFHMDF POS=(02,01),                                           X
+               LENGTH=10,                                              X
+               ATTRB=ASKIP,                                            X
+               INITIAL='TRANSACAO:'
+*
+* CAMPO VARIAVEL
+*
+T3TRAN   DFHMDF POS=(02,12),                                           X
+               LENGTH=04,                                              X
+               ATTRB=(ASKIP,BRT,FSET),                                 X
+               PICOUT='X(4)'
+*
+* CAMPO CONSTANTE
+*
+         DFHMDF POS=(02,30),                                           X
+               LENGTH=21,                                              X
+               ATTRB=ASKIP,                                            X
+               INITIAL='CADASTRO DE PRODUTOS'
+*
+* CAMPO VARIAVEL
+*
+T3HORA   DFHMDF POS=(02,71),                                           X
+               LENGTH=08,                                              X
+               ATTRB=(ASKIP,BRT,FSET),                                 X
+               PICOUT='X(8)'
+*
+* CAMPO CONSTANTE
+*
+         DFHMDF POS=(03,01),                                           X
+               LENGTH=79,                                              X
+               ATTRB=ASKIP,                                            X
+               INITIAL='-----------------------------------------------X
+               --------------------------------'
+*
+* CAMPO CONSTANTE
+*
+         DFHMDF POS=(04,01),                                           X
+               LENGTH=05,                                              X
+               ATTRB=ASKIP,                                            X
+               INITIAL='TASK:'
+*
+* CAMPO VARIAVEL
+*
+T3TASK   DFHMDF POS=(04,07),                                           X
+               LENGTH=07,                                              X
+               ATTRB=(ASKIP,BRT,FSET),                                 X
+               PICOUT='9(7)'
+*
+* CAMPO CONSTANTE
+*
+         DFHMDF POS=(04,25),                                           X
+               LENGTH=14,                                              X
+               ATTRB=ASKIP,                                            X
+               INITIAL='LISTAGEM A PARTIR DO PRODUTO:'
+*
+* CAMPO VARIAVEL
+*
+T3PRD    DFHMDF POS=(04,55),                                           X
+               LENGTH=04,                                              X
+               ATTRB=(BRT,FSET),                                       X
+               PICOUT='X(4)'
+*
+* CAMPO CONSTANTE
+*
+         DFHMDF POS=(04,72),                                           X
+               LENGTH=05,                                              X
+               ATTRB=ASKIP,                                            X
+               INITIAL='FASE:'
+*
+* CAMPO VARIAVEL
+*
+T3FASE   DFHMDF POS=(04,78),                                           X
+               LENGTH=01,                                              X
+               ATTRB=(ASKIP,BRT,FSET),                                 X
+               PICOUT='9(1)'
+*
+* CAMPO CONSTANTE
+*
+         DFHMDF POS=(06,64),                                           X
+               LENGTH=06,                                              X
+               ATTRB=ASKIP,                                            X
+               INITIAL='PAGINA'
+*
+* CAMPO VARIAVEL
+*
+T3PAGA   DFHMDF POS=(06,71),                                           X
+               LENGTH=02,                                              X
+               ATTRB=(ASKIP,BRT,FSET),                                 X
+               PICOUT='9(2)'
+*
+* CAMPO CONSTANTE
+*
+         DFHMDF POS=(06,74),                                           X
+               LENGTH=02,                                              X
+               ATTRB=ASKIP,                                            X
+               INITIAL='DE'
+*
+* CAMPO VARIAVEL
+*
+T3PAGT   DFHMDF POS=(06,77),                                           X
+               LENGTH=02,                                              X
+               ATTRB=(ASKIP,BRT,FSET),                                 X
+               PICOUT='9(2)'
+*
+* CAMPO CONSTANTE
+*
+         DFHMDF POS=(07,01),                                           X
+               LENGTH=79,                                              X
+               ATTRB=ASKIP,                                            X
+               INITIAL='  CODIGO   DESCRICAO               ESTOQUE    PX
+               RECO COMPRA    PRECO VENDA      '
+*
+* CAMPO CONSTANTE
+*
+         DFHMDF POS=(08,01),                                           X
+               LENGTH=79,                                              X
+               ATTRB=ASKIP,                                            X
+               INITIAL='  ------   ---------------------   -------    -X
+               -----------    -----------      '
+*
+* CAMPO VARIAVEL
+*
+T3LINHA  DFHMDF POS=(10,01),                                           X
+               LENGTH=79,                                              X
+               ATTRB=(ASKIP,BRT,FSET),                                 X
+               PICOUT='X(79)',                                         X
+               OCCURS=10
+*
+* CAMPO CONSTANTE
+*
+         DFHMDF POS=(21,01),                                           X
+               LENGTH=79,                                              X
+               ATTRB=ASKIP,                                            X
+               INITIAL='-----------------------------------------------X
+               --------------------------------'
+*
+* CAMPO VARIAVEL
+*
+T3USR    DFHMDF POS=(22,01),                                           X
+               LENGTH=06,                                              X
+               ATTRB=(ASKIP,BRT,FSET),                                 X
+               PICOUT='X(6)'
+*
+* CAMPO CONSTANTE
+*
+         DFHMDF POS=(22,16),                                           X
+               LENGTH=59,                                              X
+               ATTRB=ASKIP,                                            X
+               INITIAL='TECLAS VALIDAS: ENTER - PROCESSA TELA  PF3-SAIRX
+                 PF5-LIMPAR'
+*
+* CAMPO CONSTANTE
+*
+         DFHMDF POS=(23,01),                                           X
+               LENGTH=79,                                              X
+               ATTRB=ASKIP,                                            X
+               INITIAL='-----------------------------------------------X
+               --------------------------------'
+*
+* CAMPO CONSTANTE
+*
+         DFHMDF POS=(24,01),                                           X
+               LENGTH=9,                                               X
+               ATTRB=ASKIP,                                            X
+               INITIAL='MENSAGEM:'
+*
+* CAMPO VARIAVEL
+*
+T3MSG    DFHMDF POS=(24,11),                                           X
+               LENGTH=60,                                              X
+               ATTRB=(ASKIP,BRT,FSET),                                 X
+               PICOUT='X(60)'
+         DFHMSD TYPE=FINAL
+         END
+

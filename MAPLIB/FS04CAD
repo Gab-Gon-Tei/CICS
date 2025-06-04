@@ -1,0 +1,215 @@
+       01  MAPACADI.
+           02  FILLER PIC X(12).
+           02  T2TERML    COMP  PIC  S9(4).
+           02  T2TERMF    PICTURE X.
+           02  FILLER REDEFINES T2TERMF.
+             03 T2TERMA    PICTURE X.
+           02  FILLER   PICTURE X(2).
+           02  T2TERMI  PIC X(4).
+           02  T2DATAL    COMP  PIC  S9(4).
+           02  T2DATAF    PICTURE X.
+           02  FILLER REDEFINES T2DATAF.
+             03 T2DATAA    PICTURE X.
+           02  FILLER   PICTURE X(2).
+           02  T2DATAI  PIC X(10).
+           02  T2TRANL    COMP  PIC  S9(4).
+           02  T2TRANF    PICTURE X.
+           02  FILLER REDEFINES T2TRANF.
+             03 T2TRANA    PICTURE X.
+           02  FILLER   PICTURE X(2).
+           02  T2TRANI  PIC X(4).
+           02  T2HORAL    COMP  PIC  S9(4).
+           02  T2HORAF    PICTURE X.
+           02  FILLER REDEFINES T2HORAF.
+             03 T2HORAA    PICTURE X.
+           02  FILLER   PICTURE X(2).
+           02  T2HORAI  PIC X(8).
+           02  T2TASKL    COMP  PIC  S9(4).
+           02  T2TASKF    PICTURE X.
+           02  FILLER REDEFINES T2TASKF.
+             03 T2TASKA    PICTURE X.
+           02  FILLER   PICTURE X(2).
+           02  T2TASKI  PIC X(7).
+           02  T2TELAL    COMP  PIC  S9(4).
+           02  T2TELAF    PICTURE X.
+           02  FILLER REDEFINES T2TELAF.
+             03 T2TELAA    PICTURE X.
+           02  FILLER   PICTURE X(2).
+           02  T2TELAI  PIC X(25).
+           02  T2FASEL    COMP  PIC  S9(4).
+           02  T2FASEF    PICTURE X.
+           02  FILLER REDEFINES T2FASEF.
+             03 T2FASEA    PICTURE X.
+           02  FILLER   PICTURE X(2).
+           02  T2FASEI  PIC X(1).
+           02  T2CODL    COMP  PIC  S9(4).
+           02  T2CODF    PICTURE X.
+           02  FILLER REDEFINES T2CODF.
+             03 T2CODA    PICTURE X.
+           02  FILLER   PICTURE X(2).
+           02  T2CODI  PIC X(4).
+           02  T2DESCL    COMP  PIC  S9(4).
+           02  T2DESCF    PICTURE X.
+           02  FILLER REDEFINES T2DESCF.
+             03 T2DESCA    PICTURE X.
+           02  FILLER   PICTURE X(2).
+           02  T2DESCI  PIC X(20).
+           02  T2UNIDL    COMP  PIC  S9(4).
+           02  T2UNIDF    PICTURE X.
+           02  FILLER REDEFINES T2UNIDF.
+             03 T2UNIDA    PICTURE X.
+           02  FILLER   PICTURE X(2).
+           02  T2UNIDI  PIC X(5).
+           02  T2LOCALL    COMP  PIC  S9(4).
+           02  T2LOCALF    PICTURE X.
+           02  FILLER REDEFINES T2LOCALF.
+             03 T2LOCALA    PICTURE X.
+           02  FILLER   PICTURE X(2).
+           02  T2LOCALI  PIC X(5).
+           02  T2ESTL    COMP  PIC  S9(4).
+           02  T2ESTF    PICTURE X.
+           02  FILLER REDEFINES T2ESTF.
+             03 T2ESTA    PICTURE X.
+           02  FILLER   PICTURE X(2).
+           02  T2ESTI  PIC 9(06).
+           02  T2MAXL    COMP  PIC  S9(4).
+           02  T2MAXF    PICTURE X.
+           02  FILLER REDEFINES T2MAXF.
+             03 T2MAXA    PICTURE X.
+           02  FILLER   PICTURE X(2).
+           02  T2MAXI  PIC 9(06).
+           02  T2MINL    COMP  PIC  S9(4).
+           02  T2MINF    PICTURE X.
+           02  FILLER REDEFINES T2MINF.
+             03 T2MINA    PICTURE X.
+           02  FILLER   PICTURE X(2).
+           02  T2MINI  PIC 9(06).
+           02  T2COMPL    COMP  PIC  S9(4).
+           02  T2COMPF    PICTURE X.
+           02  FILLER REDEFINES T2COMPF.
+             03 T2COMPA    PICTURE X.
+           02  FILLER   PICTURE X(2).
+           02  T2COMPI  PIC 9(08)V99.
+           02  T2VENDL    COMP  PIC  S9(4).
+           02  T2VENDF    PICTURE X.
+           02  FILLER REDEFINES T2VENDF.
+             03 T2VENDA    PICTURE X.
+           02  FILLER   PICTURE X(2).
+           02  T2VENDI  PIC 9(08)V99.
+           02  T2COMISL    COMP  PIC  S9(4).
+           02  T2COMISF    PICTURE X.
+           02  FILLER REDEFINES T2COMISF.
+             03 T2COMISA    PICTURE X.
+           02  FILLER   PICTURE X(2).
+           02  T2COMISI  PIC 9(03)V99.
+           02  T2ACAOL    COMP  PIC  S9(4).
+           02  T2ACAOF    PICTURE X.
+           02  FILLER REDEFINES T2ACAOF.
+             03 T2ACAOA    PICTURE X.
+           02  FILLER   PICTURE X(2).
+           02  T2ACAOI  PIC X(25).
+           02  T2CONFL    COMP  PIC  S9(4).
+           02  T2CONFF    PICTURE X.
+           02  FILLER REDEFINES T2CONFF.
+             03 T2CONFA    PICTURE X.
+           02  FILLER   PICTURE X(2).
+           02  T2CONFI  PIC X(1).
+           02  T2USERL    COMP  PIC  S9(4).
+           02  T2USERF    PICTURE X.
+           02  FILLER REDEFINES T2USERF.
+             03 T2USERA    PICTURE X.
+           02  FILLER   PICTURE X(2).
+           02  T2USERI  PIC X(8).
+           02  T2MSGL    COMP  PIC  S9(4).
+           02  T2MSGF    PICTURE X.
+           02  FILLER REDEFINES T2MSGF.
+             03 T2MSGA    PICTURE X.
+           02  FILLER   PICTURE X(2).
+           02  T2MSGI  PIC X(60).
+       01  MAPACADO REDEFINES MAPACADI.
+           02  FILLER PIC X(12).
+           02  FILLER PICTURE X(3).
+           02  T2TERMC    PICTURE X.
+           02  T2TERMH    PICTURE X.
+           02  T2TERMO PIC X(04).
+           02  FILLER PICTURE X(3).
+           02  T2DATAC    PICTURE X.
+           02  T2DATAH    PICTURE X.
+           02  T2DATAO PIC X(10).
+           02  FILLER PICTURE X(3).
+           02  T2TRANC    PICTURE X.
+           02  T2TRANH    PICTURE X.
+           02  T2TRANO PIC X(4).
+           02  FILLER PICTURE X(3).
+           02  T2HORAC    PICTURE X.
+           02  T2HORAH    PICTURE X.
+           02  T2HORAO PIC X(8).
+           02  FILLER PICTURE X(3).
+           02  T2TASKC    PICTURE X.
+           02  T2TASKH    PICTURE X.
+           02  T2TASKO PIC 9(7).
+           02  FILLER PICTURE X(3).
+           02  T2TELAC    PICTURE X.
+           02  T2TELAH    PICTURE X.
+           02  T2TELAO PIC X(25).
+           02  FILLER PICTURE X(3).
+           02  T2FASEC    PICTURE X.
+           02  T2FASEH    PICTURE X.
+           02  T2FASEO PIC 9(1).
+           02  FILLER PICTURE X(3).
+           02  T2CODC    PICTURE X.
+           02  T2CODH    PICTURE X.
+           02  T2CODO PIC XXXX.
+           02  FILLER PICTURE X(3).
+           02  T2DESCC    PICTURE X.
+           02  T2DESCH    PICTURE X.
+           02  T2DESCO PIC X(20).
+           02  FILLER PICTURE X(3).
+           02  T2UNIDC    PICTURE X.
+           02  T2UNIDH    PICTURE X.
+           02  T2UNIDO PIC X(05).
+           02  FILLER PICTURE X(3).
+           02  T2LOCALC    PICTURE X.
+           02  T2LOCALH    PICTURE X.
+           02  T2LOCALO PIC X(05).
+           02  FILLER PICTURE X(3).
+           02  T2ESTC    PICTURE X.
+           02  T2ESTH    PICTURE X.
+           02  T2ESTO PIC ZZ.ZZ9.
+           02  FILLER PICTURE X(3).
+           02  T2MAXC    PICTURE X.
+           02  T2MAXH    PICTURE X.
+           02  T2MAXO PIC ZZ.ZZ9.
+           02  FILLER PICTURE X(3).
+           02  T2MINC    PICTURE X.
+           02  T2MINH    PICTURE X.
+           02  T2MINO PIC ZZ.ZZ9.
+           02  FILLER PICTURE X(3).
+           02  T2COMPC    PICTURE X.
+           02  T2COMPH    PICTURE X.
+           02  T2COMPO PIC ZZZ.ZZ9,99.
+           02  FILLER PICTURE X(3).
+           02  T2VENDC    PICTURE X.
+           02  T2VENDH    PICTURE X.
+           02  T2VENDO PIC ZZZ.ZZ9,99.
+           02  FILLER PICTURE X(3).
+           02  T2COMISC    PICTURE X.
+           02  T2COMISH    PICTURE X.
+           02  T2COMISO PIC Z9,99.
+           02  FILLER PICTURE X(3).
+           02  T2ACAOC    PICTURE X.
+           02  T2ACAOH    PICTURE X.
+           02  T2ACAOO PIC X(25).
+           02  FILLER PICTURE X(3).
+           02  T2CONFC    PICTURE X.
+           02  T2CONFH    PICTURE X.
+           02  T2CONFO PIC X(01).
+           02  FILLER PICTURE X(3).
+           02  T2USERC    PICTURE X.
+           02  T2USERH    PICTURE X.
+           02  T2USERO PIC X(8).
+           02  FILLER PICTURE X(3).
+           02  T2MSGC    PICTURE X.
+           02  T2MSGH    PICTURE X.
+           02  T2MSGO PIC X(60).
+
