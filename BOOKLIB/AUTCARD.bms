@@ -1,0 +1,171 @@
+AUTCARD  DFHMSD TYPE=(MAP,DSECT),                                      X
+               MODE=INOUT,                                             X
+               LANG=COBOL,                                             X
+               STORAGE=AUTO,                                           X
+               MAPATTS=HILIGHT,                                        X
+               DSATTS=HILIGHT,                                         X
+               CTRL=(FREEKB,ALARM,FRSET),                              X
+               TIOAPFX=YES
+AUTPROC DFHMDI SIZE=(24,80),                                           X
+               LINE=1,                                                 X
+               COLUMN=1
+*
+* CAMPO CONSTANTE
+*
+         DFHMDF POS=(01,01),                                           X
+               LENGTH=11,                                              X
+               ATTRB=ASKIP,                                            X
+               INITIAL='PROGCICSAUT'
+
+         DFHMDF POS=(01,30),                                           X
+               LENGTH=13,                                              X
+               ATTRB=ASKIP,                                            X
+               INITIAL='HMI CARD AUTH'
+*
+* CAMPO VARIAVEL
+*
+T1DATA   DFHMDF POS=(01,69),                                           X
+               LENGTH=10,                                              X
+               ATTRB=(ASKIP,BRT,FSET),                                 X
+               PICOUT='X(10)'
+*
+* CAMPO CONSTANTE
+*
+         DFHMDF POS=(02,01),                                           X
+               LENGTH=10,                                              X
+               ATTRB=ASKIP,                                            X
+               INITIAL='TRANSACAO:'
+*
+* CAMPO VARIAVEL
+*
+T1TRAN   DFHMDF POS=(02,12),                                           X
+               LENGTH=04,                                              X
+               ATTRB=(ASKIP,BRT,FSET),                                 X
+               PICOUT='X(4)'
+*
+* CAMPO CONSTANTE
+*
+         DFHMDF POS=(02,30),                                           X
+               LENGTH=18,                                              X
+               ATTRB=ASKIP,                                            X
+               INITIAL='HALF MOON CARTOES'
+*
+* CAMPO VARIAVEL
+*
+T1HORA   DFHMDF POS=(02,71),                                           X
+               LENGTH=08,                                              X
+               ATTRB=(ASKIP,BRT,FSET),                                 X
+               PICOUT='X(8)'
+*
+* CAMPO CONSTANTE
+*
+         DFHMDF POS=(03,01),                                           X
+               LENGTH=79,                                              X
+               ATTRB=ASKIP,                                            X
+               INITIAL='-----------------------------------------------X
+               --------------------------------'
+*
+* CAMPO CONSTANTE
+*
+         DFHMDF POS=(04,03),                                           X
+               LENGTH=07,                                              X
+               ATTRB=ASKIP,                                            X
+               INITIAL='CARTAO:'
+*
+* CAMPO VARIAVEL
+*
+NUMCARTA DFHMDF POS=(04,12),                                           X
+               LENGTH=16,                                              X
+               ATTRB=(BRT,FSET,IC),                                    X
+               PICOUT='9(16)'
+*
+* CAMPO CONSTANTE
+*
+         DFHMDF POS=(04,29),                                           X
+               LENGTH=00,                                              X
+               ATTRB=ASKIP
+*
+* CAMPO CONSTANTE
+*
+         DFHMDF POS=(06,03),                                           X
+               LENGTH=06,                                              X
+               ATTRB=ASKIP,                                            X
+               INITIAL='VALOR:'
+*
+* CAMPO VARIAVEL
+*
+VALORC   DFHMDF POS=(06,12),                                           X
+               LENGTH=014,                                             X
+               ATTRB=(ASKIP,BRT,FSET),                                 X
+               PICIN='9(12)V99',                                       X
+               PICOUT='ZZZ.ZZZ.ZZ9,99'
+*
+* CAMPO CONSTANTE
+*
+         DFHMDF POS=(06,28),                                           X
+               LENGTH=00,                                              X
+               ATTRB=ASKIP
+*
+* CAMPO VARIAVEL
+         DFHMDF POS=(08,03),                                           X
+               LENGTH=06,                                              X
+               ATTRB=ASKIP,                                            X
+               INITIAL='SENHA:'
+
+SENHA    DFHMDF POS=(08,12),                                           X
+               LENGTH=04,                                              X
+               ATTRB=(ASKIP,BRT,FSET),                                 X
+               PICIN='9(4)',                                           X
+               PICOUT='****'
+
+         DFHMDF POS=(08,18),                                           X
+               LENGTH=00,                                              X
+               ATTRB=ASKIP
+*
+* CAMPO CONSTANTE
+*
+         DFHMDF POS=(10,03),                                           X
+               LENGTH=07,                                              X
+               ATTRB=ASKIP,                                            X
+               INITIAL='ESTAB.:'
+*
+* CAMPO VARIAVEL
+*
+CODEST   DFHMDF POS=(10,12),                                           X
+               LENGTH=10,                                              X
+               ATTRB=(ASKIP,BRT,FSET),                                 X
+               PICOUT='X(10)'
+
+         DFHMDF POS=(10,23),                                           X
+               LENGTH=00,                                              X
+               ATTRB=ASKIP
+*
+* CAMPO CONSTANTE
+*
+         DFHMDF POS=(13,03),                                           X
+               LENGTH=09,                                              X
+               ATTRB=ASKIP,                                            X
+               INITIAL='MENSAGEM:'
+*
+* CAMPO VARIAVEL
+*
+MSGOUT   DFHMDF POS=(13,14),                                           X
+               LENGTH=60,                                              X
+               ATTRB=(ASKIP,BRT,FSET),                                 X
+               PICOUT='X(60)'
+*
+* CAMPO CONSTANTE
+*
+         DFHMDF POS=(15,03),                                           X
+               LENGTH=09,                                              X
+               ATTRB=ASKIP,                                            X
+               INITIAL='F3 = SAIR'
+
+         DFHMDF POS=(15,15),                                           X
+               LENGTH=17,                                              X
+               ATTRB=ASKIP,                                            X
+               INITIAL='ENTER = AUTORIZAR'
+
+         DFHMSD TYPE=FINAL
+         END
+

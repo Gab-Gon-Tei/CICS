@@ -1,0 +1,40 @@
+      ******************************************************************
+      * DCLGEN TABLE(TB_TRANSACOES_PENDENTES)                          *
+      *        LIBRARY(FS.FSYS004.BOOKLIB(BKTRPD))                     *
+      *        ACTION(REPLACE)                                         *
+      *        LANGUAGE(COBOL)                                         *
+      *        NAMES(DCLTRPD-)                                         *
+      *        STRUCTURE(DCL-TRPD)                                     *
+      *        QUOTE                                                   *
+      *        COLSUFFIX(YES)                                          *
+      * ... IS THE DCLGEN COMMAND THAT MADE THE FOLLOWING STATEMENTS   *
+      ******************************************************************
+           EXEC SQL DECLARE TB_TRANSACOES_PENDENTES TABLE
+           ( ID_TRANSACAO                   INTEGER NOT NULL,
+             NUM_CARTAO                     CHAR(16) NOT NULL,
+             VALOR_TRANSACAO                DECIMAL(11, 2) NOT NULL,
+             COD_ESTABELECIMENTO            CHAR(10) NOT NULL,
+             STATUS_AUTORIZACAO             CHAR(1) NOT NULL
+           ) END-EXEC.
+      ******************************************************************
+      * COBOL DECLARATION FOR TABLE TB_TRANSACOES_PENDENTES            *
+      ******************************************************************
+       01  DCL-TRPD.
+      *                       ID_TRANSACAO
+           10 DCLTRPD-ID-TRANSACAO
+              PIC S9(9) USAGE COMP.
+      *                       NUM_CARTAO
+           10 DCLTRPD-NUM-CARTAO   PIC X(16).
+      *                       VALOR_TRANSACAO
+           10 DCLTRPD-VALOR-TRANSACAO
+              PIC S9(9)V9(2) USAGE COMP-3.
+      *                       COD_ESTABELECIMENTO
+           10 DCLTRPD-COD-ESTABELECIMENTO
+              PIC X(10).
+      *                       STATUS_AUTORIZACAO
+           10 DCLTRPD-STATUS-AUTORIZACAO
+              PIC X(1).
+      ******************************************************************
+      * THE NUMBER OF COLUMNS DESCRIBED BY THIS DECLARATION IS 5       *
+      ******************************************************************
+

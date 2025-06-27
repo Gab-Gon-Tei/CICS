@@ -1,0 +1,77 @@
+       01  AUTPROCI.
+           02  FILLER PIC X(12).
+           02  T1DATAL    COMP  PIC  S9(4).
+           02  T1DATAF    PICTURE X.
+           02  FILLER REDEFINES T1DATAF.
+             03 T1DATAA    PICTURE X.
+           02  FILLER   PICTURE X(1).
+           02  T1DATAI  PIC X(10).
+           02  T1TRANL    COMP  PIC  S9(4).
+           02  T1TRANF    PICTURE X.
+           02  FILLER REDEFINES T1TRANF.
+             03 T1TRANA    PICTURE X.
+           02  FILLER   PICTURE X(1).
+           02  T1TRANI  PIC X(4).
+           02  T1HORAL    COMP  PIC  S9(4).
+           02  T1HORAF    PICTURE X.
+           02  FILLER REDEFINES T1HORAF.
+             03 T1HORAA    PICTURE X.
+           02  FILLER   PICTURE X(1).
+           02  T1HORAI  PIC X(8).
+           02  NUMCARTAL    COMP  PIC  S9(4).
+           02  NUMCARTAF    PICTURE X.
+           02  FILLER REDEFINES NUMCARTAF.
+             03 NUMCARTAA    PICTURE X.
+           02  FILLER   PICTURE X(1).
+           02  NUMCARTAI  PIC X(16).
+           02  VALORCL    COMP  PIC  S9(4).
+           02  VALORCF    PICTURE X.
+           02  FILLER REDEFINES VALORCF.
+             03 VALORCA    PICTURE X.
+           02  FILLER   PICTURE X(1).
+           02  VALORCI  PIC 9(12)V99.
+           02  SENHAL    COMP  PIC  S9(4).
+           02  SENHAF    PICTURE X.
+           02  FILLER REDEFINES SENHAF.
+             03 SENHAA    PICTURE X.
+           02  FILLER   PICTURE X(1).
+           02  SENHAI  PIC 9(4).
+           02  CODESTL    COMP  PIC  S9(4).
+           02  CODESTF    PICTURE X.
+           02  FILLER REDEFINES CODESTF.
+             03 CODESTA    PICTURE X.
+           02  FILLER   PICTURE X(1).
+           02  CODESTI  PIC X(10).
+           02  MSGOUTL    COMP  PIC  S9(4).
+           02  MSGOUTF    PICTURE X.
+           02  FILLER REDEFINES MSGOUTF.
+             03 MSGOUTA    PICTURE X.
+           02  FILLER   PICTURE X(1).
+           02  MSGOUTI  PIC X(60).
+       01  AUTPROCO REDEFINES AUTPROCI.
+           02  FILLER PIC X(12).
+           02  FILLER PICTURE X(3).
+           02  T1DATAH    PICTURE X.
+           02  T1DATAO PIC X(10).
+           02  FILLER PICTURE X(3).
+           02  T1TRANH    PICTURE X.
+           02  T1TRANO PIC X(4).
+           02  FILLER PICTURE X(3).
+           02  T1HORAH    PICTURE X.
+           02  T1HORAO PIC X(8).
+           02  FILLER PICTURE X(3).
+           02  NUMCARTAH    PICTURE X.
+           02  NUMCARTAO PIC 9(16).
+           02  FILLER PICTURE X(3).
+           02  VALORCH    PICTURE X.
+           02  VALORCO PIC ZZZ.ZZZ.ZZ9,99.
+           02  FILLER PICTURE X(3).
+           02  SENHAH    PICTURE X.
+           02  SENHAO PIC ****.
+           02  FILLER PICTURE X(3).
+           02  CODESTH    PICTURE X.
+           02  CODESTO PIC X(10).
+           02  FILLER PICTURE X(3).
+           02  MSGOUTH    PICTURE X.
+           02  MSGOUTO PIC X(60).
+

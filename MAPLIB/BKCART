@@ -1,0 +1,51 @@
+      ******************************************************************
+      * DCLGEN TABLE(TB_CARTOES)                                       *
+      *        LIBRARY(FS.FSYS004.BOOKLIB(BKCART))                     *
+      *        ACTION(REPLACE)                                         *
+      *        LANGUAGE(COBOL)                                         *
+      *        NAMES(DCLCART-)                                         *
+      *        STRUCTURE(DCL-CART)                                     *
+      *        QUOTE                                                   *
+      *        COLSUFFIX(YES)                                          *
+      * ... IS THE DCLGEN COMMAND THAT MADE THE FOLLOWING STATEMENTS   *
+      ******************************************************************
+           EXEC SQL DECLARE TB_CARTOES TABLE
+           ( NUM_CARTAO                     CHAR(16) NOT NULL,
+             CPF_TITULAR                    CHAR(11) NOT NULL,
+             NOME_TITULAR                   VARCHAR(50) NOT NULL,
+             LIMITE_CREDITO                 DECIMAL(11, 2) NOT NULL,
+             LIMITE_DISPONIVEL              DECIMAL(11, 2) NOT NULL,
+             SENHA_DIGITAL                  CHAR(4) NOT NULL,
+             STATUS_CARTAO                  CHAR(1) NOT NULL
+           ) END-EXEC.
+      ******************************************************************
+      * COBOL DECLARATION FOR TABLE TB_CARTOES                         *
+      ******************************************************************
+       01  DCL-CART.
+      *                       NUM_CARTAO
+           10 DCLCART-NUM-CARTAO   PIC X(16).
+      *                       CPF_TITULAR
+           10 DCLCART-CPF-TITULAR  PIC X(11).
+           10 DCLCART-NOME-TITULAR.
+      *                       NOME_TITULAR LENGTH
+              49 DCLCART-NOME-TITULAR-LEN
+                 PIC S9(4) USAGE COMP.
+      *                       NOME_TITULAR
+              49 DCLCART-NOME-TITULAR-TEXT
+                 PIC X(50).
+      *                       LIMITE_CREDITO
+           10 DCLCART-LIMITE-CREDITO
+              PIC S9(9)V9(2) USAGE COMP-3.
+      *                       LIMITE_DISPONIVEL
+           10 DCLCART-LIMITE-DISPONIVEL
+              PIC S9(9)V9(2) USAGE COMP-3.
+      *                       SENHA_DIGITAL
+           10 DCLCART-SENHA-DIGITAL
+              PIC X(4).
+      *                       STATUS_CARTAO
+           10 DCLCART-STATUS-CARTAO
+              PIC X(1).
+      ******************************************************************
+      * THE NUMBER OF COLUMNS DESCRIBED BY THIS DECLARATION IS 7       *
+      ******************************************************************
+

@@ -1,0 +1,505 @@
+      *----------------------------------------------------------------*
+       IDENTIFICATION                      DIVISION.
+      *----------------------------------------------------------------*
+       PROGRAM-ID.                         PROGAUTC.
+       AUTHOR.                             GABRIEL
+
+      *----------------------------------------------------------------*
+       ENVIRONMENT                         DIVISION.
+      *----------------------------------------------------------------*
+       CONFIGURATION                       SECTION.
+       SPECIAL-NAMES.
+           DECIMAL-POINT IS COMMA.
+
+      *----------------------------------------------------------------*
+       DATA                                DIVISION.
+      *----------------------------------------------------------------*
+       WORKING-STORAGE                     SECTION.
+      *----------------------------------------------------------------*
+       77  WS-MSG-ERRO                     PIC X(80).
+       77  WS-LENGTH                       PIC S9(04) COMP.
+
+       01  WS-VAR-TEMPO.
+           05 WS-DATA                      PIC X(10).
+           05 WS-HORARIO                   PIC X(08).
+
+      *77  WS-DATA-F                       PIC X(10).
+      *77  WS-DIA                          PIC X(2).
+      *77  WS-MES                          PIC X(2).
+      *77  WS-ANO                          PIC X(4).
+
+       01  WS-DFHCOMMAREA.
+           05 WS-FASE                      PIC X(01).
+
+           05 WS-NUM-CARTAO                   PIC 9(16).
+           05 WS-VALOR-COMPRA                 PIC 9(9)V99.
+           05 WS-VALOR-COMPRA-F               PIC ZZZ.ZZZ.ZZ9,99.
+           05 WS-SENHA-ENTRADA                PIC 9(4).
+           05 WS-SENHA-DIGITAL                PIC 9(4).
+           05 WS-LIMITE-DISPONIVEL            PIC 9(09)V99.
+           05 WS-STATUS-CARTAO                PIC X(1).
+           05 WS-COD-ESTABELEC                PIC X(10).
+
+      *MAPA REFERENTE AO CADASTRO
+           COPY AUTCARD.
+      *COMANDO TECLAS PRESSIONADAS
+           COPY DFHAID.
+      *CARACTERES E ATRIBUTOS
+           COPY DFHBMSCA.
+      *BOOK DAS VARIAVEIS HOSPEDEIRAS
+           EXEC SQL
+           INCLUDE BKCART
+           END-EXEC.
+
+           EXEC SQL
+           INCLUDE BKTRPD
+           END-EXEC.
+      *BOOK DE VARIAVEIS DE USO DO SQL
+           EXEC SQL
+           INCLUDE SQLCA
+           END-EXEC.
+      *----------------------------------------------------------------*
+       LINKAGE                             SECTION.
+      *----------------------------------------------------------------*
+       01  DFHCOMMAREA.
+           05 OCCURS 0 TO 24579 TIMES DEPENDING ON EIBCALEN
+                                           PIC X(01).
+      *----------------------------------------------------------------*
+       PROCEDURE                           DIVISION.
+      *----------------------------------------------------------------*
+      *ROTINA DEFINIDA PARA LIDAR COM ERROS DE MAPA E GENERICOS--------*
+           EXEC CICS HANDLE CONDITION
+              MAPFAIL(999-MAPFAIL)
+              ERROR(999-ERROR)
+           END-EXEC
+
+      * SELETOR DE FASE - O MENU PRINCIPAL POSSUI 4 FASES
+      *    FASE 1 - ENVIA O MAPA PARA O TERMINAL
+      *    FASE 2 - TRATA O CAMPO T2COD
+      *    FASE 3 - TRATA OS DEMAIS CAMPOS DO PRODUTO
+      *    FASE 4 - TRATA O CAMPO T2CONF
+      *
+           MOVE DFHCOMMAREA                TO WS-DFHCOMMAREA
+
+           IF EIBCALEN EQUAL 0
+              MOVE '1'                     TO WS-FASE
+           END-IF
+
+           EVALUATE WS-FASE
+              WHEN '1' PERFORM 100-FASE1
+              WHEN '2' PERFORM 200-FASE2
+              WHEN '3' PERFORM 300-FASE3
+              WHEN '4' PERFORM 400-FASE4
+              WHEN OTHER
+                 MOVE +80                  TO WS-LENGTH
+                 MOVE 'ERRO NO NUMERO DA FASE'
+                                           TO WS-MSG-ERRO
+                 PERFORM 999-ENCERRA-TRANSACAO
+           END-EVALUATE
+           .
+
+       100-FASE1.
+           MOVE LOW-VALUES                 TO AUTPROCO
+           MOVE -1                         TO NUMCARTAL
+           MOVE 'ENTRE OS DADOS DO CARTAO E DA COMPRA'
+                                           TO MSGOUTO
+           PERFORM 999-PROTECAO-FASE2
+           PERFORM 999-MANDA-TELA
+           PERFORM 999-CHAMA-FASE2
+           .
+
+       200-FASE2.
+           EXEC CICS HANDLE AID
+              ENTER   (210-ENTER)
+              PF3     (220-PF3)
+              PF5     (230-PF5)
+              CLEAR   (230-PF5)
+              ANYKEY  (240-ANYKEY)
+           END-EXEC
+
+           EXEC CICS RECEIVE
+              MAP   ('AUTPROC')
+              MAPSET('AUTCARD')
+              INTO  (AUTPROCI)
+           END-EXEC
+           .
+
+       210-ENTER.
+           IF NUMCARTAL = 0 OR NUMCARTAI EQUAL SPACES
+              MOVE 'FAVOR PREENCHER O NUMERO DO CARTAO'
+                                           TO MSGOUTO
+              PERFORM 999-TRATA-FASE2
+           END-IF
+
+           MOVE NUMCARTAI                  TO WS-NUM-CARTAO
+           MOVE NUMCARTAI                  TO DCLCART-NUM-CARTAO
+           EXEC SQL
+               SELECT LIMITE_DISPONIVEL
+                    ,SENHA_DIGITAL
+                    ,STATUS_CARTAO
+               INTO  :DCLCART-LIMITE-DISPONIVEL
+                    ,:DCLCART-SENHA-DIGITAL
+                    ,:DCLCART-STATUS-CARTAO
+              FROM TB_CARTOES
+              WHERE NUM_CARTAO = :DCLCART-NUM-CARTAO
+           END-EXEC
+
+           IF SQLCODE = 0
+              MOVE LOW-VALUES                 TO AUTPROCO
+              STRING 'CARTAO ' DELIMITED BY SIZE
+              DCLCART-NUM-CARTAO DELIMITED BY SPACE
+              ' ENCONTRADO' DELIMITED BY SIZE INTO MSGOUTO
+           ELSE
+              IF SQLCODE = +100
+                 PERFORM 999-NOTFND
+              END-IF
+           END-IF
+
+           MOVE DCLCART-NUM-CARTAO         TO NUMCARTAO
+           MOVE DCLCART-LIMITE-DISPONIVEL  TO WS-LIMITE-DISPONIVEL
+           MOVE DCLCART-SENHA-DIGITAL      TO WS-SENHA-DIGITAL
+           MOVE DCLCART-STATUS-CARTAO      TO WS-STATUS-CARTAO
+
+           PERFORM 999-TRATA-FASE3
+           .
+
+       220-PF3.
+           MOVE +80                        TO WS-LENGTH
+           MOVE 'TERMINO NORMAL DA TRANSACAO FC4A'
+                                          TO WS-MSG-ERRO
+           PERFORM 999-ENCERRA-TRANSACAO
+           .
+
+       230-PF5.
+           PERFORM 999-CHAMA-FASE1
+           .
+
+       240-ANYKEY.
+           MOVE 'TECLA PRESSIONADA INVALIDA!'
+                                           TO MSGOUTO
+           PERFORM 999-TRATA-FASE2
+           .
+
+       300-FASE3.
+           EXEC CICS HANDLE AID
+              ENTER   (310-ENTER)
+              PF3     (220-PF3)
+              PF5     (230-PF5)
+              CLEAR   (230-PF5)
+              ANYKEY  (240-ANYKEY)
+           END-EXEC
+
+           EXEC CICS RECEIVE
+              MAP   ('AUTPROC')
+              MAPSET('AUTCARD')
+              INTO  (AUTPROCI)
+           END-EXEC
+           .
+
+       310-ENTER.
+           EXEC CICS BIF DEEDIT FIELD(VALORCI  ) END-EXEC
+      * VERIFICAR SE HA ALGUM CAMPO NAO DIGITADO
+           IF VALORCL  = 0 OR
+              SENHAL   = 0 OR
+              CODESTL  = 0 OR CODESTI EQUAL SPACES
+
+              MOVE 'FAVOR PREENCHER TODOS OS CAMPOS'
+                                           TO MSGOUTO
+              PERFORM 999-TRATA-FASE3
+           END-IF
+
+
+      * TRATA FASE4
+           PERFORM 999-TRATA-FASE4
+           .
+
+       999-PROTECAO-FASE2.
+      * DESPROTEGER
+           MOVE DFHUNIMD                      TO NUMCARTAA
+      * PROTEGER
+           MOVE DFHBMPRF                      TO SENHAA
+           MOVE DFHBMPRF                      TO CODESTA
+           MOVE DFHBMPRF                      TO VALORCA
+
+      *UNDERLINE
+           MOVE DFHUNDLN                      TO NUMCARTAH
+
+      * DESPROTEGER
+      *    MOVE DFHALL                        TO T2CONFH
+           .
+
+       400-FASE4.
+           EXEC CICS HANDLE AID
+              ENTER   (410-ENTER)
+              PF3     (220-PF3)
+              PF5     (230-PF5)
+              CLEAR   (230-PF5)
+              ANYKEY  (240-ANYKEY)
+           END-EXEC
+
+           EXEC CICS RECEIVE
+              MAP   ('AUTPROC')
+              MAPSET('AUTCARD')
+              INTO  (AUTPROCI)
+           END-EXEC
+           .
+
+       410-ENTER.
+      *RECUPERA OS DADOS
+           MOVE VALORCI               TO DCLTRPD-VALOR-TRANSACAO
+           MOVE SENHAI                TO WS-SENHA-ENTRADA
+           MOVE CODESTI               TO DCLTRPD-COD-ESTABELECIMENTO
+           MOVE WS-NUM-CARTAO         TO DCLCART-NUM-CARTAO
+           MOVE WS-SENHA-DIGITAL      TO DCLCART-SENHA-DIGITAL
+           MOVE WS-LIMITE-DISPONIVEL  TO DCLCART-LIMITE-DISPONIVEL
+           MOVE WS-STATUS-CARTAO      TO DCLCART-STATUS-CARTAO
+      *REGRAS DE AUTORIZACAO
+      * NEGA AUTORIZACAO QUANDO
+           EVALUATE TRUE
+           WHEN DCLCART-STATUS-CARTAO NOT = 'A'
+               MOVE 'N'                 TO DCLTRPD-STATUS-AUTORIZACAO
+               MOVE 'CARTAO INATIVO'  TO MSGOUTO
+           WHEN DCLCART-SENHA-DIGITAL NOT = WS-SENHA-ENTRADA
+               MOVE 'N'                 TO DCLTRPD-STATUS-AUTORIZACAO
+               MOVE 'SENHA ERRADA'  TO MSGOUTO
+      *IMPLEMENTAR TENTATIVAS PARA BLOQUEAR CARTAO
+      *        ADD 1                    TO CT-SENHA
+      *        IF CT-SENHA = 4
+      *        MOVE 'B'                 TO DCLCART-STATUS-CARTAO
+           WHEN DCLTRPD-VALOR-TRANSACAO > DCLCART-LIMITE-DISPONIVEL
+               MOVE 'N'                 TO DCLTRPD-STATUS-AUTORIZACAO
+               MOVE 'EXCEDEU O LIMITE'  TO MSGOUTO
+      * AUTORIZA
+           WHEN OTHER
+      *ATUALIZA LIMITE
+               COMPUTE DCLCART-LIMITE-DISPONIVEL =
+               DCLCART-LIMITE-DISPONIVEL - DCLTRPD-VALOR-TRANSACAO
+               EXEC SQL
+                  UPDATE TB_CARTOES
+                  SET LIMITE_DISPONIVEL = :DCLCART-LIMITE-DISPONIVEL
+                  WHERE NUM_CARTAO = :DCLCART-NUM-CARTAO
+               END-EXEC
+               EVALUATE SQLCODE
+                  WHEN 0
+                     CONTINUE
+                  WHEN -530
+                     MOVE 'ERRO: CHAVE ESTRANGEIRA NAO ENCONTRADA'
+                                                         TO MSGOUTO
+                     PERFORM 999-TRATA-FASE4
+                  WHEN +100
+                     MOVE 'ERRO: CARTAO NAO ENCONTRADO' TO MSGOUTO
+                     PERFORM 999-TRATA-FASE4
+                  WHEN OTHER
+                     MOVE 'ERRO SQLCODE NAO DEFINIDO'
+                                                   TO MSGOUTO
+                     PERFORM 999-TRATA-FASE4
+               END-EVALUATE
+
+               MOVE 'A'                 TO DCLTRPD-STATUS-AUTORIZACAO
+               MOVE 'AUTORIZADA'        TO MSGOUTO
+           END-EVALUATE
+           MOVE +80                     TO WS-LENGTH
+           MOVE MSGOUTO                 TO WS-MSG-ERRO
+           PERFORM 420-TRATA-PENDENTES
+           PERFORM 999-ENCERRA-TRANSACAO
+           .
+
+       420-TRATA-PENDENTES.
+           MOVE WS-NUM-CARTAO       TO DCLTRPD-NUM-CARTAO
+      *    MOVE WS-HORARIO          TO DCLTRPD-HORA-TRANSACAO
+
+      *    MOVE WS-DATA(1:2)        TO WS-DIA
+      *    MOVE WS-DATA(4:2)        TO WS-MES
+      *    MOVE WS-DATA(7:4)        TO WS-ANO
+      *    STRING
+      *    WS-DIA DELIMITED BY SIZE
+      *                            '.' DELIMITED BY SIZE
+      *    WS-MES DELIMITED BY SIZE
+      *                            '.' DELIMITED BY SIZE
+      *    WS-ANO DELIMITED BY SIZE
+      *                             INTO WS-DATA-F
+      *    MOVE WS-DATA-F           TO DCLTRPD-DATA-TRANSACAO
+
+           EXEC SQL
+              INSERT INTO TB_TRANSACOES_PENDENTES
+              (  NUM_CARTAO
+                ,VALOR_TRANSACAO
+                ,COD_ESTABELECIMENTO
+                ,STATUS_AUTORIZACAO
+              )
+              VALUES
+              (  :DCLTRPD-NUM-CARTAO
+               , :DCLTRPD-VALOR-TRANSACAO
+               , :DCLTRPD-COD-ESTABELECIMENTO
+               , :DCLTRPD-STATUS-AUTORIZACAO
+              )
+           END-EXEC
+
+           EVALUATE SQLCODE
+              WHEN 0
+                  CONTINUE
+              WHEN -803
+                  MOVE ' SQLCODE ERRO -803: CHAVE DUPLICADA'
+                                           TO MSGOUTO
+                  PERFORM 999-TRATA-FASE4
+              WHEN -545
+                  MOVE ' SQLCODE ERRO -545: VIOLACAO DE RESTRICAO'
+                                           TO MSGOUTO
+                  PERFORM 999-TRATA-FASE4
+              WHEN OTHER
+                  PERFORM 999-ERROR
+              END-EVALUATE
+           .
+       999-TRATA-FASE3.
+           MOVE -1                         TO VALORCL
+
+           PERFORM 999-PROTECAO-FASE3
+           PERFORM 999-MANDA-TELA
+           PERFORM 999-CHAMA-FASE3
+           .
+
+       999-ENCERRA-TRANSACAO.
+           EXEC CICS SEND TEXT
+              FROM (WS-MSG-ERRO)
+              LENGTH(WS-LENGTH)
+              ERASE FREEKB ALARM
+           END-EXEC
+
+           EXEC CICS RETURN
+           END-EXEC
+           .
+
+       999-MANDA-TELA.
+           MOVE EIBTRNID                  TO T1TRANO
+
+           EXEC CICS LINK
+               PROGRAM('AUXCICS1')
+               COMMAREA(WS-VAR-TEMPO)
+               LENGTH(+18)
+           END-EXEC
+
+           MOVE WS-DATA                   TO T1DATAO
+           MOVE WS-HORARIO                TO T1HORAO
+
+           EXEC CICS SEND
+              MAP ('AUTPROC')
+              MAPSET('AUTCARD')
+              FROM(AUTPROCO)
+              ERASE FREEKB ALARM CURSOR
+           END-EXEC
+           .
+
+       999-CHAMA-FASE1.
+           MOVE '1'                       TO WS-FASE
+
+           EXEC CICS XCTL
+              PROGRAM('PROGAUTC')
+              COMMAREA(WS-DFHCOMMAREA)
+              LENGTH(LENGTH OF WS-DFHCOMMAREA)
+           END-EXEC
+           .
+
+       999-CHAMA-FASE2.
+           MOVE '2'                       TO WS-FASE
+
+           EXEC CICS RETURN
+               TRANSID('FC4A')
+               COMMAREA(WS-DFHCOMMAREA)
+               LENGTH(LENGTH OF WS-DFHCOMMAREA)
+           END-EXEC
+           .
+
+       999-CHAMA-FASE3.
+           MOVE '3'                       TO WS-FASE
+
+           EXEC CICS RETURN
+               TRANSID('FC4A')
+               COMMAREA(WS-DFHCOMMAREA)
+               LENGTH(LENGTH OF WS-DFHCOMMAREA)
+           END-EXEC
+           .
+
+       999-CHAMA-FASE4.
+           MOVE '4'                       TO WS-FASE
+
+           EXEC CICS RETURN
+               TRANSID('FC4A')
+               COMMAREA(WS-DFHCOMMAREA)
+               LENGTH(LENGTH OF WS-DFHCOMMAREA)
+           END-EXEC
+           .
+
+       999-TRATA-FASE2.
+           MOVE -1                        TO NUMCARTAL
+
+           PERFORM 999-PROTECAO-FASE2
+           PERFORM 999-MANDA-TELA
+           PERFORM 999-CHAMA-FASE2
+           .
+
+       999-PROTECAO-FASE3.
+           MOVE -1                         TO VALORCL
+      * DESPROTEGER OS CAMPOS DE REGISTRO
+
+           MOVE DFHUNIMD                   TO VALORCA
+           MOVE DFHUNIMD                   TO SENHAA
+           MOVE DFHUNIMD                   TO CODESTA
+
+      * UNDERLINE
+           MOVE DFHUNDLN                   TO VALORCH
+           MOVE DFHUNDLN                   TO SENHAH
+           MOVE DFHUNDLN                   TO CODESTH
+
+      * PROTEGER E TIRAR UNDELINE
+           MOVE DFHBMPRF                   TO NUMCARTAA
+           .
+
+       999-PROTECAO-FASE4.
+      * PROTEGER OS CAMPOS DE REGISTRO
+
+           MOVE DFHBMPRF                   TO VALORCA
+           MOVE DFHBMPRF                   TO SENHAA
+           MOVE DFHBMPRF                   TO CODESTA
+
+      * UNDERLINE
+           MOVE DFHALL                    TO VALORCH
+           MOVE DFHALL                    TO SENHAH
+           MOVE DFHALL                    TO CODESTH
+           .
+
+       999-TRATA-FASE4.
+           MOVE -1                         TO MSGOUTL
+           MOVE VALORCI                    TO WS-VALOR-COMPRA-F
+           MOVE 'CONFIRMA TRANSACAO ?'     TO MSGOUTO
+      *    MOVE WS-VALOR-COMPRA-F          TO MSGOUTO
+
+           PERFORM 999-PROTECAO-FASE4
+           PERFORM 999-MANDA-TELA
+           PERFORM 999-CHAMA-FASE4
+           .
+
+       999-MAPFAIL.
+           MOVE 'ERRO MAPA AUTCARD'        TO WS-MSG-ERRO
+           PERFORM 999-ENCERRA-TRANSACAO
+           .
+
+       999-ERROR.
+           MOVE 'ERRO GENERICO PROGAUTC'   TO WS-MSG-ERRO
+           PERFORM 999-ENCERRA-TRANSACAO
+           .
+       999-NOTFND.
+           STRING 'CARTAO NAO LOCALIZADO'
+           DELIMITED BY SIZE               INTO MSGOUTO
+           PERFORM 999-TRATA-FASE2
+           .
+      *999-DUPREC.
+      *    MOVE NUMCARTAI                  TO CODPROD
+      *    MOVE LOW-VALUES                 TO AUTPROCO
+      *    MOVE SPACES                     TO MSGOUTO
+      *    STRING 'O PRODUTO ' DELIMITED BY SIZE
+      *           CODPROD DELIMITED BY SPACES
+      *           ' FOI INSERIDO POR OUTRO USUARIO' DELIMITED BY SIZE
+      *                                    INTO MSGOUTO
+      *    PERFORM 999-TRATA-FASE2
+      *    .
+
