@@ -1,0 +1,296 @@
+      *----------------------------------------------------------------*
+       IDENTIFICATION                      DIVISION.
+      *----------------------------------------------------------------*
+       PROGRAM-ID.                         T4044602.
+       AUTHOR.                             GABRIEL.
+      *----------------------------------------------------------------*
+      *----------------------------------------------------------------*
+       ENVIRONMENT                         DIVISION.
+      *----------------------------------------------------------------*
+       CONFIGURATION                       SECTION.
+       SPECIAL-NAMES.
+           DECIMAL-POINT IS COMMA.
+
+       INPUT-OUTPUT                        SECTION.
+       FILE-CONTROL.
+           SELECT FILE4601 ASSIGN          TO FILE4601
+           FILE STATUS IS FS-FILE4601
+           .
+      *----------------------------------------------------------------*
+       DATA                                DIVISION.
+      *----------------------------------------------------------------*
+       FILE                                SECTION.
+      *----------------------------------------------------------------*
+       FD  FILE4601
+           RECORDING MODE IS F.
+           COPY BK044610.
+
+      *----------------------------------------------------------------*
+       WORKING-STORAGE                     SECTION.
+      *----------------------------------------------------------------*
+      *                 VARIAVEIS ESPELHO                              *
+      *----------------------------------------------------------------*
+      * BOOK DAS VARIAVEIS DE CALCULO DE TEMPO
+           COPY VARDATA.
+           COPY VARPROSS.
+      *BOOK DAS VARIAVEIS HOSPEDEIRAS
+           EXEC SQL
+              INCLUDE DCLFUNC
+           END-EXEC.
+      *BOOK DAS VARIAVEIS PARA USO DO SQL
+           EXEC SQL
+              INCLUDE SQLCA
+           END-EXEC.
+      * INDICADORES DA TABELA 
+       01  WS-INDICADORES.
+           05 IINSS                        PIC S9(4) COMP.
+           05 IIRRF                         PIC S9(4) COMP.
+           05 IDEPENDENTE                  PIC S9(4) COMP.
+      *----------------------------------------------------------------*
+      *                 VARIAVEIS DE TRABALHO                          *
+      *----------------------------------------------------------------*
+       01  WS-CONTADORES-COMP.
+           05 WS-CTGRAV                    PIC 9(05) COMP.
+           05 WS-CTLIDO                    PIC 9(05) COMP.
+
+       01  WS-CONTADORES-FORMATADOS.
+           05 WS-CTGRAV-F                  PIC ZZ.ZZ9.
+           05 WS-CTLIDO-F                  PIC ZZ.ZZ9.
+
+      *VARIAVEIS DE FILE STATUS
+       01  FS-FILE4601                     PIC X(02).
+           88 SUCESSO-FILE4601             VALUE '00'.
+      *    88 FIM-ARQ-FILE4601             VALUE '10'.
+       
+       77  WS-SALARIO-INSS                 PIC S9(8)V9(2) COMP-3.
+       77  WS-ALIQUOTA-INSS                PIC S9(4)V9(2) COMP-3.
+
+       77  WS-SQLCODE                      PIC +9(09).
+       77  WS-MSG                          PIC X(60).
+       77  WS-FS                           PIC X(02).
+   
+      *----------------------------------------------------------------*
+       PROCEDURE                           DIVISION.
+      *----------------------------------------------------------------*
+      *0000-T4044602.
+           PERFORM 1000-INICIALIZAR
+           PERFORM 2000-PROCESSAR
+               UNTIL SQLCODE = +100
+           PERFORM 3000-TERMINO
+           GOBACK
+           .
+
+       1000-INICIALIZAR.
+           ACCEPT WS-HORARIO-INICIAL       FROM TIME
+           INITIALIZE WS-CONTADORES-COMP
+      
+           EXEC SQL
+               DECLARE FILTRO1 CURSOR FOR
+                   SELECT CPF
+                         ,NOME
+                         ,TELEFONE
+                         ,SALARIOBASE
+                         ,INSS 
+                         ,IRRF
+                   FROM FUNCIONARIOS
+                   ORDER BY CPF
+           END-EXEC
+
+      * ABERTURA DO CURSOR
+           EXEC SQL
+                OPEN FILTRO1
+           END-EXEC
+
+           IF SQLCODE NOT EQUAL 0
+              MOVE "ERRO AO ABRIR CURSOR"
+                                           TO WS-MSG
+              MOVE SQLCODE                 TO WS-SQLCODE
+              GO TO 9000-ERRO-DB2
+           END-IF
+
+      * ABERTURA DO ARQUIVO DE RELATORIO
+           OPEN OUTPUT FILE4601
+           IF NOT SUCESSO-FILE4601
+              MOVE "ERRO ABERTURA FILE4601" TO WS-MSG
+              MOVE FS-FILE4601             TO WS-FS
+              GO TO 9000-ERRO
+           END-IF
+
+      * LEITURA DA PRIMEIRA LINHA DO CURSOR
+           PERFORM 1500-LER-FILTRO1
+           .
+       1500-LER-FILTRO1.
+           EXEC SQL
+               FETCH FILTRO1
+               INTO :DCLFUNC-CPF
+                    ,:DCLFUNC-NOME
+                    ,:DCLFUNC-TELEFONE
+                    ,:DCLFUNC-SALARIOBASE
+                    ,:DCLFUNC-INSS :IINSS
+                    ,:DCLFUNC-IRRF :IIRRF
+                    ,:DCLFUNC-DEPENDENTE :IDEPENDENTE
+           END-EXEC
+
+           IF SQLCODE = 0
+              PERFORM 1600-TRATA-INDICATOR
+              ADD 1 TO WS-CTLIDO
+           ELSE
+              IF SQLCODE NOT = +100
+              MOVE "ERRO LEITURA CURSOR FILTRO1"
+                                           TO WS-MSG
+              MOVE SQLCODE                 TO WS-SQLCODE
+              GO TO 9000-ERRO-DB2
+              END-IF
+           END-IF
+           .
+
+       1600-TRATA-INDICATOR.
+           IF IINSS < 0
+              MOVE ZEROS                   TO BK044610-INSS
+           END-IF
+
+           IF IIRRF < 0
+              MOVE ZEROS                   TO BK044610-IRRF
+           END-IF
+
+           IF IDEPENDENTE < 0
+              MOVE ZEROS                   TO BK044610-DEPENDENTE
+           END-IF
+           .
+
+       2000-PROCESSAR.
+
+           EVALUATE TRUE
+              WHEN DCLFUNC-SALARIOBASE <= 1500.00
+                   PERFORM 2100-TRATAR-FAIXA1
+              WHEN DCLFUNC-SALARIOBASE > 1500.00
+                   AND DCLFUNC-SALARIOBASE <= 2500.00
+                   PERFORM 2200-TRATAR-FAIXA2
+              WHEN DCLFUNC-SALARIOBASE > 2500.00
+                   AND DCLFUNC-SALARIOBASE <= 3500.00
+                   PERFORM 2300-TRATAR-FAIXA3
+              WHEN DCLFUNC-SALARIOBASE > 3500.00
+                   AND DCLFUNC-SALARIOBASE <= 7000.00
+                   PERFORM 2400-TRATAR-FAIXA4
+              WHEN OTHER
+                   PERFORM 2500-TRATAR-FAIXA5
+           END-EVALUATE.
+
+           MOVE DCLFUNC-CPF                TO BK044610-CPF
+           MOVE DCLFUNC-NOME               TO BK044610-NOME
+           MOVE DCLFUNC-TELEFONE           TO BK044610-TELEFONE
+           MOVE DCLFUNC-SALARIOBASE        TO BK044610-SALARIOBASE
+           MOVE DCLFUNC-INSS               TO BK044610-INSS
+           MOVE DCLFUNC-IRRF               TO BK044610-IRRF
+           MOVE DCLFUNC-DEPENDENTE         TO BK044610-DEPENDENTE
+
+           WRITE REG-FILE4601
+           IF NOT SUCESSO-FILE4601
+              MOVE "ERRO NA GRAVACAO FILE4601"
+                                           TO WS-MSG
+              MOVE FS-FILE4601             TO WS-FS
+              PERFORM 9000-ERRO
+           END-IF
+
+           ADD 1 TO WS-CTGRAV
+           PERFORM 1500-LER-FILTRO1
+           .
+       2100-TRATAR-FAIXA1.
+           COMPUTE DCLFUNC-INSS = DCLFUNC-SALARIOBASE * 0,075
+           .
+       2200-TRATAR-FAIXA2.
+           COMPUTE DCLFUNC-INSS = ((DCLFUNC-SALARIOBASE - 1500.00) 
+                                        * 0,09) + 112,50
+           .
+       2300-TRATAR-FAIXA3.
+           COMPUTE DCLFUNC-INSS = ((DCLFUNC-SALARIOBASE - 2500.00) 
+                                        * 0,12) + (112,50 + 90,00)
+           .
+       2400-TRATAR-FAIXA4.
+           COMPUTE DCLFUNC-INSS = ((DCLFUNC-SALARIOBASE - 3500.00) 
+                                     * 0,14) + (112,50 + 90,00 + 120,00)
+           .
+       2500-TRATAR-FAIXA5.
+           COMPUTE DCLFUNC-INSS = (7000.00* 0,14) + (112,50 + 90,00 
+                                        + 120,00 + 490,00)
+           .           
+       3000-TERMINO.
+           MOVE WS-CTLIDO                  TO WS-CTLIDO-F
+           MOVE WS-CTGRAV                  TO WS-CTGRAV-F
+
+           EXEC SQL
+               CLOSE FILTRO1
+           END-EXEC
+           IF SQLCODE NOT EQUAL 0
+              MOVE "ERRO AO FECHAR CURSOR"
+                                           TO WS-MSG
+              MOVE SQLCODE                 TO WS-SQLCODE
+              PERFORM 9000-ERRO-DB2
+           END-IF
+
+           CLOSE FILE4601
+           IF NOT SUCESSO-FILE4601
+              MOVE "ERRO AO FECHAR FILE4601"
+                                           TO WS-MSG
+              MOVE FS-FILE4601             TO WS-FS
+              PERFORM 9000-ERRO
+           END-IF
+
+
+           ACCEPT WS-HORARIO-FINAL    FROM TIME
+           PERFORM 9000-TEMPO-DE-PROCESSAMENTO
+
+      *     PERFORM 9000-IMPRIME-DATA
+           PERFORM 5000-EXIBIR-RESULTADOS
+           .
+       5000-EXIBIR-RESULTADOS.
+           DISPLAY "==================================================="
+           DISPLAY "        ESTATISTICA FINAL DE PROCESSAMENTO         "
+           DISPLAY "==================================================="
+           DISPLAY " QTDE. DCLFUNC   LIDOS..............: " WS-CTLIDO-F
+           DISPLAY " QTDE. DCLFUNC   GRAVADOS...........: " WS-CTGRAV-F
+           DISPLAY "==================================================="
+           DISPLAY " TEMPO TOTAL DE PROCESSAMENTO  : "
+                                               WS-TEMPO-PROCESSAMENTO-F
+           DISPLAY "==================================================="
+           DISPLAY "                                                   "
+           DISPLAY "                                                   "
+           DISPLAY "                        *             *            "
+           DISPLAY "           *                                       "
+           DISPLAY "          *                                        "
+           DISPLAY "                         *                         "
+           DISPLAY "   *        *                                      "
+           DISPLAY "                                        *     *    "
+           DISPLAY "                                *                  "
+           DISPLAY "                 _     _                           "
+           DISPLAY "   *            /_|   |_\                *         "
+           DISPLAY "           *   //||   ||\\     *                   "
+           DISPLAY "              // ||   || \\                        "
+           DISPLAY "             //  ||___||  \\        *              "
+           DISPLAY "  *    *    /     |   |     \    _           *     "
+           DISPLAY "           /    __|   |__    \  /_\                "
+           DISPLAY "          / .--~  |   |  ~--. \|   |               "
+           DISPLAY "         /.~ __\  |   |  /   ~.|   |    *          "
+           DISPLAY "        .~  `=='\ |   | /   _.-'.  |               "
+           DISPLAY "       /  /      \|   |/ .-~    _.-'               "
+           DISPLAY "      |           +---+  \  _.-~  |                "
+           DISPLAY "  *   `=----.____/  #  \____.----='         *      "
+           DISPLAY "       [::::::::|  (_)  |::::::::]                 "
+           DISPLAY "      .=----~~~~~\     /~~~~~----=.            *   "
+           DISPLAY "      |          /`---'\          |      *         "
+           DISPLAY "       \  \     /       \     /  /                 "
+           DISPLAY "        `.     /         \     .'                  "
+           DISPLAY "          `.  /._________.\  .'          *    *    "
+           DISPLAY "         *  `--._________.--'                      "
+           DISPLAY "   *                                               "
+           DISPLAY "        -NEVER TELL ME THE ODDS- *        *        "
+           DISPLAY "    *                   *                          "
+           DISPLAY "                                                   "
+           DISPLAY "             *         *             *             "
+           DISPLAY "  *                                                "
+           .
+
+      *----------------------------------------------------------------*
+           COPY ROTERRO.
+           COPY ROTERROD.
+           COPY ROTPROSS.

@@ -1,0 +1,192 @@
+      *----------------------------------------------------------------*
+       IDENTIFICATION                      DIVISION.
+      *----------------------------------------------------------------*
+       PROGRAM-ID.                         T4044603.
+       AUTHOR.                             GABRIEL.
+      *----------------------------------------------------------------*
+      *----------------------------------------------------------------*
+       ENVIRONMENT                         DIVISION.
+      *----------------------------------------------------------------*
+       CONFIGURATION                       SECTION.
+       SPECIAL-NAMES.
+           DECIMAL-POINT IS COMMA.
+
+       INPUT-OUTPUT                        SECTION.
+       FILE-CONTROL.
+           SELECT A3044603 ASSIGN          TO A3044603
+           FILE STATUS IS FS-A3044603
+           .
+      *----------------------------------------------------------------*
+       DATA                                DIVISION.
+      *----------------------------------------------------------------*
+       FILE                                SECTION.
+      *----------------------------------------------------------------*
+       FD  A3044603
+           RECORDING MODE IS F.
+           COPY BK044603.
+
+      *----------------------------------------------------------------*
+       WORKING-STORAGE                     SECTION.
+      *----------------------------------------------------------------*
+      *                 VARIAVEIS ESPELHO                              *
+      *----------------------------------------------------------------*
+      * BOOK DAS VARIAVEIS DE CALCULO DE TEMPO
+           COPY VARDATA.
+           COPY VARPROSS.
+      *BOOK DAS VARIAVEIS HOSPEDEIRAS
+           EXEC SQL
+              INCLUDE DCLFUNC
+           END-EXEC.
+      *BOOK DAS VARIAVEIS PARA USO DO SQL
+           EXEC SQL
+              INCLUDE SQLCA
+           END-EXEC.
+      * INDICADORES DA TABELA 
+      *01  WS-INDICADORES.
+      *    05 INOME                        PIC S9(4) COMP.
+      *    05 IDDI                         PIC S9(4) COMP.
+      *    05 IDDD                         PIC S9(4) COMP.
+      *    05 ITELEFONE                    PIC S9(4) COMP.
+      *    05 ISALARIOBASE                 PIC S9(4) COMP.
+      *----------------------------------------------------------------*
+      *                 VARIAVEIS DE TRABALHO                          *
+      *----------------------------------------------------------------*
+       01  WS-CONTADORES-COMP.
+           05 WS-CTDEL                    PIC 9(05) COMP.
+
+
+       01  WS-CONTADORES-FORMATADOS.
+           05 WS-CTDEL-F                  PIC ZZ.ZZ9.
+
+      *VARIAVEIS DE FILE STATUS
+       01  FS-A3044603                     PIC X(02).
+           88 SUCESSO-A3044603             VALUE '00'.
+           88 FIM-ARQ-A3044603             VALUE '10'.
+
+       77  WS-SQLCODE                      PIC +9(09).
+       77  WS-MSG                          PIC X(60).
+       77  WS-FS                           PIC X(02).
+   
+      *----------------------------------------------------------------*
+       PROCEDURE                           DIVISION.
+      *----------------------------------------------------------------*
+      *0000-T4044602.
+           PERFORM 1000-INICIALIZAR
+           PERFORM 2000-PROCESSAR
+               UNTIL FIM-ARQ-A3044603
+           PERFORM 3000-TERMINO
+           GOBACK
+           .
+
+       1000-INICIALIZAR.
+           ACCEPT WS-HORARIO-INICIAL       FROM TIME
+           INITIALIZE WS-CONTADORES-COMP
+
+      * ABERTURA DO ARQUIVO A3044603
+           OPEN INPUT A3044603
+           IF NOT SUCESSO-A3044603
+              MOVE "ERRO ABERTURA A3044603" TO WS-MSG
+              MOVE FS-A3044603             TO WS-FS
+              GO TO 9000-ERRO
+           END-IF
+
+      * LEITURA DA PRIMEIRA LINHA DO ARQUIVO
+
+           PERFORM 1600-LER-A3044603
+           .
+
+       1600-LER-A3044603.
+           READ A3044603
+           IF FIM-ARQ-A3044603
+               MOVE "FIM DO ARQUIVO A3044603" TO WS-MSG
+               MOVE FS-A3044603             TO WS-FS
+               GO TO 9000-ERRO
+           END-IF.
+
+       2000-PROCESSAR.
+           MOVE
+           EXEC SQL
+               DELETE FROM TBFUNC
+               WHERE CPF = :BK044603-CPF
+           END-EXEC
+
+           EVALUATE SQLCODE
+              WHEN 0
+                  ADD 1 TO WS-CTDEL
+              WHEN OTHER 
+                  MOVE "ERRO AO DELETAR DCLFUNC"   TO WS-MSG         
+                  MOVE SQLCODE                     TO WS-SQLCODE
+                  GO TO 9000-ERRO-DB2
+           END-EVALUATE
+
+           PERFORM 1600-LER-A3044603
+           .
+
+       3000-TERMINO.
+           MOVE WS-CTDEL                  TO WS-CTDEL-F
+
+           CLOSE A3044603
+           IF NOT SUCESSO-A3044603
+              MOVE "ERRO AO FECHAR A3044603"
+                                           TO WS-MSG
+              MOVE FS-A3044603             TO WS-FS
+              GO TO 9000-ERRO
+           END-IF
+
+
+           ACCEPT WS-HORARIO-FINAL    FROM TIME
+           PERFORM 9000-TEMPO-DE-PROCESSAMENTO
+
+      *     PERFORM 9000-IMPRIME-DATA
+           PERFORM 5000-EXIBIR-RESULTADOS
+           .
+       5000-EXIBIR-RESULTADOS.
+           DISPLAY "==================================================="
+           DISPLAY "        ESTATISTICA FINAL DE PROCESSAMENTO         "
+           DISPLAY "==================================================="
+           DISPLAY " QTDE. FUNC  EXCLUIDOS..............: " WS-CTDEL-F
+           DISPLAY "==================================================="
+           DISPLAY " TEMPO TOTAL DE PROCESSAMENTO  : "
+                                               WS-TEMPO-PROCESSAMENTO-F
+           DISPLAY "==================================================="
+           DISPLAY "                                                   "
+           DISPLAY "                                                   "
+           DISPLAY "                        *             *            "
+           DISPLAY "           *                                       "
+           DISPLAY "          *                                        "
+           DISPLAY "                         *                         "
+           DISPLAY "   *        *                                      "
+           DISPLAY "                                        *     *    "
+           DISPLAY "                                *                  "
+           DISPLAY "                 _     _                           "
+           DISPLAY "   *            /_|   |_\                *         "
+           DISPLAY "           *   //||   ||\\     *                   "
+           DISPLAY "              // ||   || \\                        "
+           DISPLAY "             //  ||___||  \\        *              "
+           DISPLAY "  *    *    /     |   |     \    _           *     "
+           DISPLAY "           /    __|   |__    \  /_\                "
+           DISPLAY "          / .--~  |   |  ~--. \|   |               "
+           DISPLAY "         /.~ __\  |   |  /   ~.|   |    *          "
+           DISPLAY "        .~  `=='\ |   | /   _.-'.  |               "
+           DISPLAY "       /  /      \|   |/ .-~    _.-'               "
+           DISPLAY "      |           +---+  \  _.-~  |                "
+           DISPLAY "  *   `=----.____/  #  \____.----='         *      "
+           DISPLAY "       [::::::::|  (_)  |::::::::]                 "
+           DISPLAY "      .=----~~~~~\     /~~~~~----=.            *   "
+           DISPLAY "      |          /`---'\          |      *         "
+           DISPLAY "       \  \     /       \     /  /                 "
+           DISPLAY "        `.     /         \     .'                  "
+           DISPLAY "          `.  /._________.\  .'          *    *    "
+           DISPLAY "         *  `--._________.--'                      "
+           DISPLAY "   *                                               "
+           DISPLAY "        -NEVER TELL ME THE ODDS- *        *        "
+           DISPLAY "    *                   *                          "
+           DISPLAY "                                                   "
+           DISPLAY "             *         *             *             "
+           DISPLAY "  *                                                "
+           .
+
+      *----------------------------------------------------------------*
+           COPY ROTERRO.
+           COPY ROTERROD.
+           COPY ROTPROSS.

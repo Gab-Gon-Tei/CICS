@@ -1,7 +1,7 @@
       *----------------------------------------------------------------*
        IDENTIFICATION                      DIVISION.
       *----------------------------------------------------------------*
-       PROGRAM-ID.                         FS04PGME.
+       PROGRAM-ID.                         FS04PGMJ.
        AUTHOR.                             GABRIEL.
 
       *----------------------------------------------------------------*
@@ -76,6 +76,15 @@
        01  WS-ENDFILE-AUX                  PIC X(01).
            88 ENDFILE-YES                          VALUE 'S'.
            88 ENDFILE-NO                           VALUE 'N'.
+
+      *VARIAVEL ESPELHO DO SQLD
+           EXEC SQL
+           INCLUDE BK002TP
+           END-EXEC.
+
+           EXEC SQL
+           INCLUDE SQLCA
+           END-EXEC.
 
            COPY FS04LST.
            COPY DFHAID.
@@ -162,32 +171,43 @@
 
            MOVE T3PRDI                     TO WS-CODPROD-AUX
 
-           EXEC CICS STARTBR
-              FILE(WS-FILE-NAME)
-              RIDFLD(WS-CODPROD-AUX)
-              GTEQ
+           EXEC SQL
+           DECLARE C1 CURSOR FOR
+               SELECT CODPROD, 
+                      DESCPROD, 
+                      QTDEST, 
+                      PRECOCOMPRA, 
+                      PRECOVENDA
+                 FROM VCADPRD
+                WHERE CODPROD >= :WS-CODPROD-AUX
+                ORDER BY CODPROD
            END-EXEC
 
            EXEC CICS DELETEQ TS
               QUEUE(WS-QUEUE-NAME)
-              RESP(WS-RESP)
+              RESP(SQLCODE)
            END-EXEC
 
-           IF WS-RESP = DFHRESP(NORMAL) OR DFHRESP(QIDERR)
-              CONTINUE
-           ELSE
-              PERFORM 999-ERROR
+           EXEC SQL
+           OPEN C1
+           END-EXEC
+
+           IF SQLCODE NOT EQUAL 0
+              MOVE +80                    TO WS-LENGTH
+              MOVE 'ERRO AO ABRIR CURSOR C1'
+                                           TO WS-MSG-ERRO
+              PERFORM 999-ENCERRA-TRANSACAO
            END-IF
 
            MOVE ZERO                       TO WS-ITEM
            SET ENDFILE-NO TO TRUE
            PERFORM 999-CARREGA-TS UNTIL ENDFILE-YES
 
-           EXEC CICS ENDBR
-              FILE(WS-FILE-NAME)
+           EXEC SQL
+              CLOSE C1
            END-EXEC
 
-           MOVE 1                          TO WS-PAGA
+           MOVE 1                         TO WS-PAGA
 
            DIVIDE WS-ITEM BY 10 GIVING WS-PAGT REMAINDER WS-RESTO
 
@@ -263,7 +283,7 @@
            MOVE LD-CODPROD                 TO WS-CODPROD-COMMAREA
 
            EXEC CICS XCTL
-               PROGRAM('FS04PGMA')
+               PROGRAM('FS04PGMF')
                COMMAREA(WS-DFHCOMMAREA-AUX)
                LENGTH(LENGTH OF WS-DFHCOMMAREA-AUX)
            END-EXEC
@@ -277,7 +297,7 @@
            MOVE LD-CODPROD                 TO WS-CODPROD-COMMAREA
 
            EXEC CICS XCTL
-               PROGRAM('FS04PGMC')
+               PROGRAM('FS04PGMH')
                COMMAREA(WS-DFHCOMMAREA-AUX)
                LENGTH(LENGTH OF WS-DFHCOMMAREA-AUX)
            END-EXEC
@@ -291,7 +311,7 @@
            MOVE LD-CODPROD                 TO WS-CODPROD-COMMAREA
 
            EXEC CICS XCTL
-               PROGRAM('FS04PGMD')
+               PROGRAM('FS04PGMI')
                COMMAREA(WS-DFHCOMMAREA-AUX)
                LENGTH(LENGTH OF WS-DFHCOMMAREA-AUX)
            END-EXEC
@@ -315,15 +335,16 @@
            .
 
        999-CARREGA-TS.
-           EXEC CICS READNEXT
-               FILE (WS-FILE-NAME)
-               RIDFLD(WS-CODPROD-AUX)
-               INTO(WS-REG-VCADPRD)
-               RESP(WS-RESP)
+           EXEC SQL
+           FETCH C1 INTO :WS-CODPROD,
+                        :WS-DESCPROD,
+                        :WS-QTDEST,
+                        :WS-PRECOCOMPRA,
+                        :WS-PRECOVENDA
            END-EXEC
 
-           EVALUATE WS-RESP
-              WHEN DFHRESP(NORMAL)
+           EVALUATE SQLCODE
+              WHEN 0
                  ADD 1 TO WS-ITEM
                  MOVE WS-CODPROD           TO LD-CODPROD
                  MOVE WS-DESCPROD          TO LD-DESCPROD
@@ -335,13 +356,13 @@
                     QUEUE(WS-QUEUE-NAME)
                     FROM(WS-LINDET)
                     ITEM(WS-ITEM)
-                    RESP(WS-RESP)
+                    RESP(SQLCODE)
                  END-EXEC
 
                  IF WS-RESP NOT = DFHRESP(NORMAL)
                    PERFORM 999-ERROR
                  END-IF
-               WHEN DFHRESP(ENDFILE)
+              WHEN +100
                 SET ENDFILE-YES TO TRUE
               WHEN OTHER
                PERFORM 999-ERROR
@@ -419,7 +440,7 @@
            MOVE '1'                        TO WS-FASE
 
            EXEC CICS XCTL
-               PROGRAM('FS04PGME')
+               PROGRAM('FS04PGMJ')
                COMMAREA(WS-DFHCOMMAREA)
                LENGTH(LENGTH OF WS-DFHCOMMAREA)
            END-EXEC
@@ -429,7 +450,7 @@
            MOVE '2'                        TO WS-FASE
 
            EXEC CICS RETURN
-               TRANSID('F04E')
+               TRANSID('F04J')
                COMMAREA(WS-DFHCOMMAREA)
                LENGTH(LENGTH OF WS-DFHCOMMAREA)
            END-EXEC
@@ -454,13 +475,13 @@
 
        999-MAPFAIL.
            MOVE +80                        TO WS-LENGTH
-           MOVE 'ERRO MAPA FS04MNU'        TO WS-MSG-ERRO
+           MOVE 'ERRO MAPA FS04LST'        TO WS-MSG-ERRO
            PERFORM 999-ENCERRA-TRANSACAO
            .
 
        999-ERROR.
            MOVE +80                        TO WS-LENGTH
-      *    MOVE 'ERRO GENERICO FS12PGME'   TO WS-MSG-ERRO
+      *    MOVE 'ERRO GENERICO FS04PGMJ'   TO WS-MSG-ERRO
            MOVE EIBRESP                    TO WS-MSG-ERRO
            PERFORM 999-ENCERRA-TRANSACAO
            .
