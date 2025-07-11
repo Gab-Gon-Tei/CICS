@@ -1,0 +1,43 @@
+      ******************************************************************
+      * DCLGEN TABLE(CLIENTES)                                         *
+      *        LIBRARY(FS.FSYS004.BOOKLIB(BKCLIT))                     *
+      *        LANGUAGE(COBOL)                                         *
+      *        NAMES(DCLCLI-)                                          *
+      *        STRUCTURE(DCL-CLI)                                      *
+      *        QUOTE                                                   *
+      *        COLSUFFIX(YES)                                          *
+      * ... IS THE DCLGEN COMMAND THAT MADE THE FOLLOWING STATEMENTS   *
+      ******************************************************************
+           EXEC SQL DECLARE CLIENTES TABLE
+           ( CPF                            CHAR(11) NOT NULL,
+             NOME                           CHAR(100) NOT NULL,
+             EMAIL                          CHAR(255) NOT NULL,
+             DATA_NASCIMENTO                DATE,
+             DATA_CADASTRO                  DATE NOT NULL,
+             NOME_USUARIO                   CHAR(20) NOT NULL,
+             SENHA                          CHAR(20) NOT NULL
+           ) END-EXEC.
+      ******************************************************************
+      * COBOL DECLARATION FOR TABLE CLIENTES                           *
+      ******************************************************************
+       01  DCL-CLIENTES.
+      *                       CPF
+           10 DCLCLI-CPF           PIC X(11).
+      *                       NOME
+           10 DCLCLI-NOME          PIC X(100).
+      *                       EMAIL
+           10 DCLCLI-EMAIL         PIC X(255).
+      *                       DATA_NASCIMENTO
+           10 DCLCLI-DATA-NASCIMENTO
+              PIC X(10).
+      *                       DATA_CADASTRO
+           10 DCLCLI-DATA-CADASTRO
+              PIC X(10).
+      *                       NOME_USUARIO
+           10 DCLCLI-NOME-USUARIO  PIC X(20).
+      *                       SENHA
+           10 DCLCLI-SENHA         PIC X(20).
+      ******************************************************************
+      * THE NUMBER OF COLUMNS DESCRIBED BY THIS DECLARATION IS 7       *
+      ******************************************************************
+

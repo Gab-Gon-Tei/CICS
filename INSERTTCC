@@ -1,0 +1,137 @@
+-- *******************                                                 
+-- * TABELA CLIENTES *                                                 
+-- ********************************************************************
+CREATE TABLE CLIENTES (                                                
+    CPF CHAR(11)          NOT NULL PRIMARY KEY,                                             
+    NOME CHAR(100)        NOT NULL,                                           
+    EMAIL CHAR(255)       NOT NULL,                                          
+    DATA_NASCIMENTO DATE,                                              
+    DATA_CADASTRO DATE    NOT NULL,                                       
+    NOME_USUARIO CHAR(20) NOT NULL,                                    
+    SENHA CHAR(20)        NOT NULL,                                           
+
+--    CONSTRAINT UK_CLIENTES_EMAIL UNIQUE (EMAIL),                       
+--    CONSTRAINT PK_CLIENTES PRIMARY KEY (CPF)                           
+
+);                                                                     
+
+CREATE UNIQUE INDEX IX_CLIENTES_CPF                                    
+ON CLIENTES (CPF);                                                     
+
+-- *******************                                                  
+-- * TABELA PRODUTOS *                                                  
+-- *********************************************************************
+CREATE TABLE PRODUTOS (                                                 
+    ID_PRODUTO         INTEGER GENERATED ALWAYS AS IDENTITY             
+        (START WITH 1 INCREMENT BY 1),                                  
+    DESCRICAO          CHAR(255) NOT NULL,                              
+    ID_CATEGORIA       SMALLINT  NOT NULL,                               
+    DATA_CADASTRO      DATE      NOT NULL,                                   
+    QUANTIDADE_ESTOQUE INTEGER   NOT NULL DEFAULT 0,                      
+    VALOR_UNITARIO     DECIMAL(7,2) DEFAULT 0,                          
+
+    CONSTRAINT         PK_PRODUTOS PRIMARY KEY (ID_PRODUTO)             
+);                                                                      
+
+CREATE UNIQUE INDEX IX_PRODUTOS_ID_PRODUTO                              
+ON PRODUTOS (ID_PRODUTO);                                               
+
+-- **********************
+-- * CONTA_BANCARIA     *
+-- **********************
+CREATE TABLE CONTA_BANCARIA (
+    ID_CONTA_BANCARIA INTEGER GENERATED ALWAYS AS IDENTITY
+        (START WITH 1 INCREMENT BY 1),
+    AGENCIA SMALLINT   NOT NULL,
+    CONTA INTEGER      NOT NULL,
+    DIGITO SMALLINT    NOT NULL,
+    SALDO DECIMAL(10,2) DEFAULT 100,
+    CPF CHAR(11)       NOT NULL,
+
+    CONSTRAINT PK_CONTA_BANCARIA PRIMARY KEY (ID_CONTA_BANCARIA),
+
+    CONSTRAINT FK_CONTA_BANCARIA_CLIENTES FOREIGN KEY (CPF)
+        REFERENCES CLIENTES (CPF)
+);
+
+CREATE UNIQUE INDEX IX_CONTA_BANCARIA_ID
+ON CONTA_BANCARIA (ID_CONTA_BANCARIA);
+
+CREATE INDEX IX_CONTA_BANCARIA_CPF
+ON CONTA_BANCARIA (CPF);
+
+-- **********************
+-- * CARTOES            *
+-- **********************
+CREATE TABLE CARTOES (
+    NUMERO_CARTAO     DECIMAL(16,0) NOT NULL,
+    NOME_IMPRESSO     CHAR(30)     NOT NULL,
+    CVV               SMALLINT     NOT NULL,
+    DATA_EXPIRACAO    CHAR(7)      NOT NULL, 
+    LIMITE_APROVADO   DECIMAL(8,2) NOT NULL DEFAULT 500,
+    LIMITE_DISPONIVEL DECIMAL(8,2) NOT NULL,
+    TIPO              CHAR(1)      NOT NULL, 
+    ID_CONTA_BANCARIA INTEGER      NOT NULL,
+
+    CONSTRAINT PK_CARTOES PRIMARY KEY (NUMERO_CARTAO),
+
+    CONSTRAINT FK_CARTOES_CONTA_BANCARIA FOREIGN KEY (ID_CONTA_BANCARIA)
+     REFERENCES CONTA_BANCARIA (ID_CONTA_BANCARIA)
+);
+
+CREATE UNIQUE INDEX IX_CARTOES_NUMERO
+ON CARTOES (NUMERO_CARTAO);
+
+CREATE INDEX IX_CARTOES_ID_CONTA_BANCARIA
+ON CARTOES (ID_CONTA_BANCARIA);
+
+-- *******************                                                  
+-- * TABELA PEDIDOS  *                                                  
+-- *********************************************************************
+CREATE TABLE PEDIDOS (                                                  
+    NUMERO_PEDIDO INTEGER GENERATED ALWAYS AS IDENTITY                  
+        (START WITH 1 INCREMENT BY 1),                                  
+    CPF             CHAR(11) NOT NULL,                                      
+    NUMERO_CARTAO   DECIMAL(16,0) NOT NULL,
+    TIPO_CARTAO     CHAR(1)  NOT NULL,
+    DATA        DATE         NOT NULL,                                          
+    VALOR_TOTAL DECIMAL(7,2) DEFAULT 0,                                 
+
+    CONSTRAINT PK_PEDIDOS          PRIMARY KEY (NUMERO_PEDIDO), 
+
+    CONSTRAINT FK_PEDIDOS_CLIENTES FOREIGN KEY (CPF)                    
+        REFERENCES CLIENTES (CPF),                                      
+
+    CONSTRAINT FK_PEDIDOS_CARTOES FOREIGN KEY (NUMERO_CARTAO)             
+        REFERENCES CARTOES (NUMERO_CARTAO)
+);
+
+CREATE UNIQUE INDEX IX_PEDIDOS_NUMERO     
+ON PEDIDOS (NUMERO_PEDIDO);               
+
+CREATE INDEX IX_PEDIDOS_CLIENTES               
+ON PEDIDOS (CPF);                         
+
+CREATE INDEX IX_PEDIDOS_CARTOES        
+ON PEDIDOS (NUMERO_CARTAO);   
+
+-- ******************************                                                  
+-- * TABELA PEDIDOS X PRODUTOS  *                                                  
+-- *********************************************************************
+CREATE TABLE PEDIDOS_PRODUTOS (                                                  
+    NUMERO_PEDIDO_PRODUTO INTEGER GENERATED ALWAYS AS IDENTITY                  
+        (START WITH 1 INCREMENT BY 1),                                  
+    NUMERO_PEDIDO    INTEGER      NOT NULL,                                      
+    ID_PRODUTO       INTEGER      NOT NULL,
+    QTD_PRODUTO      SMALLINT     NOT NULL,       
+    VALOR_UNITARIO   DECIMAL(7,2) NOT NULL, 
+
+    CONSTRAINT PK_NUMERO_PEDIDO_PRODUTO 
+    PRIMARY KEY (NUMERO_PEDIDO_PRODUTO), 
+
+    CONSTRAINT FK_NUMERO_PEDIDO FOREIGN KEY (NUMERO_PEDIDO)                    
+        REFERENCES PEDIDOS (NUMERO_PEDIDO),                                      
+
+    CONSTRAINT FK_ID_PRODUTO FOREIGN KEY (ID_PRODUTO)             
+        REFERENCES PRODUTOS (ID_PRODUTO)
+);

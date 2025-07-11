@@ -1,0 +1,442 @@
+      *----------------------------------------------------------------*
+       IDENTIFICATION                      DIVISION.
+      *----------------------------------------------------------------*
+       PROGRAM-ID.                         T04PCAD.
+       AUTHOR.                             GABRIEL
+
+      *----------------------------------------------------------------*
+       ENVIRONMENT                         DIVISION.
+      *----------------------------------------------------------------*
+       CONFIGURATION                       SECTION.
+       SPECIAL-NAMES.
+           DECIMAL-POINT IS COMMA.
+
+      *----------------------------------------------------------------*
+       DATA                                DIVISION.
+      *----------------------------------------------------------------*
+       WORKING-STORAGE                     SECTION.
+      *----------------------------------------------------------------*
+       77  WS-MSG-ERRO                     PIC X(80).
+       77  WS-LENGTH                       PIC S9(04) COMP.
+
+       01  WS-VAR-TEMPO.
+           05 WS-DATA                      PIC X(10).
+           05 WS-HORARIO                   PIC X(08).
+
+       01  WS-DFHCOMMAREA.
+           05 WS-FASE                      PIC X(01).
+
+      *MAPA REFERENTE A TELA DE CADASTRO
+           COPY T04MCAD.
+      *COMANDO TECLAS PRESSIONADAS
+           COPY DFHAID.
+      *CARACTERES E ATRIBUTOS
+           COPY DFHBMSCA.
+      *BOOK DAS VARIAVEIS HOSPEDEIRAS
+           EXEC SQL
+           INCLUDE BK002TP
+           END-EXEC.
+      *BOOK DE VARIAVEIS DE USO DO SQL
+           EXEC SQL
+           INCLUDE SQLCA
+           END-EXEC.
+      *----------------------------------------------------------------*
+       LINKAGE                             SECTION.
+      *----------------------------------------------------------------*
+       01  DFHCOMMAREA.
+           05 OCCURS 0 TO 24579 TIMES DEPENDING ON EIBCALEN
+                                           PIC X(01).
+      *----------------------------------------------------------------*
+       PROCEDURE                           DIVISION.
+      *----------------------------------------------------------------*
+      *ROTINA DEFINIDA PARA LIDAR COM ERROS DE MAPA E GENERICOS--------*
+           EXEC CICS HANDLE CONDITION
+              MAPFAIL(999-MAPFAIL)
+              ERROR(999-ERROR)
+           END-EXEC
+
+      * SELETOR DE FASE - O MENU PRINCIPAL POSSUI 4 FASES
+      *    FASE 1 - ENVIA O MAPA PARA O TERMINAL
+      *    FASE 2 - TRATA O CAMPO T2COD
+      *    FASE 3 - TRATA OS DEMAIS CAMPOS DO PRODUTO
+      *    FASE 4 - TRATA O CAMPO T2CONF
+      *
+           MOVE DFHCOMMAREA                TO WS-DFHCOMMAREA
+
+           IF EIBCALEN EQUAL 0
+              MOVE +80                     TO WS-LENGTH
+              MOVE 'FAÇA LOGIN NO SISTEMA PELA TRANSACAO FT4A'
+                                           TO WS-MSG-ERRO
+                 PERFORM 999-ENCERRA-TRANSACAO
+           END-IF
+
+           EVALUATE WS-FASE
+              WHEN '1' PERFORM 100-FASE1
+              WHEN '2' PERFORM 200-FASE2
+              WHEN '3' PERFORM 300-FASE3
+              WHEN '4' PERFORM 400-FASE4
+              WHEN OTHER
+                 MOVE +80                  TO WS-LENGTH
+                 MOVE 'ERRO NO NUMERO DA FASE'
+                                           TO WS-MSG-ERRO
+                 PERFORM 999-ENCERRA-TRANSACAO
+           END-EVALUATE
+           .
+
+       100-FASE1.
+           MOVE LOW-VALUES                 TO MAPACADO
+           MOVE -1                         TO T1NOMEL
+
+           PERFORM 999-MANDA-TELA
+           PERFORM 999-CHAMA-FASE2
+           .
+
+       200-FASE2.
+           EXEC CICS HANDLE AID
+              ENTER   (210-ENTER)
+              PF3     (220-PF3)
+              PF5     (230-PF5)
+              CLEAR   (230-PF5)
+              PF2     (240-PF2)
+              ANYKEY  (250-ANYKEY)
+           END-EXEC
+
+           EXEC CICS RECEIVE
+              MAP   ('MAPACAD')
+              MAPSET('T04MCAD')
+              INTO  (MAPACADI)
+           END-EXEC
+           .
+
+       220-PF3.
+           MOVE '1'                       TO WS-FASE
+
+           EXEC CICS XCTL
+               PROGRAM('T04PLOGN')
+               COMMAREA(WS-DFHCOMMAREA)
+               LENGTH(LENGTH OF WS-DFHCOMMAREA)
+           END-EXEC
+           .
+
+       230-PF5.
+           PERFORM 999-CHAMA-FASE1
+           .
+
+       240-PF2.
+           MOVE '1'                       TO WS-FASE
+
+           EXEC CICS XCTL
+               PROGRAM('T04PLOGN')
+               COMMAREA(WS-DFHCOMMAREA)
+               LENGTH(LENGTH OF WS-DFHCOMMAREA)
+           END-EXEC
+           .
+
+       240-ANYKEY.
+           MOVE 'TECLA PRESSIONADA INVALIDA!'
+                                           TO T1MSGO
+           PERFORM 999-TRATA-FASE2
+           .
+PAREI AQUIIIIIIIIIIII
+       210-ENTER.
+      * LIMPAR OS CAMPOS NUMERICOS DE CARACTERES ALFANUMERICOS
+           EXEC CICS BIF DEEDIT FIELD(T2ESTI   ) END-EXEC
+           EXEC CICS BIF DEEDIT FIELD(T2MAXI   ) END-EXEC
+           EXEC CICS BIF DEEDIT FIELD(T2MINI   ) END-EXEC
+           EXEC CICS BIF DEEDIT FIELD(T2COMPI  ) END-EXEC
+           EXEC CICS BIF DEEDIT FIELD(T2VENDI  ) END-EXEC
+           EXEC CICS BIF DEEDIT FIELD(T2COMISI ) END-EXEC
+
+      * VERIFICAR SE HA ALGUM CAMPO NAO DIGITADO
+           IF T2DESCL  = 0 OR T2DESCI EQUAL SPACES OR
+              T2UNIDL  = 0 OR T2UNIDI EQUAL SPACES OR
+              T2LOCALL = 0 OR T2UNIDI EQUAL SPACES OR
+              T2ESTL   = 0 OR
+              T2MAXL   = 0 OR
+              T2MINL   = 0 OR
+              T2COMPL  = 0 OR
+              T2VENDL  = 0 OR
+              T2COMISL = 0
+
+              MOVE 'FAVOR PREENCHER TODOS OS CAMPOS'
+                                           TO T2MSGO
+              PERFORM 999-TRATA-FASE3
+           END-IF
+
+      * VERIFICAR SE MAX > MIN
+           IF T2MAXI <= T2MINI
+              MOVE 'QTD. MAX. DEVE SER MAIOR QUE QTD. MIN.'
+                                           TO T2MSGO
+              PERFORM 999-TRATA-FASE3
+           END-IF
+      * TRATA FASE4
+           PERFORM 999-TRATA-FASE4
+           .
+
+       400-FASE4.
+           EXEC CICS HANDLE AID
+              ENTER   (410-ENTER)
+              PF3     (220-PF3)
+              PF5     (230-PF5)
+              CLEAR   (230-PF5)
+              ANYKEY  (240-ANYKEY)
+           END-EXEC
+
+           EXEC CICS RECEIVE
+              MAP   ('MAPACAD')
+              MAPSET('T04MCAD')
+              INTO  (MAPACADI)
+           END-EXEC
+           .
+
+       410-ENTER.
+           IF T2CONFL EQUAL 0
+      *        OR T2CONFI NOT EQUAL 'S' AND 'N'
+
+              MOVE 'DIGITE UM S=SIM OU N=NAO'
+                                           TO T2MSGO
+              PERFORM 999-TRATA-FASE4
+           END-IF
+
+           IF  T2CONFI = 'S'
+               MOVE T2CODI              TO CODPROD
+               MOVE +20                 TO DESCPROD-LEN
+               MOVE T2DESCI             TO DESCPROD-TEXT
+               MOVE T2UNIDI             TO UNIDPROD
+               MOVE T2LOCALI            TO LOCALPROD
+               MOVE T2ESTI              TO QTDEST
+               MOVE T2MAXI              TO QTDMAX
+               MOVE T2MINI              TO QTDMIN
+               MOVE T2COMPI             TO PRECOCOMPRA
+               MOVE T2VENDI             TO PRECOVENDA
+               MOVE T2COMISI            TO PERCOMIS
+
+               EXEC SQL
+                  INSERT INTO TBPRODUTO
+                  (  CODPROD
+                    ,DESCPROD
+                    ,UNIDPROD
+                    ,LOCALPROD
+                    ,QTDEST
+                    ,QTDMAX
+                    ,QTDMIN
+                    ,PRECOCOMPRA
+                    ,PRECOVENDA
+                    ,PERCOMIS
+                  )
+                  VALUES
+                  (  :CODPROD
+                   , :DESCPROD
+                   , :UNIDPROD
+                   , :LOCALPROD
+                   , :QTDEST
+                   , :QTDMAX
+                   , :QTDMIN
+                   , :PRECOCOMPRA
+                   , :PRECOVENDA
+                   , :PERCOMIS
+                  )
+               END-EXEC
+
+               EVALUATE SQLCODE
+                 WHEN 0
+                    PERFORM 220-PF3
+                 WHEN -803
+                    PERFORM 999-DUPREC
+                 WHEN -545
+                    MOVE ' SQLCODE ERRO -545'
+                                           TO T2MSGO
+                    PERFORM 999-TRATA-FASE4
+                 WHEN OTHER
+                    PERFORM 999-ERROR
+               END-EVALUATE
+           ELSE
+              IF T2CONFI = 'N'
+              PERFORM 100-FASE1
+              END-IF
+           END-IF
+
+      *    PERFORM 220-PF3
+           .
+       999-TRATA-FASE3.
+           MOVE -1                         TO T2DESCL
+
+           PERFORM 999-PROTECAO-FASE3
+           PERFORM 999-MANDA-TELA
+           PERFORM 999-CHAMA-FASE3
+           .
+
+       999-ENCERRA-TRANSACAO.
+           EXEC CICS SEND TEXT
+              FROM (WS-MSG-ERRO)
+              LENGTH(WS-LENGTH)
+              ERASE FREEKB ALARM
+           END-EXEC
+
+           EXEC CICS RETURN
+           END-EXEC
+           .
+
+       999-MANDA-TELA.
+           MOVE EIBTRMID                  TO T1TERMO
+           MOVE EIBTRNID                  TO T1TRANO
+           MOVE EIBTASKN                  TO T1TASKO
+           MOVE WS-FASE                   TO T1FASEO
+
+           ACCEPT WS-DATA FROM DATE
+           ACCEPT WS-HORARIO FROM TIME
+           MOVE WS-DATA                   TO T1DATAO
+           MOVE WS-HORARIO                TO T1HORAO
+
+           EXEC CICS SEND
+              MAP ('MAPACAD')
+              MAPSET('T04MCAD')
+              FROM(MAPACADO)
+              ERASE FREEKB ALARM CURSOR
+           END-EXEC
+           .
+
+       999-CHAMA-FASE1.
+           MOVE '1'                       TO WS-FASE
+
+           EXEC CICS XCTL
+              PROGRAM('T04PCAD')
+              COMMAREA(WS-DFHCOMMAREA)
+              LENGTH(LENGTH OF WS-DFHCOMMAREA)
+           END-EXEC
+           .
+
+       999-CHAMA-FASE2.
+           MOVE '2'                       TO WS-FASE
+
+           EXEC CICS RETURN
+               TRANSID('FT4B')
+               COMMAREA(WS-DFHCOMMAREA)
+               LENGTH(LENGTH OF WS-DFHCOMMAREA)
+           END-EXEC
+           .
+
+       999-CHAMA-FASE3.
+           MOVE '3'                       TO WS-FASE
+
+           EXEC CICS RETURN
+               TRANSID('FT4B')
+               COMMAREA(WS-DFHCOMMAREA)
+               LENGTH(LENGTH OF WS-DFHCOMMAREA)
+           END-EXEC
+           .
+
+       999-CHAMA-FASE4.
+           MOVE '4'                       TO WS-FASE
+
+           EXEC CICS RETURN
+               TRANSID('FT4B')
+               COMMAREA(WS-DFHCOMMAREA)
+               LENGTH(LENGTH OF WS-DFHCOMMAREA)
+           END-EXEC
+           .
+
+       999-TRATA-FASE2.
+           MOVE -1                        TO T2CODL
+
+           PERFORM 999-PROTECAO-FASE2
+           PERFORM 999-MANDA-TELA
+           PERFORM 999-CHAMA-FASE2
+           .
+
+       999-PROTECAO-FASE3.
+           MOVE -1                         TO T2DESCL
+      * DESPROTEGER OS CAMPOS DE REGISTRO
+
+           MOVE DFHUNIMD                   TO T2DESCA
+           MOVE DFHUNIMD                   TO T2UNIDA
+           MOVE DFHUNIMD                   TO T2LOCALA
+           MOVE DFHUNIMD                   TO T2ESTA
+           MOVE DFHUNIMD                   TO T2MAXA
+           MOVE DFHUNIMD                   TO T2MINA
+           MOVE DFHUNIMD                   TO T2COMPA
+           MOVE DFHUNIMD                   TO T2VENDA
+           MOVE DFHUNIMD                   TO T2COMISA
+
+      * UNDERLINE
+           MOVE DFHUNDLN                   TO T2DESCH
+           MOVE DFHUNDLN                   TO T2UNIDH
+           MOVE DFHUNDLN                   TO T2LOCALH
+           MOVE DFHUNDLN                   TO T2ESTH
+           MOVE DFHUNDLN                   TO T2MAXH
+           MOVE DFHUNDLN                   TO T2MINH
+           MOVE DFHUNDLN                   TO T2COMPH
+           MOVE DFHUNDLN                   TO T2VENDH
+           MOVE DFHUNDLN                   TO T2COMISH
+
+      * PROTEGER E TIRAR UNDELINE
+           MOVE DFHBMPRF                   TO T2CODA
+           MOVE DFHBMPRF                   TO T2CONFA
+           MOVE DFHALL                     TO T2CODH
+           .
+
+       999-PROTECAO-FASE4.
+           MOVE -1                         TO T2CONFL
+      * PROTEGER OS CAMPOS DE REGISTRO
+
+           MOVE DFHBMPRF                   TO T2CODA
+           MOVE DFHBMPRF                   TO T2DESCA
+           MOVE DFHBMPRF                   TO T2UNIDA
+           MOVE DFHBMPRF                   TO T2LOCALA
+           MOVE DFHBMPRF                   TO T2ESTA
+           MOVE DFHBMPRF                   TO T2MAXA
+           MOVE DFHBMPRF                   TO T2MINA
+           MOVE DFHBMPRF                   TO T2COMPA
+           MOVE DFHBMPRF                   TO T2VENDA
+           MOVE DFHBMPRF                   TO T2COMISA
+
+      * UNDERLINE
+           MOVE DFHALL                    TO T2DESCH
+           MOVE DFHALL                    TO T2UNIDH
+           MOVE DFHALL                    TO T2LOCALH
+           MOVE DFHALL                    TO T2ESTH
+           MOVE DFHALL                    TO T2MAXH
+           MOVE DFHALL                    TO T2MINH
+           MOVE DFHALL                    TO T2COMPH
+           MOVE DFHALL                    TO T2VENDH
+           MOVE DFHALL                    TO T2COMISH
+
+      * DESPROTEGER CONFIRMACAO E UNDELINE
+           MOVE DFHUNIMD                   TO T2CONFA
+           MOVE DFHUNDLN                   TO T2CONFH
+           .
+
+       999-TRATA-FASE4.
+           MOVE -1                         TO T2CONFL
+           MOVE 'CONFIRMA INCLUSAO (S/N)?' TO T2ACAOO
+
+           PERFORM 999-PROTECAO-FASE4
+           PERFORM 999-MANDA-TELA
+           PERFORM 999-CHAMA-FASE4
+           .
+
+       999-MAPFAIL.
+           MOVE 'ERRO MAPA T04MCAD'        TO WS-MSG-ERRO
+           PERFORM 999-ENCERRA-TRANSACAO
+           .
+
+       999-ERROR.
+           MOVE 'ERRO GENERICO T04PCAD'   TO WS-MSG-ERRO
+           PERFORM 999-ENCERRA-TRANSACAO
+           .
+       999-NOTFND.
+           STRING 'INFORME OS DADOS DO PRODUTO PARA INSERIR'
+           DELIMITED BY SIZE               INTO T2MSGO
+           PERFORM 999-TRATA-FASE3
+           .
+       999-DUPREC.
+           MOVE T2CODI                     TO WS-CODPROD
+           MOVE LOW-VALUES                 TO MAPACADO
+           MOVE SPACES                     TO T2MSGO
+           STRING 'O PRODUTO ' DELIMITED BY SIZE
+                  WS-CODPROD DELIMITED BY SPACES
+                  ' FOI INSERIDO POR OUTRO USUARIO' DELIMITED BY SIZE
+                                           INTO T2MSGO
+           PERFORM 999-TRATA-FASE2
+           .
+
