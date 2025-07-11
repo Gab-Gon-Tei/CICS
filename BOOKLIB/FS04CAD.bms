@@ -6,6 +6,7 @@ FS04CAD  DFHMSD TYPE=(MAP,DSECT),                                      X
                DSATTS=(COLOR,HILIGHT),                                 X
                CTRL=(FREEKB,ALARM,FRSET),                              X
                TIOAPFX=YES
+               
 MAPACAD  DFHMDI SIZE=(24,80),                                          X
                LINE=1,                                                 X
                COLUMN=1
