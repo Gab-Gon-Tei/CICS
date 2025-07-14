@@ -18,13 +18,43 @@
       *----------------------------------------------------------------*
        77  WS-MSG-ERRO                     PIC X(80).
        77  WS-LENGTH                       PIC S9(04) COMP.
+       77  WS-CPF-ERRO                      PIC X(11).
 
-       01  WS-VAR-TEMPO.
-           05 WS-DATA                      PIC X(10).
-           05 WS-HORARIO                   PIC X(08).
+       01  WS-DATA.
+           05 WS-DIA                       PIC X(02).
+           05 WS-MES                       PIC X(02).
+           05 WS-ANO                       PIC X(04).
+
+       01  WS-HORARIO.
+           05 WS-HORA                      PIC X(02).
+           05 WS-MIN                       PIC X(02).
+           05 WS-SEG                       PIC X(02).
+
+       01  WS-DATA-F.                         
+           05 WS-DIA-F                     PIC X(10).
+           05 FILLER                       PIC X(01) VALUE '/'.
+           05 WS-MES-F                     PIC X(02).
+           05 FILLER                       PIC X(01) VALUE '/'.
+           05 WS-ANO-F                     PIC X(04).
+
+       01  WS-HORARIO-F.                   
+           05 WS-HORA-F                    PIC X(02).
+           05 FILLER                       PIC X(01) VALUE ':'.
+           05 WS-MIN-F                     PIC X(02).
+           05 FILLER                       PIC X(01) VALUE ':'.
+           05 WS-SEG-F                     PIC X(02).
+       
+       01  WS-DATA-NASCIMENTO.
+           05 WS-DIA-NASCIMENTO            PIC 9(2).
+           05 FILLER                       PIC X(1) VALUE '.'.
+           05 WS-MES-NASCIMENTO            PIC 9(2).
+           05 FILLER                       PIC X(1) VALUE '.'.
+           05 WS-ANO-NASCIMENTO            PIC 9(4).
 
        01  WS-DFHCOMMAREA.
            05 WS-FASE                      PIC X(01).
+           05 WS-ID-CPF                    PIC X(11).
+      *    05 WS-MSG                       PIC X(60).
 
       *MAPA REFERENTE A TELA DE CADASTRO
            COPY T04MCAD.
@@ -34,7 +64,7 @@
            COPY DFHBMSCA.
       *BOOK DAS VARIAVEIS HOSPEDEIRAS
            EXEC SQL
-           INCLUDE BK002TP
+           INCLUDE BKCLIT
            END-EXEC.
       *BOOK DE VARIAVEIS DE USO DO SQL
            EXEC SQL
@@ -73,8 +103,7 @@
            EVALUATE WS-FASE
               WHEN '1' PERFORM 100-FASE1
               WHEN '2' PERFORM 200-FASE2
-              WHEN '3' PERFORM 300-FASE3
-              WHEN '4' PERFORM 400-FASE4
+
               WHEN OTHER
                  MOVE +80                  TO WS-LENGTH
                  MOVE 'ERRO NO NUMERO DA FASE'
@@ -112,7 +141,7 @@
            MOVE '1'                       TO WS-FASE
 
            EXEC CICS XCTL
-               PROGRAM('T04PLOGN')
+               PROGRAM('T04PLOG')
                COMMAREA(WS-DFHCOMMAREA)
                LENGTH(LENGTH OF WS-DFHCOMMAREA)
            END-EXEC
@@ -126,115 +155,94 @@
            MOVE '1'                       TO WS-FASE
 
            EXEC CICS XCTL
-               PROGRAM('T04PLOGN')
+               PROGRAM('T04PLOG')
                COMMAREA(WS-DFHCOMMAREA)
                LENGTH(LENGTH OF WS-DFHCOMMAREA)
            END-EXEC
            .
 
-       240-ANYKEY.
+       250-ANYKEY.
            MOVE 'TECLA PRESSIONADA INVALIDA!'
                                            TO T1MSGO
            PERFORM 999-TRATA-FASE2
            .
-PAREI AQUIIIIIIIIIIII
+
        210-ENTER.
       * LIMPAR OS CAMPOS NUMERICOS DE CARACTERES ALFANUMERICOS
-           EXEC CICS BIF DEEDIT FIELD(T2ESTI   ) END-EXEC
-           EXEC CICS BIF DEEDIT FIELD(T2MAXI   ) END-EXEC
-           EXEC CICS BIF DEEDIT FIELD(T2MINI   ) END-EXEC
-           EXEC CICS BIF DEEDIT FIELD(T2COMPI  ) END-EXEC
-           EXEC CICS BIF DEEDIT FIELD(T2VENDI  ) END-EXEC
-           EXEC CICS BIF DEEDIT FIELD(T2COMISI ) END-EXEC
+           EXEC CICS BIF DEEDIT FIELD(T1DIA   ) END-EXEC
+           EXEC CICS BIF DEEDIT FIELD(T1MES   ) END-EXEC
+           EXEC CICS BIF DEEDIT FIELD(T1ANO   ) END-EXEC
 
-      * VERIFICAR SE HA ALGUM CAMPO NAO DIGITADO
-           IF T2DESCL  = 0 OR T2DESCI EQUAL SPACES OR
-              T2UNIDL  = 0 OR T2UNIDI EQUAL SPACES OR
-              T2LOCALL = 0 OR T2UNIDI EQUAL SPACES OR
-              T2ESTL   = 0 OR
-              T2MAXL   = 0 OR
-              T2MINL   = 0 OR
-              T2COMPL  = 0 OR
-              T2VENDL  = 0 OR
-              T2COMISL = 0
+      * VERIFICAÇÃO DOS CAMPOS
+           EVALUATE TRUE
+           WHEN T1NOMEL  = 0 OR T1NOMEI EQUAL SPACES
+              MOVE 'FAVOR PREENCHER O CAMPO NOME'
+                                           TO T1MSGO
+              PERFORM 999-TRATA-FASE2
+           WHEN T1CPFL NOT EQUAL 11
+              MOVE 'FAVOR PREENCHER O CAMPO CPF COM 11 DIGITOS'
+                                           TO T1MSGO
+              PERFORM 999-TRATA-FASE2
+           WHEN T1EMAILL NOT EQUAL 0 OR T1EMAILI EQUAL SPACES
+              MOVE 'FAVOR PREENCHER O CAMPO EMAIL'
+                                           TO T1MSGO
+              PERFORM 999-TRATA-FASE2
+           WHEN T1DIAL EQUAL SPACES OR
+                T1MESA EQUAL SPACES OR
+                T1ANOA EQUAL SPACES
+                MOVE 'FAVOR PREENCHER A DATA DE CADASTRO'
+                                           TO T1MSGO
+                PERFORM 999-TRATA-FASE2
+           WHEN T1DIAI < 1 OR T1DIAI > 31 OR
+                T1MESI < 1 OR T1MESI > 12 OR
+                T1ANOI < 1900 OR T1ANOI > 2100
+                MOVE 'DATA DE NASCIMENTO INVALIDA'
+                                           TO T1MSGO
+                PERFORM 999-TRATA-FASE2
+           WHEN T1USERL > 5
+                MOVE 'FAVOR PREENCHER O CAMPO NOME USUARIO'
+                                             TO T1MSGO
+                PERFORM 999-TRATA-FASE2
+           WHEN T1SENHAL > 5
+                MOVE 'FAVOR PREENCHER O CAMPO SENHA'
+                                             TO T1MSGO
+                PERFORM 999-TRATA-FASE2
+             WHEN OTHER
+                CONTINUE
+           END-EVALUATE
 
-              MOVE 'FAVOR PREENCHER TODOS OS CAMPOS'
-                                           TO T2MSGO
-              PERFORM 999-TRATA-FASE3
-           END-IF
+               MOVE T1NOMEI             TO DCLICLI-NOME
+               MOVE T1CPFI              TO DCLICLI-CPF
+               MOVE T1EMAILI            TO DCLICLI-EMAIL
+               MOVE T1DATAI             TO DCLICLI-DATA-CADASTRO
+               MOVE T1USERI             TO DCLICLI-NOME-USUARIO
+               MOVE T1SENHAI            TO DCLICLI-SENHA
 
-      * VERIFICAR SE MAX > MIN
-           IF T2MAXI <= T2MINI
-              MOVE 'QTD. MAX. DEVE SER MAIOR QUE QTD. MIN.'
-                                           TO T2MSGO
-              PERFORM 999-TRATA-FASE3
-           END-IF
-      * TRATA FASE4
-           PERFORM 999-TRATA-FASE4
-           .
-
-       400-FASE4.
-           EXEC CICS HANDLE AID
-              ENTER   (410-ENTER)
-              PF3     (220-PF3)
-              PF5     (230-PF5)
-              CLEAR   (230-PF5)
-              ANYKEY  (240-ANYKEY)
-           END-EXEC
-
-           EXEC CICS RECEIVE
-              MAP   ('MAPACAD')
-              MAPSET('T04MCAD')
-              INTO  (MAPACADI)
-           END-EXEC
-           .
-
-       410-ENTER.
-           IF T2CONFL EQUAL 0
-      *        OR T2CONFI NOT EQUAL 'S' AND 'N'
-
-              MOVE 'DIGITE UM S=SIM OU N=NAO'
-                                           TO T2MSGO
-              PERFORM 999-TRATA-FASE4
-           END-IF
-
-           IF  T2CONFI = 'S'
-               MOVE T2CODI              TO CODPROD
-               MOVE +20                 TO DESCPROD-LEN
-               MOVE T2DESCI             TO DESCPROD-TEXT
-               MOVE T2UNIDI             TO UNIDPROD
-               MOVE T2LOCALI            TO LOCALPROD
-               MOVE T2ESTI              TO QTDEST
-               MOVE T2MAXI              TO QTDMAX
-               MOVE T2MINI              TO QTDMIN
-               MOVE T2COMPI             TO PRECOCOMPRA
-               MOVE T2VENDI             TO PRECOVENDA
-               MOVE T2COMISI            TO PERCOMIS
+               MOVE T1DIAI              TO WS-DIA-NASCIMENTO
+               MOVE T1MESI              TO WS-MES-NASCIMENTO
+               MOVE T1ANOI              TO WS-ANO-NASCIMENTO
+               MOVE WS-DATA-NASCIMENTO
+                                        TO DCLICLI-DATA-NASCIMENTO
 
                EXEC SQL
-                  INSERT INTO TBPRODUTO
-                  (  CODPROD
-                    ,DESCPROD
-                    ,UNIDPROD
-                    ,LOCALPROD
-                    ,QTDEST
-                    ,QTDMAX
-                    ,QTDMIN
-                    ,PRECOCOMPRA
-                    ,PRECOVENDA
-                    ,PERCOMIS
+                  INSERT INTO CLIENTES
+                  (  CPF
+                    ,NOME
+                    ,EMAIL
+                    ,DATA_NASCIMENTO
+                    ,DATA_CADASTRO
+                    ,NOME_USUARIO
+                    ,SENHA
+
                   )
                   VALUES
-                  (  :CODPROD
-                   , :DESCPROD
-                   , :UNIDPROD
-                   , :LOCALPROD
-                   , :QTDEST
-                   , :QTDMAX
-                   , :QTDMIN
-                   , :PRECOCOMPRA
-                   , :PRECOVENDA
-                   , :PERCOMIS
+                  (  :DCLCLI-CPF
+                   , :DCLCLI-NOME
+                   , :DCLCLI-EMAIL
+                   , :DCLCLI-DATA-NASCIMENTO
+                   , :DCLCLI-DATA-CADASTRO
+                   , :DCLCLI-NOME-USUARIO
+                   , :DCLCLI-SENHA
                   )
                END-EXEC
 
@@ -245,25 +253,40 @@ PAREI AQUIIIIIIIIIIII
                     PERFORM 999-DUPREC
                  WHEN -545
                     MOVE ' SQLCODE ERRO -545'
-                                           TO T2MSGO
-                    PERFORM 999-TRATA-FASE4
+                                           TO T1MSGO
+                    PERFORM 999-TRATA-FASE2
                  WHEN OTHER
                     PERFORM 999-ERROR
                END-EVALUATE
-           ELSE
-              IF T2CONFI = 'N'
-              PERFORM 100-FASE1
-              END-IF
-           END-IF
-
-      *    PERFORM 220-PF3
+           PERFORM 999-TRATA-FASE3
            .
-       999-TRATA-FASE3.
-           MOVE -1                         TO T2DESCL
+       300-FASE3.
+           EXEC CICS HANDLE AID
+              ENTER   (310-ENTER)
+              PF2     (340-PF2)
+              ANYKEY  (250-ANYKEY)
+           END-EXEC
 
-           PERFORM 999-PROTECAO-FASE3
-           PERFORM 999-MANDA-TELA
-           PERFORM 999-CHAMA-FASE3
+           EXEC CICS RECEIVE
+              MAP   ('MAPACAD')
+              MAPSET('T04MCAD')
+              INTO  (MAPACADI)
+           END-EXEC
+           .
+
+       310-ENTER.
+           MOVE DCLCLI-CPF                 TO WS-ID-CPF
+           MOVE '1'                        TO WS-FASE
+
+           EXEC CICS XCTL
+               PROGRAM('T04PPRL')
+               COMMAREA(WS-DFHCOMMAREA)
+               LENGTH(LENGTH OF WS-DFHCOMMAREA)
+           END-EXEC
+           .
+
+       340-PF2.
+           PERFORM 999-TRATA-FASE2
            .
 
        999-ENCERRA-TRANSACAO.
@@ -279,17 +302,26 @@ PAREI AQUIIIIIIIIIIII
 
        999-MANDA-TELA.
            MOVE EIBTRMID                  TO T1TERMO
-           MOVE EIBTRNID                  TO T1TRANO
+           MOVE EIBTRNID                  TO T1TRANSO
            MOVE EIBTASKN                  TO T1TASKO
            MOVE WS-FASE                   TO T1FASEO
 
            ACCEPT WS-DATA FROM DATE
            ACCEPT WS-HORARIO FROM TIME
-           MOVE WS-DATA                   TO T1DATAO
-           MOVE WS-HORARIO                TO T1HORAO
+
+           MOVE WS-DIA                     TO WS-DIA-F
+           MOVE WS-MES                     TO WS-MES-F
+           MOVE WS-ANO                     TO WS-ANO-F
+           
+           MOVE WS-HORA                    TO WS-HORA-F
+           MOVE WS-MIN                     TO WS-MIN-F
+           MOVE WS-SEG                     TO WS-SEG-F
+           
+           MOVE WS-DATA-F                   TO T1DATAO
+           MOVE WS-HORARIO-F                TO T1HORAO
 
            EXEC CICS SEND
-              MAP ('MAPACAD')
+              MAP ('MAPCAD')
               MAPSET('T04MCAD')
               FROM(MAPACADO)
               ERASE FREEKB ALARM CURSOR
@@ -326,93 +358,33 @@ PAREI AQUIIIIIIIIIIII
            END-EXEC
            .
 
-       999-CHAMA-FASE4.
-           MOVE '4'                       TO WS-FASE
-
-           EXEC CICS RETURN
-               TRANSID('FT4B')
-               COMMAREA(WS-DFHCOMMAREA)
-               LENGTH(LENGTH OF WS-DFHCOMMAREA)
-           END-EXEC
-           .
-
        999-TRATA-FASE2.
-           MOVE -1                        TO T2CODL
+           MOVE -1                        TO T1NOMEL
 
-           PERFORM 999-PROTECAO-FASE2
            PERFORM 999-MANDA-TELA
            PERFORM 999-CHAMA-FASE2
            .
 
        999-PROTECAO-FASE3.
-           MOVE -1                         TO T2DESCL
-      * DESPROTEGER OS CAMPOS DE REGISTRO
-
-           MOVE DFHUNIMD                   TO T2DESCA
-           MOVE DFHUNIMD                   TO T2UNIDA
-           MOVE DFHUNIMD                   TO T2LOCALA
-           MOVE DFHUNIMD                   TO T2ESTA
-           MOVE DFHUNIMD                   TO T2MAXA
-           MOVE DFHUNIMD                   TO T2MINA
-           MOVE DFHUNIMD                   TO T2COMPA
-           MOVE DFHUNIMD                   TO T2VENDA
-           MOVE DFHUNIMD                   TO T2COMISA
-
-      * UNDERLINE
-           MOVE DFHUNDLN                   TO T2DESCH
-           MOVE DFHUNDLN                   TO T2UNIDH
-           MOVE DFHUNDLN                   TO T2LOCALH
-           MOVE DFHUNDLN                   TO T2ESTH
-           MOVE DFHUNDLN                   TO T2MAXH
-           MOVE DFHUNDLN                   TO T2MINH
-           MOVE DFHUNDLN                   TO T2COMPH
-           MOVE DFHUNDLN                   TO T2VENDH
-           MOVE DFHUNDLN                   TO T2COMISH
-
-      * PROTEGER E TIRAR UNDELINE
-           MOVE DFHBMPRF                   TO T2CODA
-           MOVE DFHBMPRF                   TO T2CONFA
-           MOVE DFHALL                     TO T2CODH
-           .
-
-       999-PROTECAO-FASE4.
-           MOVE -1                         TO T2CONFL
       * PROTEGER OS CAMPOS DE REGISTRO
 
-           MOVE DFHBMPRF                   TO T2CODA
-           MOVE DFHBMPRF                   TO T2DESCA
-           MOVE DFHBMPRF                   TO T2UNIDA
-           MOVE DFHBMPRF                   TO T2LOCALA
-           MOVE DFHBMPRF                   TO T2ESTA
-           MOVE DFHBMPRF                   TO T2MAXA
-           MOVE DFHBMPRF                   TO T2MINA
-           MOVE DFHBMPRF                   TO T2COMPA
-           MOVE DFHBMPRF                   TO T2VENDA
-           MOVE DFHBMPRF                   TO T2COMISA
-
-      * UNDERLINE
-           MOVE DFHALL                    TO T2DESCH
-           MOVE DFHALL                    TO T2UNIDH
-           MOVE DFHALL                    TO T2LOCALH
-           MOVE DFHALL                    TO T2ESTH
-           MOVE DFHALL                    TO T2MAXH
-           MOVE DFHALL                    TO T2MINH
-           MOVE DFHALL                    TO T2COMPH
-           MOVE DFHALL                    TO T2VENDH
-           MOVE DFHALL                    TO T2COMISH
-
-      * DESPROTEGER CONFIRMACAO E UNDELINE
-           MOVE DFHUNIMD                   TO T2CONFA
-           MOVE DFHUNDLN                   TO T2CONFH
+           MOVE DFHBMPRF                   TO T1NOMEA
+           MOVE DFHBMPRF                   TO T1CPFA
+           MOVE DFHBMPRF                   TO T1EMAILA
+           MOVE DFHBMPRF                   TO T1DIAA
+           MOVE DFHBMPRF                   TO T1MESA
+           MOVE DFHBMPRF                   TO T1ANOA
+           MOVE DFHBMPRF                   TO T1USERA
+           MOVE DFHBMPRF                   TO T1SENHAA
            .
 
-       999-TRATA-FASE4.
-           MOVE -1                         TO T2CONFL
-           MOVE 'CONFIRMA INCLUSAO (S/N)?' TO T2ACAOO
+       999-TRATA-FASE3.
+           MOVE -1                         TO T1MSGL
+           MOVE 'CONFIRMA INCLUSAO (S/N)?' TO T1MSGO
 
-           PERFORM 999-PROTECAO-FASE4
+           PERFORM 999-PROTECAO-FASE3
            PERFORM 999-MANDA-TELA
-           PERFORM 999-CHAMA-FASE4
+           PERFORM 999-CHAMA-FASE3
            .
 
        999-MAPFAIL.
@@ -430,13 +402,13 @@ PAREI AQUIIIIIIIIIIII
            PERFORM 999-TRATA-FASE3
            .
        999-DUPREC.
-           MOVE T2CODI                     TO WS-CODPROD
+           MOVE T1CPFI                     TO WS-CPF-ERRO
            MOVE LOW-VALUES                 TO MAPACADO
-           MOVE SPACES                     TO T2MSGO
-           STRING 'O PRODUTO ' DELIMITED BY SIZE
-                  WS-CODPROD DELIMITED BY SPACES
-                  ' FOI INSERIDO POR OUTRO USUARIO' DELIMITED BY SIZE
-                                           INTO T2MSGO
+           MOVE SPACES                     TO T1MSGO
+           STRING 'O USUARIO DO CPF: ' DELIMITED BY SIZE
+                  WS-CPF-ERRO DELIMITED BY SPACES
+                  ' JÁ EXISTE.' DELIMITED BY SIZE
+                                           INTO T1MSGO
            PERFORM 999-TRATA-FASE2
            .
 

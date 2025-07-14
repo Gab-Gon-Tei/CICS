@@ -492,14 +492,4 @@
            DELIMITED BY SIZE               INTO MSGOUTO
            PERFORM 999-TRATA-FASE2
            .
-      *999-DUPREC.
-      *    MOVE NUMCARTAI                  TO CODPROD
-      *    MOVE LOW-VALUES                 TO AUTPROCO
-      *    MOVE SPACES                     TO MSGOUTO
-      *    STRING 'O PRODUTO ' DELIMITED BY SIZE
-      *           CODPROD DELIMITED BY SPACES
-      *           ' FOI INSERIDO POR OUTRO USUARIO' DELIMITED BY SIZE
-      *                                    INTO MSGOUTO
-      *    PERFORM 999-TRATA-FASE2
-      *    .
 
