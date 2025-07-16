@@ -84,12 +84,6 @@
               MAPFAIL(999-MAPFAIL)
               ERROR(999-ERROR)
            END-EXEC
-
-      * SELETOR DE FASE - O MENU PRINCIPAL POSSUI 4 FASES
-      *    FASE 1 - ENVIA O MAPA PARA O TERMINAL
-      *    FASE 2 - TRATA O CAMPO T2COD
-      *    FASE 3 - TRATA OS DEMAIS CAMPOS DO PRODUTO
-      *    FASE 4 - TRATA O CAMPO T2CONF
       *
            MOVE DFHCOMMAREA                TO WS-DFHCOMMAREA
 
@@ -113,7 +107,7 @@
            .
 
        100-FASE1.
-           MOVE LOW-VALUES                 TO MAPACADO
+           MOVE LOW-VALUES                 TO MAPCADO
            MOVE -1                         TO T1NOMEL
 
            PERFORM 999-MANDA-TELA
@@ -133,7 +127,7 @@
            EXEC CICS RECEIVE
               MAP   ('MAPACAD')
               MAPSET('T04MCAD')
-              INTO  (MAPACADI)
+              INTO  (MAPCADI)
            END-EXEC
            .
 
@@ -169,9 +163,9 @@
 
        210-ENTER.
       * LIMPAR OS CAMPOS NUMERICOS DE CARACTERES ALFANUMERICOS
-           EXEC CICS BIF DEEDIT FIELD(T1DIA   ) END-EXEC
-           EXEC CICS BIF DEEDIT FIELD(T1MES   ) END-EXEC
-           EXEC CICS BIF DEEDIT FIELD(T1ANO   ) END-EXEC
+           EXEC CICS BIF DEEDIT FIELD(T1DIAI   ) END-EXEC
+           EXEC CICS BIF DEEDIT FIELD(T1MESI   ) END-EXEC
+           EXEC CICS BIF DEEDIT FIELD(T1ANOI   ) END-EXEC
 
       * VERIFICAÇÃO DOS CAMPOS
            EVALUATE TRUE
@@ -183,7 +177,7 @@
               MOVE 'FAVOR PREENCHER O CAMPO CPF COM 11 DIGITOS'
                                            TO T1MSGO
               PERFORM 999-TRATA-FASE2
-           WHEN T1EMAILL NOT EQUAL 0 OR T1EMAILI EQUAL SPACES
+           WHEN T1EMAILL = 0  OR T1EMAILI EQUAL SPACES
               MOVE 'FAVOR PREENCHER O CAMPO EMAIL'
                                            TO T1MSGO
               PERFORM 999-TRATA-FASE2
@@ -211,18 +205,18 @@
                 CONTINUE
            END-EVALUATE
 
-               MOVE T1NOMEI             TO DCLICLI-NOME
-               MOVE T1CPFI              TO DCLICLI-CPF
-               MOVE T1EMAILI            TO DCLICLI-EMAIL
-               MOVE T1DATAI             TO DCLICLI-DATA-CADASTRO
-               MOVE T1USERI             TO DCLICLI-NOME-USUARIO
-               MOVE T1SENHAI            TO DCLICLI-SENHA
+               MOVE T1NOMEI             TO DCLCLI-NOME
+               MOVE T1CPFI              TO DCLCLI-CPF
+               MOVE T1EMAILI            TO DCLCLI-EMAIL
+               MOVE T1DATAI             TO DCLCLI-DATA-CADASTRO
+               MOVE T1USERI             TO DCLCLI-NOME-USUARIO
+               MOVE T1SENHAI            TO DCLCLI-SENHA
 
                MOVE T1DIAI              TO WS-DIA-NASCIMENTO
                MOVE T1MESI              TO WS-MES-NASCIMENTO
                MOVE T1ANOI              TO WS-ANO-NASCIMENTO
                MOVE WS-DATA-NASCIMENTO
-                                        TO DCLICLI-DATA-NASCIMENTO
+                                        TO DCLCLI-DATA-NASCIMENTO
 
                EXEC SQL
                   INSERT INTO CLIENTES
