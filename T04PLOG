@@ -20,23 +20,23 @@
        77  WS-LENGTH                       PIC S9(04) COMP.
 
        01  WS-DATA.
-           05 WS-DIA                       PIC X(02).
+           05 WS-ANO                       PIC X(02).
            05 WS-MES                       PIC X(02).
-           05 WS-ANO                       PIC X(04).
+           05 WS-DIA                       PIC X(02).
 
        01  WS-HORARIO.
            05 WS-HORA                      PIC X(02).
            05 WS-MIN                       PIC X(02).
            05 WS-SEG                       PIC X(02).
 
-       01  WS-DATA-F.                         
-           05 WS-DIA-F                     PIC X(10).
+       01  WS-DATA-F.
+           05 WS-DIA-F                     PIC X(02).
            05 FILLER                       PIC X(01) VALUE '/'.
            05 WS-MES-F                     PIC X(02).
            05 FILLER                       PIC X(01) VALUE '/'.
-           05 WS-ANO-F                     PIC X(04).
+           05 WS-ANO-F                     PIC X(02).
 
-       01  WS-HORARIO-F.                   
+       01  WS-HORARIO-F.
            05 WS-HORA-F                    PIC X(02).
            05 FILLER                       PIC X(01) VALUE ':'.
            05 WS-MIN-F                     PIC X(02).
@@ -80,7 +80,6 @@
       * SELETOR DE FASE - O MENU PRINCIPAL POSSUI 3 FASES
       *    FASE 1 - ENVIA O MAPA PARA O TERMINAL
       *    FASE 2 - TRATA O CAMPO T1USER
-      *    FASE 3 - TRATA OS CAMPOS
       *
            MOVE DFHCOMMAREA                TO WS-DFHCOMMAREA
 
@@ -89,7 +88,7 @@
            END-IF
 
            EVALUATE WS-FASE
-              WHEN '1' PERFORM 100-FASE1
+              WHEN '1'  PERFORM 100-FASE1
               WHEN '2' PERFORM 200-FASE2
               WHEN OTHER
                  MOVE +80                  TO WS-LENGTH
@@ -102,6 +101,7 @@
        100-FASE1.
            MOVE LOW-VALUES                 TO MAPLOGO
            MOVE -1                         TO T1USERL
+           MOVE 'FACA LOGIN OU CADASTRE-SE' TO T1MSGO
            PERFORM 999-MANDA-TELA
            PERFORM 999-CHAMA-FASE2
            .
@@ -137,7 +137,7 @@
            MOVE DCLCLI-CPF                 TO WS-ID-CPF
            PERFORM 260-LISTAGEM-DE-PRODUTOS
            .
-           
+
        210-VALIDA-USUARIO.
            EXEC SQL
               SELECT NOME_USUARIO
@@ -154,7 +154,7 @@
                MOVE 'USUARIO NAO ENCONTRADO'
                                            TO T1MSGO
                PERFORM 999-TRATA-FASE2
-           ELSE 
+           ELSE
                IF SQLCODE NOT EQUAL 0
                    MOVE 'ERRO AO CONSULTAR USUARIO'
                                            TO T1MSGO
@@ -165,7 +165,7 @@
 
        210-VALIDA-SENHA.
            IF DCLCLI-SENHA EQUAL T1SENHAI
-               CONTINUE    
+               CONTINUE
            ELSE
                MOVE 'SENHA INCORRETA'         TO T1MSGO
                PERFORM 999-TRATA-FASE2
@@ -183,13 +183,16 @@
            .
 
        220-PF3.
+           MOVE +80                        TO WS-LENGTH
+           MOVE 'FIM NORMAL DA TRANSACAO FT4A'
+                                           TO WS-MSG-ERRO
            PERFORM 999-ENCERRA-TRANSACAO
            .
 
        230-PF5.
            PERFORM 999-CHAMA-FASE1
            .
-       
+
        240-PF2.
            MOVE '1'                       TO WS-FASE
 
@@ -229,13 +232,14 @@
            MOVE WS-DIA                     TO WS-DIA-F
            MOVE WS-MES                     TO WS-MES-F
            MOVE WS-ANO                     TO WS-ANO-F
-           
+
            MOVE WS-HORA                    TO WS-HORA-F
            MOVE WS-MIN                     TO WS-MIN-F
            MOVE WS-SEG                     TO WS-SEG-F
-           
+
            MOVE WS-DATA-F                   TO T1DATAO
            MOVE WS-HORARIO-F                TO T1HORAO
+      *    MOVE '11111'                   TO T1MSGO
 
            EXEC CICS SEND
               MAP ('MAPLOG')
@@ -248,6 +252,8 @@
        999-CHAMA-FASE1.
            MOVE '1'                       TO WS-FASE
 
+           MOVE 'DIGITE USUARIO E SENHA PARA ENTRAR OU EFETUE CADASTRO'
+                                          TO T1MSGO
            EXEC CICS XCTL
               PROGRAM('T04PLOG')
               COMMAREA(WS-DFHCOMMAREA)
@@ -266,7 +272,7 @@
            .
 
        999-TRATA-FASE2.
-           MOVE LOW-VALUES                TO MAPLOGO
+      *    MOVE LOW-VALUES                TO MAPLOGO
            MOVE -1                        TO T1USERL
 
            PERFORM 999-MANDA-TELA

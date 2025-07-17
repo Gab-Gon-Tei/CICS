@@ -1,7 +1,7 @@
       *----------------------------------------------------------------*
        IDENTIFICATION                      DIVISION.
       *----------------------------------------------------------------*
-       PROGRAM-ID.                         T04PLOG.
+       PROGRAM-ID.                         T04PPRL.
        AUTHOR.                             GABRIEL
 
       *----------------------------------------------------------------*
@@ -20,23 +20,23 @@
        77  WS-LENGTH                       PIC S9(04) COMP.
 
        01  WS-DATA.
-           05 WS-DIA                       PIC X(02).
+           05 WS-ANO                       PIC X(02).
            05 WS-MES                       PIC X(02).
-           05 WS-ANO                       PIC X(04).
+           05 WS-DIA                       PIC X(04).
 
        01  WS-HORARIO.
            05 WS-HORA                      PIC X(02).
            05 WS-MIN                       PIC X(02).
            05 WS-SEG                       PIC X(02).
 
-       01  WS-DATA-F.                         
-           05 WS-DIA-F                     PIC X(10).
+       01  WS-DATA-F.
+           05 WS-DIA-F                     PIC X(02).
            05 FILLER                       PIC X(01) VALUE '/'.
            05 WS-MES-F                     PIC X(02).
            05 FILLER                       PIC X(01) VALUE '/'.
-           05 WS-ANO-F                     PIC X(04).
+           05 WS-ANO-F                     PIC X(02).
 
-       01  WS-HORARIO-F.                   
+       01  WS-HORARIO-F.
            05 WS-HORA-F                    PIC X(02).
            05 FILLER                       PIC X(01) VALUE ':'.
            05 WS-MIN-F                     PIC X(02).
@@ -86,7 +86,7 @@
 
            IF EIBCALEN EQUAL 0
               MOVE +80                     TO WS-LENGTH
-              MOVE 'FAÇA LOGIN NO SISTEMA PELA TRANSACAO FT4A'
+              MOVE 'FACA O LOGIN NO SISTEMA PELA TRANSACAO FT4A'
                                            TO WS-MSG-ERRO
                  PERFORM 999-ENCERRA-TRANSACAO
            END-IF
@@ -103,7 +103,7 @@
            .
 
        100-FASE1.
-           MOVE LOW-VALUES                 TO MAPLOGO
+           MOVE LOW-VALUES                 TO MAPPRLO
            MOVE -1                         TO T1MSGL
            PERFORM 999-MANDA-TELA
            PERFORM 999-CHAMA-FASE2
@@ -115,18 +115,17 @@
       *        PF3     (220-PF3)
       *        PF5     (230-PF5)
       *        CLEAR   (230-PF5)
-              PF2     (240-PF2)
+              PF12    (240-PF12)
               ANYKEY  (250-ANYKEY)
            END-EXEC
-
            EXEC CICS RECEIVE
-              MAP   ('MAPLOG')
-              MAPSET('T04MLOG')
-              INTO  (MAPLOGI)
+              MAP   ('MAPPRL')
+              MAPSET('T04MPRL')
+              INTO  (MAPPRLI)
            END-EXEC
            .
 
-       240-PF2.
+       240-PF12.
            MOVE '1'                       TO WS-FASE
 
            EXEC CICS XCTL
@@ -165,18 +164,18 @@
            MOVE WS-DIA                     TO WS-DIA-F
            MOVE WS-MES                     TO WS-MES-F
            MOVE WS-ANO                     TO WS-ANO-F
-           
+
            MOVE WS-HORA                    TO WS-HORA-F
            MOVE WS-MIN                     TO WS-MIN-F
            MOVE WS-SEG                     TO WS-SEG-F
-           
+
            MOVE WS-DATA-F                   TO T1DATAO
            MOVE WS-HORARIO-F                TO T1HORAO
 
            EXEC CICS SEND
-              MAP ('MAPLOG')
-              MAPSET('T04MLOG')
-              FROM(MAPLOGO)
+              MAP ('MAPPRL')
+              MAPSET('T04MPRL')
+              FROM(MAPPRLO)
               ERASE FREEKB ALARM CURSOR
            END-EXEC
            .
@@ -202,15 +201,14 @@
            .
 
        999-TRATA-FASE2.
-           MOVE LOW-VALUES                TO MAPLOGO
-           MOVE -1                        TO T1USERL
+           MOVE LOW-VALUES                TO MAPPRLO
 
            PERFORM 999-MANDA-TELA
            PERFORM 999-CHAMA-FASE2
            .
 
        999-MAPFAIL.
-           MOVE 'ERRO MAPA T04MLOG'        TO WS-MSG-ERRO
+           MOVE 'ERRO MAPA T04MPRL'        TO WS-MSG-ERRO
            PERFORM 999-ENCERRA-TRANSACAO
            .
 

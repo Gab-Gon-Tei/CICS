@@ -20,36 +20,39 @@
        77  WS-LENGTH                       PIC S9(04) COMP.
        77  WS-CPF-ERRO                      PIC X(11).
 
+       01  WS-DATA-COMPARA.
+           05 FILLER                       PIC X(4)
+                                                   VALUE '2025'.
        01  WS-DATA.
-           05 WS-DIA                       PIC X(02).
+           05 WS-ANO                       PIC X(02).
            05 WS-MES                       PIC X(02).
-           05 WS-ANO                       PIC X(04).
+           05 WS-DIA                       PIC X(02).
 
        01  WS-HORARIO.
            05 WS-HORA                      PIC X(02).
            05 WS-MIN                       PIC X(02).
            05 WS-SEG                       PIC X(02).
 
-       01  WS-DATA-F.                         
-           05 WS-DIA-F                     PIC X(10).
+       01  WS-DATA-F.
+           05 WS-DIA-F                     PIC X(02).
            05 FILLER                       PIC X(01) VALUE '/'.
            05 WS-MES-F                     PIC X(02).
            05 FILLER                       PIC X(01) VALUE '/'.
-           05 WS-ANO-F                     PIC X(04).
+           05 WS-ANO-F                     PIC X(02).
 
-       01  WS-HORARIO-F.                   
+       01  WS-HORARIO-F.
            05 WS-HORA-F                    PIC X(02).
            05 FILLER                       PIC X(01) VALUE ':'.
            05 WS-MIN-F                     PIC X(02).
            05 FILLER                       PIC X(01) VALUE ':'.
            05 WS-SEG-F                     PIC X(02).
-       
+
        01  WS-DATA-NASCIMENTO.
-           05 WS-DIA-NASCIMENTO            PIC 9(2).
+           05 WS-DIA-NASCIMENTO            PIC X(2).
            05 FILLER                       PIC X(1) VALUE '.'.
-           05 WS-MES-NASCIMENTO            PIC 9(2).
+           05 WS-MES-NASCIMENTO            PIC X(2).
            05 FILLER                       PIC X(1) VALUE '.'.
-           05 WS-ANO-NASCIMENTO            PIC 9(4).
+           05 WS-ANO-NASCIMENTO            PIC X(4).
 
        01  WS-DFHCOMMAREA.
            05 WS-FASE                      PIC X(01).
@@ -84,12 +87,18 @@
               MAPFAIL(999-MAPFAIL)
               ERROR(999-ERROR)
            END-EXEC
+
+      * SELETOR DE FASE - O MENU PRINCIPAL POSSUI 4 FASES
+      *    FASE 1 - ENVIA O MAPA PARA O TERMINAL
+      *    FASE 2 - TRATA O CAMPO T1COD
+      *    FASE 3 - TRATA OS DEMAIS1CAMPOS DO PRODUTO
+      *    FASE 4 - TRATA O CAMPO T1CONF
       *
            MOVE DFHCOMMAREA                TO WS-DFHCOMMAREA
 
            IF EIBCALEN EQUAL 0
               MOVE +80                     TO WS-LENGTH
-              MOVE 'FAÇA LOGIN NO SISTEMA PELA TRANSACAO FT4A'
+              MOVE 'FACA O LOGIN NO SISTEMA PELA TRANSACAO FT4A'
                                            TO WS-MSG-ERRO
                  PERFORM 999-ENCERRA-TRANSACAO
            END-IF
@@ -97,6 +106,7 @@
            EVALUATE WS-FASE
               WHEN '1' PERFORM 100-FASE1
               WHEN '2' PERFORM 200-FASE2
+              WHEN '3' PERFORM 300-FASE3
 
               WHEN OTHER
                  MOVE +80                  TO WS-LENGTH
@@ -125,7 +135,7 @@
            END-EXEC
 
            EXEC CICS RECEIVE
-              MAP   ('MAPACAD')
+              MAP   ('MAPCAD')
               MAPSET('T04MCAD')
               INTO  (MAPCADI)
            END-EXEC
@@ -163,41 +173,44 @@
 
        210-ENTER.
       * LIMPAR OS CAMPOS NUMERICOS DE CARACTERES ALFANUMERICOS
-           EXEC CICS BIF DEEDIT FIELD(T1DIAI   ) END-EXEC
-           EXEC CICS BIF DEEDIT FIELD(T1MESI   ) END-EXEC
-           EXEC CICS BIF DEEDIT FIELD(T1ANOI   ) END-EXEC
+      *    EXEC CICS BIF DEEDIT FIELD(T1DIAI  ) END-EXEC
+      *    EXEC CICS BIF DEEDIT FIELD(T1MESI  ) END-EXEC
+      *    EXEC CICS BIF DEEDIT FIELD(T1ANOI  ) END-EXEC
 
-      * VERIFICAÇÃO DOS CAMPOS
+      * VERIFICACAO DOS CAMPOS
+           MOVE T1DIAI              TO WS-DIA-NASCIMENTO
+           MOVE T1MESI              TO WS-MES-NASCIMENTO
+           MOVE T1ANOI              TO WS-ANO-NASCIMENTO
            EVALUATE TRUE
            WHEN T1NOMEL  = 0 OR T1NOMEI EQUAL SPACES
               MOVE 'FAVOR PREENCHER O CAMPO NOME'
                                            TO T1MSGO
               PERFORM 999-TRATA-FASE2
-           WHEN T1CPFL NOT EQUAL 11
+           WHEN T1CPFL NOT EQUAL 11 OR T1CPFI NOT NUMERIC
               MOVE 'FAVOR PREENCHER O CAMPO CPF COM 11 DIGITOS'
                                            TO T1MSGO
               PERFORM 999-TRATA-FASE2
-           WHEN T1EMAILL = 0  OR T1EMAILI EQUAL SPACES
+           WHEN T1EMAILL = 0 OR T1EMAILI EQUAL SPACES
               MOVE 'FAVOR PREENCHER O CAMPO EMAIL'
                                            TO T1MSGO
               PERFORM 999-TRATA-FASE2
-           WHEN T1DIAL EQUAL SPACES OR
-                T1MESA EQUAL SPACES OR
-                T1ANOA EQUAL SPACES
-                MOVE 'FAVOR PREENCHER A DATA DE CADASTRO'
+           WHEN T1DIAL = 0 OR
+                T1MESL = 0 OR
+                T1ANOL = 0
+                MOVE 'FAVOR PREENCHER A DATA DE NASCIMENTO'
                                            TO T1MSGO
                 PERFORM 999-TRATA-FASE2
-           WHEN T1DIAI < 1 OR T1DIAI > 31 OR
-                T1MESI < 1 OR T1MESI > 12 OR
-                T1ANOI < 1900 OR T1ANOI > 2100
-                MOVE 'DATA DE NASCIMENTO INVALIDA'
+           WHEN T1DIAI < '01' OR T1DIAI > '31' OR
+                T1MESI < '01' OR T1MESI > '12' OR
+                T1ANOI < '1900' OR T1ANOI >  WS-DATA-COMPARA
+                MOVE   'DATA DE NASCIMENTO INVALIDA'
                                            TO T1MSGO
                 PERFORM 999-TRATA-FASE2
-           WHEN T1USERL > 5
+           WHEN T1USERL <  5
                 MOVE 'FAVOR PREENCHER O CAMPO NOME USUARIO'
                                              TO T1MSGO
                 PERFORM 999-TRATA-FASE2
-           WHEN T1SENHAL > 5
+           WHEN T1SENHAL <  5
                 MOVE 'FAVOR PREENCHER O CAMPO SENHA'
                                              TO T1MSGO
                 PERFORM 999-TRATA-FASE2
@@ -208,13 +221,9 @@
                MOVE T1NOMEI             TO DCLCLI-NOME
                MOVE T1CPFI              TO DCLCLI-CPF
                MOVE T1EMAILI            TO DCLCLI-EMAIL
-               MOVE T1DATAI             TO DCLCLI-DATA-CADASTRO
                MOVE T1USERI             TO DCLCLI-NOME-USUARIO
                MOVE T1SENHAI            TO DCLCLI-SENHA
 
-               MOVE T1DIAI              TO WS-DIA-NASCIMENTO
-               MOVE T1MESI              TO WS-MES-NASCIMENTO
-               MOVE T1ANOI              TO WS-ANO-NASCIMENTO
                MOVE WS-DATA-NASCIMENTO
                                         TO DCLCLI-DATA-NASCIMENTO
 
@@ -234,7 +243,7 @@
                    , :DCLCLI-NOME
                    , :DCLCLI-EMAIL
                    , :DCLCLI-DATA-NASCIMENTO
-                   , :DCLCLI-DATA-CADASTRO
+                   , CURRENT DATE
                    , :DCLCLI-NOME-USUARIO
                    , :DCLCLI-SENHA
                   )
@@ -242,7 +251,7 @@
 
                EVALUATE SQLCODE
                  WHEN 0
-                    PERFORM 220-PF3
+                    PERFORM 999-TRATA-FASE3
                  WHEN -803
                     PERFORM 999-DUPREC
                  WHEN -545
@@ -250,9 +259,10 @@
                                            TO T1MSGO
                     PERFORM 999-TRATA-FASE2
                  WHEN OTHER
+                    MOVE DCLCLI-DATA-NASCIMENTO TO T1MSGO
                     PERFORM 999-ERROR
                END-EVALUATE
-           PERFORM 999-TRATA-FASE3
+      *    PERFORM 999-TRATA-FASE2
            .
        300-FASE3.
            EXEC CICS HANDLE AID
@@ -262,9 +272,9 @@
            END-EXEC
 
            EXEC CICS RECEIVE
-              MAP   ('MAPACAD')
+              MAP   ('MAPCAD')
               MAPSET('T04MCAD')
-              INTO  (MAPACADI)
+              INTO  (MAPCADI)
            END-EXEC
            .
 
@@ -280,7 +290,7 @@
            .
 
        340-PF2.
-           PERFORM 999-TRATA-FASE2
+           PERFORM 999-CHAMA-FASE1
            .
 
        999-ENCERRA-TRANSACAO.
@@ -306,18 +316,18 @@
            MOVE WS-DIA                     TO WS-DIA-F
            MOVE WS-MES                     TO WS-MES-F
            MOVE WS-ANO                     TO WS-ANO-F
-           
+
            MOVE WS-HORA                    TO WS-HORA-F
            MOVE WS-MIN                     TO WS-MIN-F
            MOVE WS-SEG                     TO WS-SEG-F
-           
+
            MOVE WS-DATA-F                   TO T1DATAO
            MOVE WS-HORARIO-F                TO T1HORAO
 
            EXEC CICS SEND
               MAP ('MAPCAD')
               MAPSET('T04MCAD')
-              FROM(MAPACADO)
+              FROM(MAPCADO)
               ERASE FREEKB ALARM CURSOR
            END-EXEC
            .
@@ -334,7 +344,6 @@
 
        999-CHAMA-FASE2.
            MOVE '2'                       TO WS-FASE
-
            EXEC CICS RETURN
                TRANSID('FT4B')
                COMMAREA(WS-DFHCOMMAREA)
@@ -374,8 +383,8 @@
 
        999-TRATA-FASE3.
            MOVE -1                         TO T1MSGL
-           MOVE 'CONFIRMA INCLUSAO (S/N)?' TO T1MSGO
-
+           MOVE 'PRESSIONE ENTER PARA CONFIRMAR OU PF2 PARA CANCELAR'
+                                           TO T1MSGO
            PERFORM 999-PROTECAO-FASE3
            PERFORM 999-MANDA-TELA
            PERFORM 999-CHAMA-FASE3
@@ -392,17 +401,15 @@
            .
        999-NOTFND.
            STRING 'INFORME OS DADOS DO PRODUTO PARA INSERIR'
-           DELIMITED BY SIZE               INTO T2MSGO
+           DELIMITED BY SIZE               INTO T1MSGO
            PERFORM 999-TRATA-FASE3
            .
        999-DUPREC.
            MOVE T1CPFI                     TO WS-CPF-ERRO
-           MOVE LOW-VALUES                 TO MAPACADO
+           MOVE LOW-VALUES                 TO MAPCADO
            MOVE SPACES                     TO T1MSGO
-           STRING 'O USUARIO DO CPF: ' DELIMITED BY SIZE
-                  WS-CPF-ERRO DELIMITED BY SPACES
-                  ' JÁ EXISTE.' DELIMITED BY SIZE
-                                           INTO T1MSGO
+           MOVE 'O USUARIO JA TEM CADASTRO'
+                                           TO T1MSGO
            PERFORM 999-TRATA-FASE2
            .
 
