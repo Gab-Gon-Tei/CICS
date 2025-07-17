@@ -23,6 +23,12 @@
        01  WS-DATA-COMPARA.
            05 FILLER                       PIC X(4)
                                                    VALUE '2025'.
+      * 01  WS-DATA-COMPARA.
+      *     05 FILLER                       PIC X(2)
+      *                                             VALUE '20'.
+      *     05 ANO-COMPARA                  PIC X(2).
+      *     05 MES-COMPARA                  PIC X(2).       
+      *     05 DIA-COMPARA                  PIC X(2).
        01  WS-DATA.
            05 WS-ANO                       PIC X(02).
            05 WS-MES                       PIC X(02).
@@ -172,10 +178,7 @@
            .
 
        210-ENTER.
-      * LIMPAR OS CAMPOS NUMERICOS DE CARACTERES ALFANUMERICOS
-      *    EXEC CICS BIF DEEDIT FIELD(T1DIAI  ) END-EXEC
-      *    EXEC CICS BIF DEEDIT FIELD(T1MESI  ) END-EXEC
-      *    EXEC CICS BIF DEEDIT FIELD(T1ANOI  ) END-EXEC
+      *     ACCEPT WS-DATA-COMPARA FROM DATE
 
       * VERIFICACAO DOS CAMPOS
            MOVE T1DIAI              TO WS-DIA-NASCIMENTO
@@ -202,6 +205,7 @@
                 PERFORM 999-TRATA-FASE2
            WHEN T1DIAI < '01' OR T1DIAI > '31' OR
                 T1MESI < '01' OR T1MESI > '12' OR
+      *          T1ANOI < '1900' OR T1ANOI > WS-DATA-COMPARA
                 T1ANOI < '1900' OR T1ANOI >  WS-DATA-COMPARA
                 MOVE   'DATA DE NASCIMENTO INVALIDA'
                                            TO T1MSGO
