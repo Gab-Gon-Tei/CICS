@@ -46,7 +46,50 @@
        01  WS-DFHCOMMAREA.
            05 WS-FASE                      PIC X(01).
            05 WS-ID-CPF                    PIC X(11).
+           05 WS-PAGA                      PIC 9(2).
+           05 WS-PAGT                      PIC 9(2).
       *    05 WS-MSG                       PIC X(60).
+       
+       01  WS-DFHCOMMAREA-AUX.
+           05 WS-FASE-COMMAREA             PIC X(01).
+           05 WS-ID-PROD-COMMAREA          PIC X(04).
+           05 WS-ID-CPF                    PIC X(11).
+
+       01  WS-LINDET.
+           05 FILLER                       PIC X(6)
+                                                   VALUE SPACES.
+           05 LD-PRODUTO                   PIC X(25).
+           05 FILLER                       PIC X(4)        
+                                                   VALUE SPACES.
+           05 LD-VENDIDO                   PIC X(20).
+           05 FILLER                       PIC X(5)
+                                                   VALUE SPACES.
+           05 LD-VALOR                     PIC ZZ.ZZ9,99.
+           05 FILLER                       PIC X(9)
+                                                   VALUE SPACES.
+
+       01  WS-REG-PRODUTOS.
+      *     05 WS-ID-PRODUTO                PIC 9(09).
+           05 WS-NOME-PRODUTO              PIC X(20).
+           05 WS-DESCRICAO                 PIC X(60).
+           05 WS-VENDIDO-POR               PIC X(05).
+           05 WS-VALOR-UNITARIO            PIC 9(5)V99.
+       
+      * 77  WS-ID-PROD-AUX                  PIC 9(9).
+       77  WS-FILE-NAME                    PIC X(8)                     
+                                                   VALUE 'PRODUTOS'.
+       77  WS-QUEUE-NAME                   PIC X(8)
+                                                   VALUE 'TS04TPRL'.
+       77  WS-ITEM                         PIC S9(04) COMP.
+       77  WS-RESP                         PIC S9(08) COMP.
+       77  WS-RESTO                        PIC 9(01).
+       77  WS-INDEX                        PIC 9(02).
+
+       01  WS-ENDFILE-AUX                  PIC X(01).
+           88 ENDFILE-YES                          VALUE 'S'.
+           88 ENDFILE-NO                           VALUE 'N'.
+
+           
 
       *MAPA REFERENTE A TELA DE CADASTRO
            COPY T04MPRL.
@@ -56,7 +99,7 @@
            COPY DFHBMSCA.
 
            EXEC SQL
-              INCLUDE BKCLIT
+              INCLUDE BKPROD
            END-EXEC.
 
            EXEC SQL
@@ -75,6 +118,7 @@
            EXEC CICS HANDLE CONDITION
               MAPFAIL(999-MAPFAIL)
               ERROR(999-ERROR)
+              NOTFND(999-NOTFND)
            END-EXEC
 
       * SELETOR DE FASE - O MENU PRINCIPAL POSSUI 3 FASES
@@ -82,7 +126,6 @@
       *    FASE 2 - TRATA O CAMPO T1USER
       *    FASE 3 - TRATA OS CAMPOS
       *
-           MOVE DFHCOMMAREA                TO WS-DFHCOMMAREA
 
            IF EIBCALEN EQUAL 0
               MOVE +80                     TO WS-LENGTH
@@ -90,6 +133,8 @@
                                            TO WS-MSG-ERRO
                  PERFORM 999-ENCERRA-TRANSACAO
            END-IF
+
+           MOVE DFHCOMMAREA                TO WS-DFHCOMMAREA
 
            EVALUATE WS-FASE
               WHEN '1' PERFORM 100-FASE1
@@ -104,17 +149,20 @@
 
        100-FASE1.
            MOVE LOW-VALUES                 TO MAPPRLO
-           MOVE -1                         TO T1MSGL
+           MOVE -1                         TO T1PRODFL
            PERFORM 999-MANDA-TELA
            PERFORM 999-CHAMA-FASE2
            .
 
        200-FASE2.
            EXEC CICS HANDLE AID
-      *        ENTER   (210-ENTER)
-      *        PF3     (220-PF3)
-      *        PF5     (230-PF5)
-      *        CLEAR   (230-PF5)
+              ENTER   (210-ENTER)
+              PF1     (215-PF1)
+              PF3     (220-PF3 )
+              PF5     (230-PF5 )
+              CLEAR   (230-PF5 )
+              PF7     (250-PF7 )
+              PF8     (260-PF8 )
               PF12    (240-PF12)
               ANYKEY  (250-ANYKEY)
            END-EXEC
@@ -123,6 +171,132 @@
               MAPSET('T04MPRL')
               INTO  (MAPPRLI)
            END-EXEC
+           .
+       
+       210-ENTER.
+      *     IF T3PRDL EQUAL 0 OR T3PRDI EQUAL SPACES
+      *        MOVE 'PRODUTO NAO INFORMADO. TENTE NOVAMENTE.'
+      *                                     TO T3MSGO
+      *        PERFORM 999-TRATA-FASE2
+      *     END-IF
+
+      *     MOVE T1PRODFI                     TO DCLPROD-NOME-PRODUTO
+
+           EXEC SQL
+           DECLARE C1 CURSOR FOR
+               SELECT ID_PRODUTO, 
+                      NOME_PRODUTO,
+                      DESCRICAO, 
+                      VENDIDO_POR, 
+                      VALOR_UNITARIO 
+                 FROM PRODUTOS
+      *           WHERE NOME_PRODUTO = :DCLPROD-NOME-PRODUTO
+                ORDER BY NOME_PRODUTO
+           END-EXEC
+
+           EXEC CICS DELETEQ TS
+              QUEUE(WS-QUEUE-NAME)
+              RESP(SQLCODE)
+           END-EXEC
+
+           EXEC SQL
+           OPEN C1
+           END-EXEC
+
+           IF SQLCODE NOT EQUAL 0
+              MOVE +80                    TO WS-LENGTH
+              MOVE 'ERRO AO ABRIR CURSOR C1'
+                                           TO WS-MSG-ERRO
+              PERFORM 999-ENCERRA-TRANSACAO
+           END-IF
+
+           MOVE ZERO                       TO WS-ITEM
+           SET ENDFILE-NO TO TRUE
+           PERFORM 999-CARREGA-TS UNTIL ENDFILE-YES
+
+           EXEC SQL
+              CLOSE C1
+           END-EXEC
+
+           MOVE 1                         TO WS-PAGA
+
+           DIVIDE WS-ITEM BY 10 GIVING WS-PAGT REMAINDER WS-RESTO
+
+           IF WS-RESTO > 0
+              ADD 1 TO WS-PAGT
+           END-IF
+
+           PERFORM 999-CARREGA-DETALHES
+           PERFORM 999-TRATA-FASE2
+           .
+
+       220-PF3.
+            MOVE '1'                        TO WS-FASE
+
+            EXEC CICS XCTL
+                PROGRAM('T04PLOG')
+                COMMAREA(WS-DFHCOMMAREA)
+                LENGTH(LENGTH OF WS-DFHCOMMAREA)
+            END-EXEC
+            .
+       
+       230-PF5.
+           PERFORM 999-CHAMA-FASE1
+           .
+
+       250-PF7.
+      *      IF T3PRDL EQUAL 0 OR T3PRDI EQUAL SPACES
+      *         MOVE 'PRODUTO NAO INFORMADO. TENTE NOVAMENTE.'
+      *                                      TO T3MSGO
+      *         PERFORM 999-TRATA-FASE2
+      *      END-IF
+            IF WS-PAGA = 1
+               MOVE 'VOCE JA ESTA NA PRIMEIRA PAGINA'
+                                           TO T1MSGO
+            ELSE
+               SUBTRACT 1 FROM WS-PAGA
+               PERFORM 999-CARREGA-DETALHES
+            END-IF
+
+            PERFORM 999-TRATA-FASE2
+            .       
+
+       260-PF8.
+      *      IF T3PRDL EQUAL 0 OR T3PRDI EQUAL SPACES
+      *         MOVE 'PRODUTO NAO INFORMADO. TENTE NOVAMENTE.'
+      *                                      TO T3MSGO
+      *         PERFORM 999-TRATA-FASE2
+      *      END-IF
+            IF WS-PAGA = WS-PAGT
+               MOVE 'VOCE JA ESTA NA ULTIMA PAGINA'
+                                           TO T1MSGO
+            ELSE
+               ADD 1 TO WS-PAGA
+               PERFORM 999-CARREGA-DETALHES
+            END-IF
+
+            PERFORM 999-TRATA-FASE2
+            .
+
+       215-PF1.
+           PERFORM 999-VALIDA-POSICAO
+
+           EXEC SQL
+               SELECT DESCRICAO 
+               INTO :DCLPROD-DESCRICAO
+               FROM PRODUTOS
+               WHERE ID_PRODUTO = :DCLPROD-ID-PRODUTO
+           END-EXEC.
+
+      *     MOVE 'P'                        TO WS-FASE-COMMAREA
+      *     MOVE WS-ID-PRODUTO              TO WS-ID-PROD-COMMAREA
+
+      *     EXEC CICS XCTL
+      *         PROGRAM('FS04PGMF')
+      *         COMMAREA(WS-DFHCOMMAREA-AUX)
+      *         LENGTH(LENGTH OF WS-DFHCOMMAREA-AUX)
+      *     END-EXEC
+
            .
 
        240-PF12.
@@ -201,10 +375,98 @@
            .
 
        999-TRATA-FASE2.
-           MOVE LOW-VALUES                TO MAPPRLO
+           MOVE -1                     TO T1PRODFL
+           MOVE WS-PAGA                TO T1PAGAO
+           MOVE WS-PAGT                TO T1PAGTO
 
            PERFORM 999-MANDA-TELA
            PERFORM 999-CHAMA-FASE2
+           .
+
+       999-CARREGA-TS.
+           EXEC SQL
+           FETCH C1 INTO 
+                        :DCLPROD-ID-PRODUTO,
+                        :DCLPROD-NOME-PRODUTO,
+                        :DCLPROD-DESCRICAO,
+                        :DCLPROD-VENDIDO-POR
+                        ,:DCLPROD-VALOR-UNITARIO
+           END-EXEC
+
+           EVALUATE SQLCODE
+              WHEN 0
+                 ADD 1 TO WS-ITEM
+                 MOVE DCLPROD-NOME-PRODUTO      TO LD-PRODUTO
+                 MOVE DCLPROD-VENDIDO-POR       TO LD-VENDIDO
+                 MOVE DCLPROD-VALOR-UNITARIO    TO LD-VALOR
+
+                 EXEC CICS WRITEQ TS
+                    QUEUE(WS-QUEUE-NAME)
+                    FROM(WS-LINDET)
+                    ITEM(WS-ITEM)
+                    RESP(SQLCODE)
+                 END-EXEC
+
+                 IF WS-RESP NOT = DFHRESP(NORMAL)
+                   PERFORM 999-ERROR
+                 END-IF
+              WHEN +100
+                SET ENDFILE-YES TO TRUE
+              WHEN OTHER
+               PERFORM 999-ERROR
+           END-EVALUATE
+           .
+
+       999-CARREGA-DETALHES.
+           COMPUTE WS-ITEM = (WS-PAGA - 1) * 10 + 1
+           MOVE 0                          TO WS-INDEX
+
+           PERFORM WITH TEST AFTER UNTIL WS-INDEX = 10
+              EXEC CICS READQ TS
+                 QUEUE (WS-QUEUE-NAME)
+                 INTO  (WS-LINDET)
+                 ITEM  (WS-ITEM)
+                 RESP  (WS-RESP)
+              END-EXEC
+
+              IF WS-RESP = DFHRESP(NORMAL)
+                 ADD 1 TO WS-INDEX
+                 MOVE WS-LINDET            TO T1LINDEO(WS-INDEX)
+              ELSE
+                 IF WS-RESP = DFHRESP(ITEMERR)
+                    PERFORM WITH TEST AFTER UNTIL WS-INDEX = 10
+                       ADD 1 TO WS-INDEX
+                       MOVE SPACES         TO T1LINDEO(WS-INDEX)
+                    END-PERFORM
+                 ELSE
+                    PERFORM 999-ERROR
+                 END-IF
+              END-IF
+              ADD 1 TO WS-ITEM
+           END-PERFORM
+           .
+       
+       999-VALIDA-POSICAO.
+           IF EIBCPOSN <= 719 OR EIBCPOSN >= 1520
+              MOVE 'POSICAO INVALIDA DO CURSOR'
+                                           TO T1MSGO
+              PERFORM 999-TRATA-FASE2
+           END-IF
+
+           COMPUTE WS-INDEX = EIBCPOSN / 80 + 1 - 9
+           MOVE T1LINDEI(WS-INDEX)         TO WS-LINDET
+
+           IF LD-PRODUTO EQUAL SPACES
+              MOVE 'POSICAO NAO CONTEM PRODUTO'
+                                           TO T1MSGO
+              PERFORM 999-TRATA-FASE2
+           END-IF
+           .
+
+       999-NOTFND.
+           MOVE 'NAO EXISTEM PRODUTOS COM CODIGO MAIOR OU IGUAL AO INFOR
+      -         'MADO'                     TO T1MSGO
+           PERFORM 999-TRATA-FASE2
            .
 
        999-MAPFAIL.

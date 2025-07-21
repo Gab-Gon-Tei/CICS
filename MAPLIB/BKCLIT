@@ -1,9 +1,10 @@
       ******************************************************************
       * DCLGEN TABLE(CLIENTES)                                         *
       *        LIBRARY(FS.FSYS004.BOOKLIB(BKCLIT))                     *
+      *        ACTION(REPLACE)                                         *
       *        LANGUAGE(COBOL)                                         *
       *        NAMES(DCLCLI-)                                          *
-      *        STRUCTURE(DCL-CLI)                                      *
+      *        STRUCTURE(DCL-CLIENTES)                                 *
       *        QUOTE                                                   *
       *        COLSUFFIX(YES)                                          *
       * ... IS THE DCLGEN COMMAND THAT MADE THE FOLLOWING STATEMENTS   *

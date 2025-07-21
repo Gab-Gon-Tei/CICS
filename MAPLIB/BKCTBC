@@ -1,0 +1,39 @@
+      ******************************************************************
+      * DCLGEN TABLE(CONTA_BANCARIA)                                   *
+      *        LIBRARY(FS.FSYS004.BOOKLIB(BKCTBC))                     *
+      *        LANGUAGE(COBOL)                                         *
+      *        NAMES(DCLCTBC-)                                         *
+      *        STRUCTURE(DCL-CONTA-BANCARIA)                           *
+      *        QUOTE                                                   *
+      *        COLSUFFIX(YES)                                          *
+      * ... IS THE DCLGEN COMMAND THAT MADE THE FOLLOWING STATEMENTS   *
+      ******************************************************************
+           EXEC SQL DECLARE CONTA_BANCARIA TABLE
+           ( ID_CONTA_BANCARIA              INTEGER NOT NULL,
+             AGENCIA                        SMALLINT NOT NULL,
+             CONTA                          INTEGER NOT NULL,
+             DIGITO                         SMALLINT NOT NULL,
+             SALDO                          DECIMAL(10, 2),
+             CPF                            CHAR(11) NOT NULL
+           ) END-EXEC.
+      ******************************************************************
+      * COBOL DECLARATION FOR TABLE CONTA_BANCARIA                     *
+      ******************************************************************
+       01  DCL-CONTA-BANCARIA.
+      *                       ID_CONTA_BANCARIA
+           10 DCLCTBC-ID-CONTA-BANCARIA
+              PIC S9(9) USAGE COMP.
+      *                       AGENCIA
+           10 DCLCTBC-AGENCIA      PIC S9(4) USAGE COMP.
+      *                       CONTA
+           10 DCLCTBC-CONTA        PIC S9(9) USAGE COMP.
+      *                       DIGITO
+           10 DCLCTBC-DIGITO       PIC S9(4) USAGE COMP.
+      *                       SALDO
+           10 DCLCTBC-SALDO        PIC S9(8)V9(2) USAGE COMP-3.
+      *                       CPF
+           10 DCLCTBC-CPF          PIC X(11).
+      ******************************************************************
+      * THE NUMBER OF COLUMNS DESCRIBED BY THIS DECLARATION IS 6       *
+      ******************************************************************
+

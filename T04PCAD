@@ -23,12 +23,6 @@
        01  WS-DATA-COMPARA.
            05 FILLER                       PIC X(4)
                                                    VALUE '2025'.
-      * 01  WS-DATA-COMPARA.
-      *     05 FILLER                       PIC X(2)
-      *                                             VALUE '20'.
-      *     05 ANO-COMPARA                  PIC X(2).
-      *     05 MES-COMPARA                  PIC X(2).       
-      *     05 DIA-COMPARA                  PIC X(2).
        01  WS-DATA.
            05 WS-ANO                       PIC X(02).
            05 WS-MES                       PIC X(02).
@@ -178,7 +172,10 @@
            .
 
        210-ENTER.
-      *     ACCEPT WS-DATA-COMPARA FROM DATE
+      * LIMPAR OS CAMPOS NUMERICOS DE CARACTERES ALFANUMERICOS
+      *    EXEC CICS BIF DEEDIT FIELD(T1DIAI  ) END-EXEC
+      *    EXEC CICS BIF DEEDIT FIELD(T1MESI  ) END-EXEC
+      *    EXEC CICS BIF DEEDIT FIELD(T1ANOI  ) END-EXEC
 
       * VERIFICACAO DOS CAMPOS
            MOVE T1DIAI              TO WS-DIA-NASCIMENTO
@@ -205,19 +202,22 @@
                 PERFORM 999-TRATA-FASE2
            WHEN T1DIAI < '01' OR T1DIAI > '31' OR
                 T1MESI < '01' OR T1MESI > '12' OR
-      *          T1ANOI < '1900' OR T1ANOI > WS-DATA-COMPARA
                 T1ANOI < '1900' OR T1ANOI >  WS-DATA-COMPARA
                 MOVE   'DATA DE NASCIMENTO INVALIDA'
                                            TO T1MSGO
                 PERFORM 999-TRATA-FASE2
-           WHEN T1USERL <  5
+           WHEN T1USERL NOT > 5
                 MOVE 'FAVOR PREENCHER O CAMPO NOME USUARIO'
                                              TO T1MSGO
-                PERFORM 999-TRATA-FASE2
+                MOVE -1                      TO T1USERL
+                PERFORM 999-MANDA-TELA
+                PERFORM 999-CHAMA-FASE2
            WHEN T1SENHAL <  5
                 MOVE 'FAVOR PREENCHER O CAMPO SENHA'
                                              TO T1MSGO
-                PERFORM 999-TRATA-FASE2
+                MOVE -1                      TO T1USERL
+                PERFORM 999-MANDA-TELA
+                PERFORM 999-CHAMA-FASE2
              WHEN OTHER
                 CONTINUE
            END-EVALUATE
@@ -266,7 +266,7 @@
                     MOVE DCLCLI-DATA-NASCIMENTO TO T1MSGO
                     PERFORM 999-ERROR
                END-EVALUATE
-      *    PERFORM 999-TRATA-FASE2
+           PERFORM 999-TRATA-FASE2
            .
        300-FASE3.
            EXEC CICS HANDLE AID

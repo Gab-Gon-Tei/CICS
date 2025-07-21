@@ -1,0 +1,46 @@
+      ******************************************************************
+      * DCLGEN TABLE(PRODUTOS)                                         *
+      *        LIBRARY(FS.FSYS004.BOOKLIB(BKPROD))                     *
+      *        ACTION(REPLACE)                                         *
+      *        LANGUAGE(COBOL)                                         *
+      *        NAMES(DCLPROD-)                                         *
+      *        STRUCTURE(DCL-PRODUTOS)                                 *
+      *        QUOTE                                                   *
+      *        COLSUFFIX(YES)                                          *
+      * ... IS THE DCLGEN COMMAND THAT MADE THE FOLLOWING STATEMENTS   *
+      ******************************************************************
+           EXEC SQL DECLARE PRODUTOS TABLE
+           ( ID_PRODUTO                     INTEGER NOT NULL,
+             NOME_PRODUTO                   CHAR(25) NOT NULL,
+             DESCRICAO                      CHAR(255) NOT NULL,
+             VENDIDO_POR                    CHAR(20) NOT NULL,
+             DATA_CADASTRO                  DATE NOT NULL,
+             QUANTIDADE_ESTOQUE             INTEGER NOT NULL,
+             VALOR_UNITARIO                 DECIMAL(7, 2)
+           ) END-EXEC.
+      ******************************************************************
+      * COBOL DECLARATION FOR TABLE PRODUTOS                           *
+      ******************************************************************
+       01  DCL-PRODUTOS.
+      *                       ID_PRODUTO
+           10 DCLPROD-ID-PRODUTO   PIC S9(9) USAGE COMP.
+      *                       NOME_PRODUTO
+           10 DCLPROD-NOME-PRODUTO
+              PIC X(25).
+      *                       DESCRICAO
+           10 DCLPROD-DESCRICAO    PIC X(255).
+      *                       VENDIDO_POR
+           10 DCLPROD-VENDIDO-POR  PIC X(20).
+      *                       DATA_CADASTRO
+           10 DCLPROD-DATA-CADASTRO
+              PIC X(10).
+      *                       QUANTIDADE_ESTOQUE
+           10 DCLPROD-QUANTIDADE-ESTOQUE
+              PIC S9(9) USAGE COMP.
+      *                       VALOR_UNITARIO
+           10 DCLPROD-VALOR-UNITARIO
+              PIC S9(5)V9(2) USAGE COMP-3.
+      ******************************************************************
+      * THE NUMBER OF COLUMNS DESCRIBED BY THIS DECLARATION IS 7       *
+      ******************************************************************
+
