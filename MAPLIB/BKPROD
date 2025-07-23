@@ -11,7 +11,7 @@
       ******************************************************************
            EXEC SQL DECLARE PRODUTOS TABLE
            ( ID_PRODUTO                     INTEGER NOT NULL,
-             NOME_PRODUTO                   CHAR(25) NOT NULL,
+             NOME_PRODUTO                   VARCHAR(25) NOT NULL,
              DESCRICAO                      CHAR(255) NOT NULL,
              VENDIDO_POR                    CHAR(20) NOT NULL,
              DATA_CADASTRO                  DATE NOT NULL,
@@ -24,9 +24,13 @@
        01  DCL-PRODUTOS.
       *                       ID_PRODUTO
            10 DCLPROD-ID-PRODUTO   PIC S9(9) USAGE COMP.
+           10 DCLPROD-NOME-PRODUTO.
+      *                       NOME_PRODUTO LENGTH
+              49 DCLPROD-NOME-PRODUTO-LEN
+                 PIC S9(4) USAGE COMP.
       *                       NOME_PRODUTO
-           10 DCLPROD-NOME-PRODUTO
-              PIC X(25).
+              49 DCLPROD-NOME-PRODUTO-TEXT
+                 PIC X(25).
       *                       DESCRICAO
            10 DCLPROD-DESCRICAO    PIC X(255).
       *                       VENDIDO_POR

@@ -49,7 +49,7 @@
            05 WS-PAGA                      PIC 9(2).
            05 WS-PAGT                      PIC 9(2).
       *    05 WS-MSG                       PIC X(60).
-       
+
        01  WS-DFHCOMMAREA-AUX.
            05 WS-FASE-COMMAREA             PIC X(01).
            05 WS-ID-PROD-COMMAREA          PIC X(04).
@@ -59,7 +59,7 @@
            05 FILLER                       PIC X(6)
                                                    VALUE SPACES.
            05 LD-PRODUTO                   PIC X(25).
-           05 FILLER                       PIC X(4)        
+           05 FILLER                       PIC X(4)
                                                    VALUE SPACES.
            05 LD-VENDIDO                   PIC X(20).
            05 FILLER                       PIC X(5)
@@ -67,16 +67,20 @@
            05 LD-VALOR                     PIC ZZ.ZZ9,99.
            05 FILLER                       PIC X(9)
                                                    VALUE SPACES.
+       01  WS-TEXTO-LEN                    PIC 9(3).
 
-       01  WS-REG-PRODUTOS.
-      *     05 WS-ID-PRODUTO                PIC 9(09).
-           05 WS-NOME-PRODUTO              PIC X(20).
-           05 WS-DESCRICAO                 PIC X(60).
-           05 WS-VENDIDO-POR               PIC X(05).
-           05 WS-VALOR-UNITARIO            PIC 9(5)V99.
-       
-      * 77  WS-ID-PROD-AUX                  PIC 9(9).
-       77  WS-FILE-NAME                    PIC X(8)                     
+       77  WS-TEXTO-FINAL                  PIC X(15).
+
+       77  WS-NOME-PRODUTO                  PIC X(14).
+
+       77  WS-VENDP-BUSCA                  PIC X(14).
+
+       77  WS-MAX-BUSCA                    PIC 9(5)V99
+                                                   VALUE 99999,99.
+       77  WS-MIN-BUSCA                    PIC 9(5)V99
+                                                   VALUE 0.
+
+       77  WS-FILE-NAME                    PIC X(8)
                                                    VALUE 'PRODUTOS'.
        77  WS-QUEUE-NAME                   PIC X(8)
                                                    VALUE 'TS04TPRL'.
@@ -84,12 +88,9 @@
        77  WS-RESP                         PIC S9(08) COMP.
        77  WS-RESTO                        PIC 9(01).
        77  WS-INDEX                        PIC 9(02).
-
        01  WS-ENDFILE-AUX                  PIC X(01).
            88 ENDFILE-YES                          VALUE 'S'.
            88 ENDFILE-NO                           VALUE 'N'.
-
-           
 
       *MAPA REFERENTE A TELA DE CADASTRO
            COPY T04MPRL.
@@ -150,6 +151,66 @@
        100-FASE1.
            MOVE LOW-VALUES                 TO MAPPRLO
            MOVE -1                         TO T1PRODFL
+           MOVE 'A%'                       TO WS-NOME-PRODUTO
+           INSPECT WS-NOME-PRODUTO
+           TALLYING WS-TEXTO-LEN FOR ALL SPACES
+
+           COMPUTE WS-TEXTO-LEN =
+           LENGTH OF WS-NOME-PRODUTO - WS-TEXTO-LEN
+
+           MOVE WS-TEXTO-LEN           TO DCLPROD-NOME-PRODUTO-LEN
+
+           STRING WS-NOME-PRODUTO(1:WS-TEXTO-LEN) DELIMITED BY SPACES
+           '%' DELIMITED BY SIZE
+           INTO DCLPROD-NOME-PRODUTO-TEXT
+
+
+ GAB       EXEC SQL
+           DECLARE C1 CURSOR FOR
+               SELECT ID_PRODUTO,
+                      NOME_PRODUTO,
+                      DESCRICAO,
+                      VENDIDO_POR,
+                      VALOR_UNITARIO
+                 FROM PRODUTOS
+               WHERE NOME_PRODUTO LIKE :DCLPROD-NOME-PRODUTO
+      *                VALOR_UNITARIO >= :DCLPROD-VALOR-UNITARIO
+                ORDER BY NOME_PRODUTO
+           END-EXEC
+
+           EXEC CICS DELETEQ TS
+              QUEUE(WS-QUEUE-NAME)
+              RESP(SQLCODE)
+           END-EXEC
+
+           EXEC SQL
+           OPEN C1
+           END-EXEC
+
+           IF SQLCODE NOT EQUAL 0
+              MOVE +80                    TO WS-LENGTH
+              MOVE 'ERRO AO ABRIR CURSOR C1'
+                                           TO WS-MSG-ERRO
+              PERFORM 999-ENCERRA-TRANSACAO
+           END-IF
+
+           MOVE ZERO                       TO WS-ITEM
+           SET ENDFILE-NO TO TRUE
+           PERFORM 999-CARREGA-TS UNTIL ENDFILE-YES
+
+           EXEC SQL
+              CLOSE C1
+           END-EXEC
+
+           MOVE 1                         TO WS-PAGA
+
+           DIVIDE WS-ITEM BY 10 GIVING WS-PAGT REMAINDER WS-RESTO
+
+           IF WS-RESTO > 0
+              ADD 1 TO WS-PAGT
+           END-IF
+
+           PERFORM 999-CARREGA-DETALHES
            PERFORM 999-MANDA-TELA
            PERFORM 999-CHAMA-FASE2
            .
@@ -172,27 +233,26 @@
               INTO  (MAPPRLI)
            END-EXEC
            .
-       
+
        210-ENTER.
-      *     IF T3PRDL EQUAL 0 OR T3PRDI EQUAL SPACES
-      *        MOVE 'PRODUTO NAO INFORMADO. TENTE NOVAMENTE.'
-      *                                     TO T3MSGO
-      *        PERFORM 999-TRATA-FASE2
-      *     END-IF
+           IF T1PRODFL EQUAL 0 OR T1PRODFI EQUAL SPACES
+              PERFORM 230-PF5
+              PERFORM 999-CARREGA-DETALHES
+              PERFORM 999-TRATA-FASE2
+           END-IF
+           MOVE T1PRODFI                   TO WS-NOME-PRODUTO
+           MOVE 0                          TO WS-TEXTO-LEN
+           INSPECT WS-NOME-PRODUTO
+           TALLYING WS-TEXTO-LEN FOR ALL SPACES
 
-      *     MOVE T1PRODFI                     TO DCLPROD-NOME-PRODUTO
+           COMPUTE WS-TEXTO-LEN =
+           LENGTH OF WS-NOME-PRODUTO - WS-TEXTO-LEN
 
-           EXEC SQL
-           DECLARE C1 CURSOR FOR
-               SELECT ID_PRODUTO, 
-                      NOME_PRODUTO,
-                      DESCRICAO, 
-                      VENDIDO_POR, 
-                      VALOR_UNITARIO 
-                 FROM PRODUTOS
-      *           WHERE NOME_PRODUTO = :DCLPROD-NOME-PRODUTO
-                ORDER BY NOME_PRODUTO
-           END-EXEC
+           MOVE WS-TEXTO-LEN           TO DCLPROD-NOME-PRODUTO-LEN
+
+           STRING WS-NOME-PRODUTO(1:WS-TEXTO-LEN) DELIMITED BY SPACES
+           '%' DELIMITED BY SIZE
+           INTO DCLPROD-NOME-PRODUTO-TEXT
 
            EXEC CICS DELETEQ TS
               QUEUE(WS-QUEUE-NAME)
@@ -239,7 +299,7 @@
                 LENGTH(LENGTH OF WS-DFHCOMMAREA)
             END-EXEC
             .
-       
+
        230-PF5.
            PERFORM 999-CHAMA-FASE1
            .
@@ -259,7 +319,7 @@
             END-IF
 
             PERFORM 999-TRATA-FASE2
-            .       
+            .
 
        260-PF8.
       *      IF T3PRDL EQUAL 0 OR T3PRDI EQUAL SPACES
@@ -282,7 +342,7 @@
            PERFORM 999-VALIDA-POSICAO
 
            EXEC SQL
-               SELECT DESCRICAO 
+               SELECT DESCRICAO
                INTO :DCLPROD-DESCRICAO
                FROM PRODUTOS
                WHERE ID_PRODUTO = :DCLPROD-ID-PRODUTO
@@ -296,8 +356,6 @@
       *         COMMAREA(WS-DFHCOMMAREA-AUX)
       *         LENGTH(LENGTH OF WS-DFHCOMMAREA-AUX)
       *     END-EXEC
-
-           .
 
        240-PF12.
            MOVE '1'                       TO WS-FASE
@@ -385,7 +443,7 @@
 
        999-CARREGA-TS.
            EXEC SQL
-           FETCH C1 INTO 
+           FETCH C1 INTO
                         :DCLPROD-ID-PRODUTO,
                         :DCLPROD-NOME-PRODUTO,
                         :DCLPROD-DESCRICAO,
@@ -396,7 +454,7 @@
            EVALUATE SQLCODE
               WHEN 0
                  ADD 1 TO WS-ITEM
-                 MOVE DCLPROD-NOME-PRODUTO      TO LD-PRODUTO
+                 MOVE DCLPROD-NOME-PRODUTO-TEXT TO LD-PRODUTO
                  MOVE DCLPROD-VENDIDO-POR       TO LD-VENDIDO
                  MOVE DCLPROD-VALOR-UNITARIO    TO LD-VALOR
 
@@ -445,7 +503,7 @@
               ADD 1 TO WS-ITEM
            END-PERFORM
            .
-       
+
        999-VALIDA-POSICAO.
            IF EIBCPOSN <= 719 OR EIBCPOSN >= 1520
               MOVE 'POSICAO INVALIDA DO CURSOR'
