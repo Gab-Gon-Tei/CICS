@@ -1,0 +1,515 @@
+      *----------------------------------------------------------------*
+       IDENTIFICATION                      DIVISION.
+      *----------------------------------------------------------------*
+       PROGRAM-ID.                         T01PPRL.
+       AUTHOR.                             ABNER.
+      *----------------------------------------------------------------*
+       ENVIRONMENT                         DIVISION.
+      *----------------------------------------------------------------*
+       CONFIGURATION                       SECTION.
+       SPECIAL-NAMES.
+           DECIMAL-POINT IS COMMA.
+      *----------------------------------------------------------------*
+       DATA                                DIVISION.
+      *----------------------------------------------------------------*
+       WORKING-STORAGE                     SECTION.
+      *----------------------------------------------------------------*
+       77  WS-MSG-ERRO                     PIC X(80).
+       77  WS-LENGTH                       PIC S9(04) COMP.
+       77  WS-CURSOR                       PIC X(04).
+       77  WS-SQLCODE                      PIC +9(9).
+       77  WS-ALL-SPACES                   PIC X(15) VALUE SPACES.
+       77  WS-FILTRO                       PIC X(15).
+       77  WS-TRIM                         PIC 9(02).
+      *77  WS-VALOR-DE                     PIC S9(5)V9(2) USAGE COMP.
+      *77  WS-VALOR-ATE                    PIC S9(5)V9(2) USAGE COMP.
+
+       01  WS-DFHCOMMAREA.
+           05 WS-FASE                      PIC X(01).
+           05 WS-PAGA                      PIC 9(02).
+           05 WS-PAGT                      PIC 9(02).
+
+       01  WS-DATA-FORMATADA.
+           05 WS-DIA                       PIC X(02).
+           05 FILLER                       PIC X(01) VALUE '.'.
+           05 WS-MES                       PIC X(02).
+           05 FILLER                       PIC X(01) VALUE '.'.
+           05 WS-ANO                       PIC X(04).
+
+       01  WS-HORA-FORMATADA.
+           05 WS-HOR                       PIC X(02).
+           05 FILLER                       PIC X(01) VALUE ':'.
+           05 WS-MIN                       PIC X(02).
+           05 FILLER                       PIC X(01) VALUE ':'.
+           05 WS-SEG                       PIC X(02).
+
+       01  WS-VAR-TEMPO.
+           05 WS-DATA                      PIC X(10).
+           05 WS-HORARIO                   PIC X(08).
+      *
+       77  WS-QUEUE-NAME                   PIC X(08)
+                                                   VALUE 'TS01PPRL'.
+       01  LD-LINDET.
+           05 FILLER                       PIC X(05)
+                                                   VALUE SPACES.
+           05 LD-NOME-PRODUTO              PIC X(24).
+           05 FILLER                       PIC X(05)
+                                                   VALUE SPACES.
+           05 LD-VENDIDO-POR               PIC X(20).
+           05 FILLER                       PIC X(05)
+                                                   VALUE SPACES.
+           05 FILLER                       PIC X(01)
+                                                   VALUE '$'.
+           05 LD-VALOR                     PIC Z.ZZZ.ZZ9,99.
+           05 FILLER                       PIC X(07)
+                                                   VALUE SPACES.
+       77  WS-ITEM                         PIC S9(04) COMP.
+       77  WS-RESP                         PIC S9(08) COMP.
+       77  WS-RESTO                        PIC 9(01).
+       77  WS-INDEX                        PIC 9(02).
+
+       01  WS-ENDFILE-AUX                  PIC X(01).
+           88 ENDFILE-YES                          VALUE 'S'.
+           88 ENDFILE-NO                           VALUE 'N'.
+
+       77  WS-DESCPROD-AUX                  PIC X(24).
+       01  WS-DFHCOMMAREA-AUX.
+           05 WS-FASE-COMMAREA             PIC X(01).
+           05 WS-IDPROD-COMMAREA           PIC X(04).
+
+           COPY T01MPRL.
+           COPY DFHAID.
+           COPY DFHBMSCA.
+      *
+           EXEC SQL
+              INCLUDE DCLPRO
+           END-EXEC.
+      *
+           EXEC SQL
+              INCLUDE SQLCA
+           END-EXEC.
+      *----------------------------------------------------------------*
+       LINKAGE                             SECTION.
+      *----------------------------------------------------------------*
+       01  DFHCOMMAREA.
+           05 OCCURS 0 TO 24576 TIMES DEPENDING ON EIBCALEN
+                                           PIC X(01).
+      *----------------------------------------------------------------*
+       PROCEDURE                           DIVISION.
+      *----------------------------------------------------------------*
+           EXEC CICS HANDLE CONDITION
+              NOTFND(999-ERRO-GENERICO)
+              MAPFAIL(999-MAPFAIL)
+              ERROR(999-ERRO-GENERICO)
+           END-EXEC
+      ******************************************************************
+      *         SELETOR DE FASE - O MENU PRINCIPAL POSSUI 2 FASES
+      *         FASE 1 - ENVIA O MAPA PARA O TERMINAL
+      *         FASE 2 - TRATA O CAMPO T2COD
+      *         FASE 3 - TRATA O CAMPO T2CONF
+      ******************************************************************
+           MOVE DFHCOMMAREA                TO WS-DFHCOMMAREA
+      *
+           EVALUATE WS-FASE
+              WHEN '1' PERFORM 100-FASE1
+              WHEN '2' PERFORM 200-FASE2
+              WHEN OTHER
+                   MOVE +80                TO WS-LENGTH
+                   MOVE 'ERRO NO NUMERO DA FASE'
+                                           TO T3MSGO
+
+                   PERFORM 999-ENCERRA-TRANSACAO
+           END-EVALUATE
+           .
+
+       100-FASE1.
+           MOVE LOW-VALUES                  TO MAPAPRLO
+           MOVE -1                          TO T3FPRODL
+           MOVE 'DIGITE O FILTRO DESEJADO!'
+                                           TO T3MSGO
+           PERFORM 210-ENTER
+           PERFORM 999-TRATA-FASE2
+           .
+
+       200-FASE2.
+           EXEC CICS HANDLE AID
+              ENTER   (210-ENTER)
+              PF1     (220-PF1)
+              PF7     (230-PF7)
+              PF8     (240-PF8)
+              PF10    (250-PF10)
+              PF11    (260-PF11)
+              PF12    (270-PF12)
+              ANYKEY  (280-ANYKEY)
+           END-EXEC
+      *
+           EXEC CICS RECEIVE
+                MAP     ('MAPAPRL')
+                MAPSET  ('T11MPRL')
+                INTO    (MAPAPRLI)
+           END-EXEC
+           .
+
+       210-ENTER.
+           PERFORM 999-VALIDA-CAMPOS
+
+           EXEC SQL
+              DECLARE C1 CURSOR FOR
+              SELECT ID_PRODUTO, NOME_PRODUTO,VENDIDO_POR,
+                 VALOR_UNITARIO
+              FROM PRODUTOS
+              WHERE (:WS-FILTRO   =     :WS-ALL-SPACES OR
+                     NOME_PRODUTO LIKE  :WS-FILTRO)
+      *             (VALOR_UNITARIO >= :WS-VALOR-DE AND
+      *              VALOR_UNITARIO <= :WS-VALOR-ATE)
+              ORDER BY NOME_PRODUTO
+           END-EXEC
+
+           EXEC SQL
+              OPEN C1
+           END-EXEC
+
+           IF SQLCODE NOT EQUAL 0
+              MOVE "ERRO AO ABRIR  CURSOR" TO WS-MSG-ERRO
+              PERFORM 999-ENCERRA-TRANSACAO
+           END-IF
+
+           EXEC CICS DELETEQ TS
+              QUEUE(WS-QUEUE-NAME)
+              RESP(WS-RESP)
+           END-EXEC
+
+           MOVE ZERO                       TO WS-ITEM
+           SET ENDFILE-NO TO TRUE
+           PERFORM 999-CARREGA-TS UNTIL ENDFILE-YES
+
+           EXEC SQL
+               CLOSE C1
+           END-EXEC
+
+           IF SQLCODE NOT EQUAL 0
+              MOVE "ERRO AO FECHAR CURSOR" TO WS-MSG-ERRO
+              PERFORM 999-ENCERRA-TRANSACAO
+           END-IF
+
+           MOVE 1                          TO WS-PAGA
+
+           DIVIDE WS-ITEM BY 10 GIVING WS-PAGT REMAINDER WS-RESTO
+
+           IF WS-RESTO > 0
+              ADD 1 TO WS-PAGT
+           END-IF
+
+           PERFORM 999-CARREGA-DETALHES
+
+           MOVE WS-FILTRO                  TO T3MSGO
+
+           IF WS-FASE = '2'
+             PERFORM 999-TRATA-FASE2
+           END-IF
+           .
+
+       220-PF1.
+           MOVE '1'                        TO WS-FASE
+      *    PERFORM 999-VALIDA-POSICAO
+      *    MOVE DCLPROD-ID-PRODUTO  TO WS-FASE-COMMAREA
+      *    MOVE 'P'               TO WS-IDPROD-COMMAREA
+      *    EXEC CICS RETURN
+      *         TRANSID('FT6D')
+      *         COMMAREA(WS-DFHCOMMAREA-AUX)
+      *         LENGTH(LENGTH OF WS-DFHCOMMAREA-AUX)
+      *    END-EXEC
+           .
+
+       230-PF7.
+      *
+           IF WS-PAGA = 1
+              MOVE 'VOCE JA ESTA NA PRIMEIRA PAGINA'
+                                          TO T3MSGO
+              PERFORM 999-CARREGA-DETALHES
+           ELSE
+              SUBTRACT 1 FROM WS-PAGA
+              PERFORM 999-CARREGA-DETALHES
+           END-IF
+
+           PERFORM 999-TRATA-FASE2
+           .
+      *
+       240-PF8.
+      *
+           IF WS-PAGA   = WS-PAGT
+              MOVE 'VOCE JA ESTA NA ULTIMA PAGINA'
+                                          TO T3MSGO
+              PERFORM 999-CARREGA-DETALHES
+           ELSE
+              ADD 1 TO WS-PAGA
+              PERFORM 999-CARREGA-DETALHES
+           END-IF
+
+           PERFORM 999-TRATA-FASE2
+           .
+
+       250-PF10.
+           MOVE '1'                        TO WS-FASE
+      *
+           EXEC CICS XCTL
+               PROGRAM('T11PLOG')
+               COMMAREA(WS-DFHCOMMAREA)
+               LENGTH(LENGTH OF WS-DFHCOMMAREA)
+           END-EXEC
+      *
+           .
+
+       260-PF11.
+           MOVE '1'                        TO WS-FASE
+      *
+           EXEC CICS XCTL
+               PROGRAM('T01PLOG')
+               COMMAREA(WS-DFHCOMMAREA)
+               LENGTH(LENGTH OF WS-DFHCOMMAREA)
+           END-EXEC
+      *
+           .
+
+       270-PF12.
+           MOVE '1'                        TO WS-FASE
+      *
+           EXEC CICS XCTL
+               PROGRAM('T01PLOG')
+               COMMAREA(WS-DFHCOMMAREA)
+               LENGTH(LENGTH OF WS-DFHCOMMAREA)
+           END-EXEC
+      *
+           .
+
+      *
+       280-ANYKEY.
+           MOVE 'TECLA PRESSIONADA INVALIDA'
+                                           TO T3MSGO
+           PERFORM 999-TRATA-FASE2
+           .
+
+       999-VALIDA-CAMPOS.
+           MOVE 0                              TO WS-TRIM
+           IF T3FPRODL <= 0
+              MOVE SPACES                      TO WS-FILTRO
+
+           ELSE
+              MOVE T3FPRODI                    TO WS-DESCPROD-AUX
+
+              PERFORM VARYING WS-TRIM FROM LENGTH OF WS-DESCPROD-AUX
+                 BY -1 UNTIL WS-TRIM = 0 OR WS-DESCPROD-AUX(WS-TRIM:1)
+                 NOT = SPACES
+              END-PERFORM
+
+              IF WS-TRIM = 0
+                 MOVE SPACES                     TO WS-FILTRO
+              ELSE
+                 MOVE '%'                        TO WS-FILTRO
+                 ADD 1                           TO WS-TRIM
+                 MOVE WS-DESCPROD-AUX            TO WS-FILTRO(2:WS-TRIM)
+                 ADD 1                           TO WS-TRIM
+                 MOVE '%'                        TO WS-FILTRO(WS-TRIM:1)
+      *          STRING '%' DELIMITED BY SIZE
+      *                 NOME-PRODUTO-TEXT DELIMITED BY SIZE
+      *                 '%' DELIMITED BY SIZE
+      *                 INTO WS-FILTRO
+      *          ADD 2                            TO NOME-PRODUTO-LEN
+              END-IF
+           END-IF
+
+      *    IF T3FVALDL <= 0
+      *       MOVE ZEROS                       TO WS-VALOR-DE
+      *    ELSE
+      *       IF T3FVALDI IS NUMERIC
+      *          MOVE T3FVALDI                 TO WS-VALOR-DE
+      *       ELSE
+      *          MOVE 'VALOR DE INVALIDO!'     TO T3MSGO
+      *          PERFORM 999-TRATA-FASE2
+      *       END-IF
+      *    END-IF
+      *
+      *    IF T3FVALAL <= 0
+      *       MOVE 9999999                     TO WS-VALOR-ATE
+      *    ELSE
+      *       IF T3FVALAI IS NUMERIC
+      *          MOVE T3FVALAI                 TO WS-VALOR-ATE
+      *       ELSE
+      *          MOVE 'VALOR DE INVALIDO!'     TO T3MSGO
+      *          MOVE -1                       TO T3FVALAL
+      *          PERFORM 999-TRATA-FASE2
+      *       END-IF
+      *    END-IF
+           .
+
+       999-ENCERRA-TRANSACAO.
+           MOVE +80                TO WS-LENGTH
+           EXEC CICS SEND TEXT
+               FROM (WS-MSG-ERRO)
+               LENGTH(WS-LENGTH)
+               ERASE FREEKB ALARM
+           END-EXEC
+      *
+           EXEC CICS RETURN
+           END-EXEC
+           .
+
+       999-MANDA-TELA.
+           MOVE EIBTRMID                    TO T3TERO
+           MOVE EIBTRNID                    TO T3TRAO
+           MOVE EIBTASKN                    TO T3TASO
+           MOVE WS-FASE                     TO T3FASO
+      *
+      *
+           EXEC CICS LINK
+              PROGRAM('AUXCICS1')
+              COMMAREA(WS-VAR-TEMPO)
+              LENGTH(+15)
+           END-EXEC
+
+           MOVE WS-DATA                    TO WS-DATA-FORMATADA
+           MOVE WS-HORARIO                 TO WS-HORA-FORMATADA
+           MOVE WS-DIA                     TO T3DIAO
+           MOVE WS-MES                     TO T3MESO
+           MOVE WS-ANO                     TO T3ANOO
+           MOVE WS-HOR                     TO T3HORO
+           MOVE WS-MIN                     TO T3MINO
+      *
+           EXEC CICS SEND
+              MAP      ('MAPAPRL')
+              MAPSET   ('T01MPRL')
+              FROM     (MAPAPRLO)
+              ERASE  FREEKB ALARM CURSOR
+           END-EXEC
+           .
+
+       999-CHAMA-FASE1.
+           MOVE '1'                        TO WS-FASE
+      *
+           EXEC CICS XCTL
+               PROGRAM('T01PPRL')
+               COMMAREA(WS-DFHCOMMAREA)
+               LENGTH(LENGTH OF WS-DFHCOMMAREA)
+           END-EXEC
+      *
+           .
+
+       999-CHAMA-FASE2.
+           MOVE '2'                        TO WS-FASE
+      *
+           EXEC CICS RETURN
+               TRANSID('FT1C')
+               COMMAREA(WS-DFHCOMMAREA)
+               LENGTH (LENGTH OF WS-DFHCOMMAREA)
+           END-EXEC
+           .
+
+       999-TRATA-FASE2.
+           MOVE WS-PAGA                    TO T3PAGAO
+           MOVE WS-PAGT                    TO T3PAGTO
+           PERFORM 999-MANDA-TELA
+           PERFORM 999-CHAMA-FASE2
+           .
+
+       999-MAPFAIL.
+           MOVE 'ERRO MAPA T01MPRL'       TO WS-MSG-ERRO
+           PERFORM 999-ENCERRA-TRANSACAO
+           .
+
+       999-ERRO-GENERICO.
+           MOVE SQLCODE TO WS-SQLCODE
+           STRING 'ERRO GENERICO T01PPRL'
+      *           'SQLCODE: ' WS-SQLCODE
+      *           DELIMITED BY SIZE
+                  'NOME-PRODUTO: ' WS-FILTRO
+                  DELIMITED BY SIZE INTO WS-MSG-ERRO
+
+           PERFORM 999-ENCERRA-TRANSACAO
+           .
+
+       999-CARREGA-TS.
+           EXEC SQL
+              FETCH C1
+              INTO  :ID-PRODUTO
+                   ,:NOME-PRODUTO
+                   ,:VENDIDO-POR
+                   ,:VALOR-UNITARIO
+           END-EXEC
+
+
+           EVALUATE SQLCODE
+              WHEN 0
+                 ADD 1 TO WS-ITEM
+                 MOVE NOME-PRODUTO-TEXT    TO LD-NOME-PRODUTO
+                 MOVE VENDIDO-POR-TEXT     TO LD-VENDIDO-POR
+                 MOVE VALOR-UNITARIO       TO LD-VALOR
+
+                 EXEC CICS WRITEQ TS
+                    QUEUE(WS-QUEUE-NAME)
+                    FROM(LD-LINDET)
+                    ITEM(WS-ITEM)
+                    RESP(WS-RESP)
+                 END-EXEC
+
+                 IF WS-RESP NOT = DFHRESP(NORMAL)
+                    PERFORM 999-ERRO-GENERICO
+                 END-IF
+
+              WHEN 100
+                 SET ENDFILE-YES TO TRUE
+              WHEN OTHER
+                 PERFORM 999-ERRO-GENERICO
+           END-EVALUATE
+           .
+
+       999-CARREGA-DETALHES.
+           COMPUTE WS-ITEM = (WS-PAGA - 1) * 10 + 1
+           MOVE 0                          TO WS-INDEX
+
+           PERFORM WITH TEST AFTER UNTIL WS-INDEX = 10
+              EXEC CICS READQ TS
+                 QUEUE (WS-QUEUE-NAME)
+                 INTO  (LD-LINDET)
+                 ITEM  (WS-ITEM)
+                 RESP  (WS-RESP)
+              END-EXEC
+
+              IF WS-RESP = DFHRESP(NORMAL)
+                 ADD 1 TO WS-INDEX
+                 MOVE LD-LINDET            TO T3LISTO(WS-INDEX)
+              ELSE
+                 IF WS-RESP = DFHRESP(ITEMERR)
+                    PERFORM WITH TEST AFTER UNTIL WS-INDEX = 10
+                       ADD 1 TO WS-INDEX
+                       MOVE SPACES         TO T3LISTO(WS-INDEX)
+                    END-PERFORM
+                 ELSE
+                    PERFORM 999-ERRO-GENERICO
+                 END-IF
+              END-IF
+              ADD 1 TO WS-ITEM
+           END-PERFORM
+           .
+
+      *999-VALIDA-POSICAO.
+      *    IF EIBCPOSN <= 719 OR EIBCPOSN >= 1520
+      *       MOVE 'POSICAO INVALIDA DO CURSOR'
+      *                                   TO T3MSGO
+      *       PERFORM 999-TRATA-FASE2
+      *    END-IF
+      *
+      *    COMPUTE WS-INDEX = EIBCPOSN / 80 + 1 - 9
+      *    MOVE T3LISTI(WS-INDEX)        TO LD-LINDET
+      *
+      *    IF NOME-PRODUTO EQUAL SPACES
+      *       MOVE 'POSICAO NAO CONTEM PRODUTO'
+      *                                  TO T3MSGO
+      *       PERFORM 999-TRATA-FASE2
+      *    END-IF
+      *    STRING 'PRODUTO'               DELIMITED BY SIZE
+      *            NOME-PRODUTO   DELIMITED BY SIZE
+      *            'SELECIONADO PARA CONSULTA' DELIMITED BY SIZE
+      *       INTO T3MSGO
+      *    PERFORM 999-TRATA-FASE2
+      *    .
+

@@ -156,7 +156,7 @@
        100-FASE1.
            MOVE LOW-VALUES                 TO MAPPRLO
            MOVE -1                         TO T1PRODFL
-           
+
            PERFORM 210-ENTER
 
            PERFORM 999-CARREGA-DETALHES
@@ -184,34 +184,24 @@
            .
 
        210-ENTER.
-           EVALUATE TRUE 
+           EVALUATE TRUE
            WHEN WS-FASE = '1'
              MOVE 'I%'                    TO DCLPROD-NOME-PRODUTO-TEXT
-             MOVE +2                      TO DCLPROD-NOME-PRODUTO-LEN  
+             MOVE +2                      TO DCLPROD-NOME-PRODUTO-LEN
            WHEN T1PRODFL EQUAL 0 OR T1PRODFI EQUAL SPACES
              MOVE '%'                     TO DCLPROD-NOME-PRODUTO-TEXT
              MOVE +1                      TO DCLPROD-NOME-PRODUTO-LEN
       *        PERFORM 999-CARREGA-DETALHES
       *        PERFORM 999-TRATA-FASE2
-           WHEN T1FVALL EQUAL 0 OR T1FVALI EQUAL SPACES
-             MOVE 0                        TO WS-MIN-BUSCA
-           WHEN T1FVALL NOT EQUAL 0 OR T1FVALI NOT EQUAL SPACES
-             MOVE T1FVALI                  TO WS-MIN-BUSCA
-
-           WHEN T1FVALTL EQUAL 0 OR T1FVALTI EQUAL SPACES
-             MOVE 0                        TO WS-MAX-BUSCA
-           WHEN T1FVALTL NOT EQUAL 0 OR T1FVALTI NOT EQUAL SPACES
-             MOVE T1FVALTI                  TO WS-MAX-BUSCA
-
-           WHEN T1PRODFL NOT EQUAL 0 OR T1PRODFI NOT EQUAL SPACES
+           WHEN OTHER
              MOVE T1PRODFI                   TO WS-NOME-PRODUTO
              MOVE FUNCTION REVERSE(WS-NOME-PRODUTO) TO WS-OTUDORP-EMOM
              INSPECT WS-OTUDORP-EMOM REPLACING LEADING SPACES BY '%'
              MOVE FUNCTION REVERSE(WS-OTUDORP-EMOM) TO WS-NOME-PRODUTO
-             
+
              MOVE WS-NOME-PRODUTO         TO DCLPROD-NOME-PRODUTO-TEXT
              MOVE +25                     TO DCLPROD-NOME-PRODUTO-LEN
-             
+
            END-EVALUATE
 
            EXEC SQL
@@ -222,9 +212,8 @@
                       VENDIDO_POR,
                       VALOR_UNITARIO
                  FROM PRODUTOS
-                 WHERE NOME_PRODUTO LIKE :DCLPROD-NOME-PRODUTO AND
-                 VALOR_UNITARIO BETWEEN WS-MIN-BUSCA AND WS-MAX-BUSCA
-
+                 WHERE NOME_PRODUTO LIKE :DCLPROD-NOME-PRODUTO
+      *                VALOR_UNITARIO >= :DCLPROD-VALOR-UNITARIO
                 ORDER BY NOME_PRODUTO
            END-EXEC
 
@@ -449,12 +438,12 @@
                  IF WS-RESP NOT = DFHRESP(NORMAL)
                    PERFORM 999-ERROR
                  END-IF
-                 
+
               WHEN +100
                 IF WS-ITEM = 0
                    MOVE 'PRODUTO NAO ENCONTRADO'     TO T1MSGO
                    PERFORM 999-TRATA-FASE2
-                ELSE                 
+                ELSE
                    SET ENDFILE-YES TO TRUE
                 END-IF
               WHEN OTHER
@@ -519,17 +508,17 @@
            PERFORM 999-ENCERRA-TRANSACAO
            .
 
-       999-ERROR.                                             
-           MOVE EIBRESP TO WS-EIBRESP                         
-           MOVE SQLCODE TO WS-SQLCODE                         
-           MOVE +80 TO WS-LENGTH                              
-           STRING 'CODIGO DO ERRO '        DELIMITED BY SIZE  
+       999-ERROR.
+           MOVE EIBRESP TO WS-EIBRESP
+           MOVE SQLCODE TO WS-SQLCODE
+           MOVE +80 TO WS-LENGTH
+           STRING 'CODIGO DO ERRO '        DELIMITED BY SIZE
            WS-EIBRESP               DELIMITED BY SPACES
-           ' SQLCODE: '             DELIMITED BY SIZE  
-           WS-SQLCODE               DELIMITED BY SIZE  
-           'PRODUTO:  '             DELIMITED BY SIZE  
-           WS-NOME-PRODUTO          DELIMITED BY SIZE  
-           INTO WS-MSG-ERRO                               
-           PERFORM 999-ENCERRA-TRANSACAO                      
-           .     
+           ' SQLCODE: '             DELIMITED BY SIZE
+           WS-SQLCODE               DELIMITED BY SIZE
+           'PRODUTO:  '             DELIMITED BY SIZE
+           WS-NOME-PRODUTO          DELIMITED BY SIZE
+           INTO WS-MSG-ERRO
+           PERFORM 999-ENCERRA-TRANSACAO
+           .
 

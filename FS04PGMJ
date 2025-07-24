@@ -64,8 +64,6 @@
            05 WS-PERCOMIS                  PIC 9(02)V99.
 
        77  WS-CODPROD-AUX                  PIC X(04).
-       77  WS-FILE-NAME                    PIC X(08)
-                                                   VALUE 'VCADPRD '.
        77  WS-QUEUE-NAME                   PIC X(08)
                                                    VALUE 'TS12PGML'.
        77  WS-ITEM                         PIC S9(04) COMP.
@@ -139,52 +137,6 @@
 
            PERFORM 999-MANDA-TELA
            PERFORM 999-CHAMA-FASE2
-           EXEC SQL
-           DECLARE C1 CURSOR FOR
-               SELECT ID_PRODUTO, 
-                      NOME_PRODUTO,
-                      DESCRICAO, 
-                      VENDIDO_POR, 
-                      VALOR_UNITARIO 
-                 FROM PRODUTOS
-      *           WHERE NOME_PRODUTO = :DCLPROD-NOME-PRODUTO
-                ORDER BY NOME_PRODUTO
-           END-EXEC
-
-           EXEC CICS DELETEQ TS
-              QUEUE(WS-QUEUE-NAME)
-              RESP(SQLCODE)
-           END-EXEC
-
-           EXEC SQL
-           OPEN C1
-           END-EXEC
-
-           IF SQLCODE NOT EQUAL 0
-              MOVE +80                    TO WS-LENGTH
-              MOVE 'ERRO AO ABRIR CURSOR C1'
-                                           TO WS-MSG-ERRO
-              PERFORM 999-ENCERRA-TRANSACAO
-           END-IF
-
-           MOVE ZERO                       TO WS-ITEM
-           SET ENDFILE-NO TO TRUE
-           PERFORM 999-CARREGA-TS UNTIL ENDFILE-YES
-
-           EXEC SQL
-              CLOSE C1
-           END-EXEC
-
-           MOVE 1                         TO WS-PAGA
-
-           DIVIDE WS-ITEM BY 10 GIVING WS-PAGT REMAINDER WS-RESTO
-
-           IF WS-RESTO > 0
-              ADD 1 TO WS-PAGT
-           END-IF
-
-           PERFORM 999-CARREGA-DETALHES
-           PERFORM 999-TRATA-FASE2
            .
 
        200-FASE2.
@@ -219,12 +171,12 @@
 
            EXEC SQL
            DECLARE C1 CURSOR FOR
-               SELECT CODPROD, 
-                      DESCPROD, 
-                      QTDEST, 
-                      PRECOCOMPRA, 
+               SELECT CODPROD,
+                      DESCPROD,
+                      QTDEST,
+                      PRECOCOMPRA,
                       PRECOVENDA
-                 FROM VCADPRD
+                 FROM TBPRODUTO
                 WHERE CODPROD >= :WS-CODPROD-AUX
                 ORDER BY CODPROD
            END-EXEC
@@ -382,21 +334,21 @@
 
        999-CARREGA-TS.
            EXEC SQL
-           FETCH C1 INTO :WS-CODPROD,
-                        :WS-DESCPROD,
-                        :WS-QTDEST,
-                        :WS-PRECOCOMPRA,
-                        :WS-PRECOVENDA
+           FETCH C1 INTO :CODPROD,
+                        :DESCPROD,
+                        :QTDEST,
+                        :PRECOCOMPRA,
+                        :PRECOVENDA
            END-EXEC
 
            EVALUATE SQLCODE
               WHEN 0
                  ADD 1 TO WS-ITEM
-                 MOVE WS-CODPROD           TO LD-CODPROD
-                 MOVE WS-DESCPROD          TO LD-DESCPROD
-                 MOVE WS-QTDEST            TO LD-QTDEST
-                 MOVE WS-PRECOCOMPRA       TO LD-PRECOCOMPRA
-                 MOVE WS-PRECOVENDA        TO LD-PRECOVENDA
+                 MOVE CODPROD           TO LD-CODPROD
+                 MOVE DESCPROD          TO LD-DESCPROD
+                 MOVE QTDEST            TO LD-QTDEST
+                 MOVE PRECOCOMPRA       TO LD-PRECOCOMPRA
+                 MOVE PRECOVENDA        TO LD-PRECOVENDA
 
                  EXEC CICS WRITEQ TS
                     QUEUE(WS-QUEUE-NAME)
