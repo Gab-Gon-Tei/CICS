@@ -44,6 +44,7 @@
       *                       VALOR_UNITARIO
            10 DCLPROD-VALOR-UNITARIO
               PIC S9(5)V9(2) USAGE COMP-3.
+
       ******************************************************************
       * THE NUMBER OF COLUMNS DESCRIBED BY THIS DECLARATION IS 7       *
       ******************************************************************

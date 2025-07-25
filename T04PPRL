@@ -55,6 +55,9 @@
            05 WS-ID-PROD-COMMAREA          PIC X(04).
            05 WS-ID-CPF                    PIC X(11).
 
+       01  WS-MIN-BUSCA           PIC S9(5)V9(2) COMP-3.
+       01  WS-MAX-BUSCA           PIC S9(5)V9(2) COMP-3.
+
        01  WS-LINDET.
            05 FILLER                       PIC X(6)
                                                    VALUE SPACES.
@@ -74,15 +77,12 @@
        77  WS-NOME-PRODUTO                  PIC X(25).
        77  WS-OTUDORP-EMOM                 PIC X(25).
 
-       77  WS-VENDP-BUSCA                  PIC X(14).
+
+       77  WS-VENDP-BUSCA                  PIC X(20).
+       77  WS-ACSUB-PDNEV                  PIC X(20).
+
        77  WS-EIBRESP                      PIC X(30).
        77  WS-SQLCODE                      PIC +9(9).
-
-
-       77  WS-MAX-BUSCA                    PIC 9(5)V99
-                                                   VALUE 99999,99.
-       77  WS-MIN-BUSCA                    PIC 9(5)V99
-                                                   VALUE 0.
 
        77  WS-FILE-NAME                    PIC X(8)
                                                    VALUE 'PRODUTOS'.
@@ -133,11 +133,11 @@
       *
 
            IF EIBCALEN EQUAL 0
-      *        MOVE +80                     TO WS-LENGTH
-      *        MOVE 'FACA O LOGIN NO SISTEMA PELA TRANSACAO FT4A'
-      *                                     TO WS-MSG-ERRO
-      *           PERFORM 999-ENCERRA-TRANSACAO
-           MOVE '1'                     TO WS-FASE
+               MOVE +80                     TO WS-LENGTH
+               MOVE 'FACA O LOGIN NO SISTEMA PELA TRANSACAO FT4A'
+                                            TO WS-MSG-ERRO
+               PERFORM 999-ENCERRA-TRANSACAO
+      *    MOVE '1'                     TO WS-FASE
            END-IF
 
            MOVE DFHCOMMAREA                TO WS-DFHCOMMAREA
@@ -167,8 +167,7 @@
        200-FASE2.
            EXEC CICS HANDLE AID
               ENTER   (210-ENTER)
-              PF1     (215-PF1)
-              PF3     (220-PF3 )
+      *        PF10    (215-PF10)
               PF5     (230-PF5 )
               CLEAR   (230-PF5 )
               PF7     (250-PF7 )
@@ -184,34 +183,57 @@
            .
 
        210-ENTER.
-           EVALUATE TRUE 
-           WHEN WS-FASE = '1'
-             MOVE 'I%'                    TO DCLPROD-NOME-PRODUTO-TEXT
-             MOVE +2                      TO DCLPROD-NOME-PRODUTO-LEN  
-           WHEN T1PRODFL EQUAL 0 OR T1PRODFI EQUAL SPACES
+           IF T1FVALL NOT EQUAL 0 
+                EXEC CICS BIF DEEDIT FIELD(T1FVALI) END-EXEC
+           END-IF.
+           IF T1FVALTL NOT EQUAL 0 
+                EXEC CICS BIF DEEDIT FIELD(T1FVALTI) END-EXEC
+           END-IF.
+           
+           EVALUATE WS-FASE 
+           WHEN '1'
              MOVE '%'                     TO DCLPROD-NOME-PRODUTO-TEXT
-             MOVE +1                      TO DCLPROD-NOME-PRODUTO-LEN
-      *        PERFORM 999-CARREGA-DETALHES
-      *        PERFORM 999-TRATA-FASE2
-           WHEN T1FVALL EQUAL 0 OR T1FVALI EQUAL SPACES
+             MOVE +1                       TO DCLPROD-NOME-PRODUTO-LEN 
              MOVE 0                        TO WS-MIN-BUSCA
-           WHEN T1FVALL NOT EQUAL 0 OR T1FVALI NOT EQUAL SPACES
-             MOVE T1FVALI                  TO WS-MIN-BUSCA
-
-           WHEN T1FVALTL EQUAL 0 OR T1FVALTI EQUAL SPACES
-             MOVE 0                        TO WS-MAX-BUSCA
-           WHEN T1FVALTL NOT EQUAL 0 OR T1FVALTI NOT EQUAL SPACES
-             MOVE T1FVALTI                  TO WS-MAX-BUSCA
-
-           WHEN T1PRODFL NOT EQUAL 0 OR T1PRODFI NOT EQUAL SPACES
-             MOVE T1PRODFI                   TO WS-NOME-PRODUTO
-             MOVE FUNCTION REVERSE(WS-NOME-PRODUTO) TO WS-OTUDORP-EMOM
-             INSPECT WS-OTUDORP-EMOM REPLACING LEADING SPACES BY '%'
-             MOVE FUNCTION REVERSE(WS-OTUDORP-EMOM) TO WS-NOME-PRODUTO
+             MOVE 99999,99                 TO WS-MAX-BUSCA
+             MOVE ALL '%'                  TO DCLPROD-VENDIDO-POR
+           WHEN '2'
+             IF T1PRODFL EQUAL 0 OR T1PRODFI EQUAL SPACES
+                MOVE '%'                   TO DCLPROD-NOME-PRODUTO-TEXT
+                MOVE +1                    TO DCLPROD-NOME-PRODUTO-LEN
+             ELSE
+                MOVE T1PRODFI              TO WS-NOME-PRODUTO
+                MOVE FUNCTION REVERSE(WS-NOME-PRODUTO) 
+                                           TO WS-OTUDORP-EMOM
+                INSPECT WS-OTUDORP-EMOM REPLACING LEADING SPACES BY '%'
+                MOVE FUNCTION REVERSE(WS-OTUDORP-EMOM) 
+                                           TO WS-NOME-PRODUTO             
+                MOVE WS-NOME-PRODUTO       TO DCLPROD-NOME-PRODUTO-TEXT
+                MOVE +25                   TO DCLPROD-NOME-PRODUTO-LEN 
+             END-IF 
+             IF T1VENDFL EQUAL 0 OR T1VENDFI EQUAL SPACES
+                MOVE ALL '%'               TO DCLPROD-VENDIDO-POR
+             ELSE
+                MOVE T1VENDFI              TO WS-VENDP-BUSCA
+                MOVE FUNCTION REVERSE(WS-VENDP-BUSCA) 
+                                           TO WS-ACSUB-PDNEV
+                INSPECT WS-ACSUB-PDNEV REPLACING LEADING SPACES BY '%'
+                MOVE FUNCTION REVERSE(WS-ACSUB-PDNEV) 
+                                           TO WS-VENDP-BUSCA             
+                MOVE WS-VENDP-BUSCA       TO DCLPROD-VENDIDO-POR 
+             END-IF 
              
-             MOVE WS-NOME-PRODUTO         TO DCLPROD-NOME-PRODUTO-TEXT
-             MOVE +25                     TO DCLPROD-NOME-PRODUTO-LEN
-             
+             IF T1FVALL EQUAL 0 
+                MOVE 0                   TO WS-MIN-BUSCA
+             ELSE                    
+                MOVE T1FVALI             TO WS-MIN-BUSCA
+             END-IF
+
+             IF T1FVALTL EQUAL 0 
+                MOVE 99999,99                 TO WS-MAX-BUSCA
+             ELSE 
+                MOVE T1FVALTI                 TO WS-MAX-BUSCA
+             END-IF                         
            END-EVALUATE
 
            EXEC SQL
@@ -223,7 +245,8 @@
                       VALOR_UNITARIO
                  FROM PRODUTOS
                  WHERE NOME_PRODUTO LIKE :DCLPROD-NOME-PRODUTO AND
-                 VALOR_UNITARIO BETWEEN WS-MIN-BUSCA AND WS-MAX-BUSCA
+                 VALOR_UNITARIO BETWEEN :WS-MIN-BUSCA AND :WS-MAX-BUSCA
+                 AND VENDIDO_POR LIKE :DCLPROD-VENDIDO-POR
 
                 ORDER BY NOME_PRODUTO
            END-EXEC
@@ -271,16 +294,6 @@
            END-IF
            .
 
-       220-PF3.
-            MOVE '1'                        TO WS-FASE
-
-            EXEC CICS XCTL
-                PROGRAM('T04PLOG')
-                COMMAREA(WS-DFHCOMMAREA)
-                LENGTH(LENGTH OF WS-DFHCOMMAREA)
-            END-EXEC
-            .
-
        230-PF5.
            PERFORM 999-CHAMA-FASE1
            .
@@ -319,25 +332,12 @@
             PERFORM 999-TRATA-FASE2
             .
 
-       215-PF1.
+       215-PF10.
            PERFORM 999-VALIDA-POSICAO
+           
+           MOVE DCLPROD-DESCRICAO        TO T1MSGO
 
-           EXEC SQL
-               SELECT DESCRICAO
-               INTO :DCLPROD-DESCRICAO
-               FROM PRODUTOS
-               WHERE ID_PRODUTO = :DCLPROD-ID-PRODUTO
-           END-EXEC.
-
-      *     MOVE 'P'                        TO WS-FASE-COMMAREA
-      *     MOVE WS-ID-PRODUTO              TO WS-ID-PROD-COMMAREA
-
-      *     EXEC CICS XCTL
-      *         PROGRAM('FS04PGMF')
-      *         COMMAREA(WS-DFHCOMMAREA-AUX)
-      *         LENGTH(LENGTH OF WS-DFHCOMMAREA-AUX)
-      *     END-EXEC
-
+           .
        240-PF12.
            MOVE '1'                       TO WS-FASE
 
