@@ -48,12 +48,8 @@
            05 WS-ID-CPF                    PIC X(11).
            05 WS-PAGA                      PIC 9(2).
            05 WS-PAGT                      PIC 9(2).
+           05 WS-ID-PROD                   PIC 9(9) COMP.
       *    05 WS-MSG                       PIC X(60).
-
-       01  WS-DFHCOMMAREA-AUX.
-           05 WS-FASE-COMMAREA             PIC X(01).
-           05 WS-ID-PROD-COMMAREA          PIC X(04).
-           05 WS-ID-CPF                    PIC X(11).
 
        01  WS-MIN-BUSCA           PIC S9(5)V9(2) COMP-3.
        01  WS-MAX-BUSCA           PIC S9(5)V9(2) COMP-3.
@@ -74,12 +70,15 @@
 
        77  WS-TEXTO-FINAL                  PIC X(15).
 
-       77  WS-NOME-PRODUTO                  PIC X(25).
-       77  WS-OTUDORP-EMOM                 PIC X(25).
+       01  WS-BUSCA-PRODUTO.
+           05  FILLER                      PIC X(1) VALUE '%'.
+           05  WS-NOME-PRODUTO                  PIC X(24).
+           05  WS-OTUDORP-EMOM                 PIC X(24).
 
-
-       77  WS-VENDP-BUSCA                  PIC X(20).
-       77  WS-ACSUB-PDNEV                  PIC X(20).
+       01  WS-BUSCA-VENDEDOR.
+           05  FILLER                      PIC X(1) VALUE '%'.
+           05  WS-VENDP-BUSCA                  PIC X(19).
+           05  WS-ACSUB-PDNEV                  PIC X(19).
 
        77  WS-EIBRESP                      PIC X(30).
        77  WS-SQLCODE                      PIC +9(9).
@@ -194,7 +193,7 @@
            WHEN '1'
              MOVE '%'                     TO DCLPROD-NOME-PRODUTO-TEXT
              MOVE +1                       TO DCLPROD-NOME-PRODUTO-LEN 
-             MOVE 0                        TO WS-MIN-BUSCA
+             MOVE 0,00                     TO WS-MIN-BUSCA
              MOVE 99999,99                 TO WS-MAX-BUSCA
              MOVE ALL '%'                  TO DCLPROD-VENDIDO-POR
            WHEN '2'
@@ -208,7 +207,7 @@
                 INSPECT WS-OTUDORP-EMOM REPLACING LEADING SPACES BY '%'
                 MOVE FUNCTION REVERSE(WS-OTUDORP-EMOM) 
                                            TO WS-NOME-PRODUTO             
-                MOVE WS-NOME-PRODUTO       TO DCLPROD-NOME-PRODUTO-TEXT
+                MOVE WS-BUSCA-PRODUTO      TO DCLPROD-NOME-PRODUTO-TEXT
                 MOVE +25                   TO DCLPROD-NOME-PRODUTO-LEN 
              END-IF 
              IF T1VENDFL EQUAL 0 OR T1VENDFI EQUAL SPACES
@@ -220,7 +219,7 @@
                 INSPECT WS-ACSUB-PDNEV REPLACING LEADING SPACES BY '%'
                 MOVE FUNCTION REVERSE(WS-ACSUB-PDNEV) 
                                            TO WS-VENDP-BUSCA             
-                MOVE WS-VENDP-BUSCA       TO DCLPROD-VENDIDO-POR 
+                MOVE WS-BUSCA-VENDEDOR     TO DCLPROD-VENDIDO-POR 
              END-IF 
              
              IF T1FVALL EQUAL 0 
@@ -236,7 +235,7 @@
              END-IF                         
            END-EVALUATE
 
-           EXEC SQL
+           EXEC SQL         
            DECLARE C1 CURSOR FOR
                SELECT ID_PRODUTO,
                       NOME_PRODUTO,

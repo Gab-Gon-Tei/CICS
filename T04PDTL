@@ -1,0 +1,335 @@
+      *----------------------------------------------------------------*
+       IDENTIFICATION                      DIVISION.
+      *----------------------------------------------------------------*
+       PROGRAM-ID.                         T04PDTL.
+       AUTHOR.                             GABRIEL
+
+      *----------------------------------------------------------------*
+       ENVIRONMENT                         DIVISION.
+      *----------------------------------------------------------------*
+       CONFIGURATION                       SECTION.
+       SPECIAL-NAMES.
+           DECIMAL-POINT IS COMMA.
+
+      *----------------------------------------------------------------*
+       DATA                                DIVISION.
+      *----------------------------------------------------------------*
+       WORKING-STORAGE                     SECTION.
+      *----------------------------------------------------------------*
+       77  WS-MSG-ERRO                     PIC X(80).
+       77  WS-LENGTH                       PIC S9(04) COMP.
+       77  WS-CPF-ERRO                      PIC X(11).
+
+       01  WS-DATA.
+           05 WS-ANO                       PIC X(02).
+           05 WS-MES                       PIC X(02).
+           05 WS-DIA                       PIC X(02).
+
+       01  WS-HORARIO.
+           05 WS-HORA                      PIC X(02).
+           05 WS-MIN                       PIC X(02).
+           05 WS-SEG                       PIC X(02).
+
+       01  WS-DATA-F.
+           05 WS-DIA-F                     PIC X(02).
+           05 FILLER                       PIC X(01) VALUE '/'.
+           05 WS-MES-F                     PIC X(02).
+           05 FILLER                       PIC X(01) VALUE '/'.
+           05 WS-ANO-F                     PIC X(02).
+
+       01  WS-HORARIO-F.
+           05 WS-HORA-F                    PIC X(02).
+           05 FILLER                       PIC X(01) VALUE ':'.
+           05 WS-MIN-F                     PIC X(02).
+           05 FILLER                       PIC X(01) VALUE ':'.
+           05 WS-SEG-F                     PIC X(02).
+
+       01  WS-DFHCOMMAREA.
+           05 WS-FASE                      PIC X(01).
+           05 WS-ID-CPF                    PIC X(11).
+           05 WS-ID-PRODUTO                PIC 9(9) COMP.
+
+      *MAPA REFERENTE A TELA DE CADASTRO
+           COPY T04MDTL.
+      *COMANDO TECLAS PRESSIONADAS
+           COPY DFHAID.
+      *CARACTERES E ATRIBUTOS
+           COPY DFHBMSCA.
+      *BOOK DAS VARIAVEIS HOSPEDEIRAS
+           EXEC SQL
+           INCLUDE BKPROD
+           END-EXEC.
+      *BOOK DE VARIAVEIS DE USO DO SQL
+           EXEC SQL
+           INCLUDE SQLCA
+           END-EXEC.
+      *----------------------------------------------------------------*
+       LINKAGE                             SECTION.
+      *----------------------------------------------------------------*
+       01  DFHCOMMAREA.
+           05 OCCURS 0 TO 24579 TIMES DEPENDING ON EIBCALEN
+                                           PIC X(01).
+      *----------------------------------------------------------------*
+       PROCEDURE                           DIVISION.
+      *----------------------------------------------------------------*
+      *ROTINA DEFINIDA PARA LIDAR COM ERROS DE MAPA E GENERICOS--------*
+           EXEC CICS HANDLE CONDITION
+              MAPFAIL(999-MAPFAIL)
+              ERROR(999-ERROR)
+           END-EXEC
+
+           MOVE DFHCOMMAREA                TO WS-DFHCOMMAREA
+
+           IF EIBCALEN EQUAL 0
+              MOVE +80                     TO WS-LENGTH
+              MOVE 'FACA O LOGIN NO SISTEMA PELA TRANSACAO FT4A'
+                                           TO WS-MSG-ERRO
+                 PERFORM 999-ENCERRA-TRANSACAO
+           END-IF
+
+           EVALUATE WS-FASE
+              WHEN '1' PERFORM 100-FASE1
+              WHEN '2' PERFORM 200-FASE2
+              WHEN '3' PERFORM 300-FASE3
+
+              WHEN OTHER
+                 MOVE +80                  TO WS-LENGTH
+                 MOVE 'ERRO NO NUMERO DA FASE'
+                                           TO WS-MSG-ERRO
+                 PERFORM 999-ENCERRA-TRANSACAO
+           END-EVALUATE
+           .
+
+       100-FASE1.
+           MOVE LOW-VALUES                 TO MAPDTLO
+           MOVE -1                         TO T1QTDL
+
+           PERFORM 210-ENTER
+           .
+
+       200-FASE2.
+           EXEC CICS HANDLE AID
+              ENTER   (210-ENTER)
+              PF3     (220-PF3)
+              PF5     (230-PF5)
+              CLEAR   (230-PF5)
+              PF12    (240-PF12)
+              ANYKEY  (250-ANYKEY)
+           END-EXEC
+
+           EXEC CICS RECEIVE
+              MAP   ('MAPCAD')
+              MAPSET('T04MCAD')
+              INTO  (MAPCADI)
+           END-EXEC
+           .
+
+       220-PF3.
+           MOVE '1'                       TO WS-FASE
+
+           EXEC CICS XCTL
+               PROGRAM('T04PPRL')
+               COMMAREA(WS-DFHCOMMAREA)
+               LENGTH(LENGTH OF WS-DFHCOMMAREA)
+           END-EXEC
+           .
+
+       230-PF5.
+           PERFORM 999-CHAMA-FASE1
+           .
+
+       240-PF12.
+           MOVE '1'                       TO WS-FASE
+
+           EXEC CICS XCTL
+               PROGRAM('T04PLOG')
+               COMMAREA(WS-DFHCOMMAREA)
+               LENGTH(LENGTH OF WS-DFHCOMMAREA)
+           END-EXEC
+           .
+
+       250-ANYKEY.
+           MOVE 'TECLA PRESSIONADA INVALIDA!'
+                                           TO T1MSGO
+           PERFORM 999-TRATA-FASE2
+           .
+
+       210-ENTER.
+               MOVE WS-ID-PRODUTO            TO DCLPROD-ID-PRODUTO
+
+               EXEC SQL
+                  SELECT
+                    DESCRICAO
+                     ,NOME
+                    ,QUANTIDADE_ESTOQUE
+                    ,VALOR_UNITARIO
+                  INTO
+                    :DCLPROD-DESCRICAO
+                   ,:DCLPROD-NOME-PRODUTO-TEXT
+                   ,:DCLPROD-QUANTIDADE-ESTOQUE
+                   ,:DCLPROD-VALOR-UNITARIO
+                  FROM PRODUTOS 
+                  WHERE ID_PRODUTO = :WS-ID-PRODUTO
+ 
+               END-EXEC
+
+               EVALUATE SQLCODE
+                 WHEN 0
+                    PERFORM 999-TRATA-FASE3
+                 WHEN -545
+                    MOVE ' SQLCODE ERRO -545'
+                                           TO T1MSGO
+                    PERFORM 999-TRATA-FASE2
+                 WHEN OTHER
+                    PERFORM 999-ERROR
+               END-EVALUATE
+           PERFORM 999-TRATA-FASE2
+           .
+       300-FASE3.
+           EXEC CICS HANDLE AID
+              ENTER   (310-ENTER)
+              PF2     (340-PF2)
+              ANYKEY  (250-ANYKEY)
+           END-EXEC
+
+           EXEC CICS RECEIVE
+              MAP   ('MAPDTL')
+              MAPSET('T04MDTL')
+              INTO  (MAPDTLI)
+           END-EXEC
+           .
+
+       310-ENTER.
+           MOVE '1'                        TO WS-FASE
+
+           EXEC CICS XCTL
+               PROGRAM('T04PPRL')
+               COMMAREA(WS-DFHCOMMAREA)
+               LENGTH(LENGTH OF WS-DFHCOMMAREA)
+           END-EXEC
+           .
+
+       340-PF2.
+           PERFORM 999-CHAMA-FASE1
+           .
+
+       999-ENCERRA-TRANSACAO.
+           EXEC CICS SEND TEXT
+              FROM (WS-MSG-ERRO)
+              LENGTH(WS-LENGTH)
+              ERASE FREEKB ALARM
+           END-EXEC
+
+           EXEC CICS RETURN
+           END-EXEC
+           .
+
+       999-MANDA-TELA.
+           MOVE EIBTRMID                  TO T1TERMO
+           MOVE EIBTRNID                  TO T1TRANSO
+           MOVE EIBTASKN                  TO T1TASKO
+           MOVE WS-FASE                   TO T1FASEO
+
+           ACCEPT WS-DATA FROM DATE
+           ACCEPT WS-HORARIO FROM TIME
+
+           MOVE WS-DIA                     TO WS-DIA-F
+           MOVE WS-MES                     TO WS-MES-F
+           MOVE WS-ANO                     TO WS-ANO-F
+
+           MOVE WS-HORA                    TO WS-HORA-F
+           MOVE WS-MIN                     TO WS-MIN-F
+           MOVE WS-SEG                     TO WS-SEG-F
+
+           MOVE WS-DATA-F                   TO T1DATAO
+           MOVE WS-HORARIO-F                TO T1HORAO
+
+           EXEC CICS SEND
+              MAP ('MAPDTL')
+              MAPSET('T04MDTL')
+              FROM(MAPDTLO)
+              ERASE FREEKB ALARM CURSOR
+           END-EXEC
+           .
+
+       999-CHAMA-FASE1.
+           MOVE '1'                       TO WS-FASE
+
+           EXEC CICS XCTL
+              PROGRAM('T04PDTL')
+              COMMAREA(WS-DFHCOMMAREA)
+              LENGTH(LENGTH OF WS-DFHCOMMAREA)
+           END-EXEC
+           .
+
+       999-CHAMA-FASE2.
+           MOVE '2'                       TO WS-FASE
+           EXEC CICS RETURN
+               TRANSID('FT4D')
+               COMMAREA(WS-DFHCOMMAREA)
+               LENGTH(LENGTH OF WS-DFHCOMMAREA)
+           END-EXEC
+           .
+
+       999-CHAMA-FASE3.
+           MOVE '3'                       TO WS-FASE
+
+           EXEC CICS RETURN
+               TRANSID('FT4D')
+               COMMAREA(WS-DFHCOMMAREA)
+               LENGTH(LENGTH OF WS-DFHCOMMAREA)
+           END-EXEC
+           .
+
+       999-TRATA-FASE2.
+           MOVE -1                        TO T1QTDL
+
+           PERFORM 999-MANDA-TELA
+           PERFORM 999-CHAMA-FASE2
+           .
+
+       999-PROTECAO-FASE3.
+      * PROTEGER OS CAMPOS DE REGISTRO
+
+           MOVE DFHBMPRF                   TO T1NOMEA
+           MOVE DFHBMPRF                   TO T1CPFA
+           MOVE DFHBMPRF                   TO T1EMAILA
+           MOVE DFHBMPRF                   TO T1DIAA
+           MOVE DFHBMPRF                   TO T1MESA
+           MOVE DFHBMPRF                   TO T1ANOA
+           MOVE DFHBMPRF                   TO T1USERA
+           MOVE DFHBMPRF                   TO T1SENHAA
+           .
+
+       999-TRATA-FASE3.
+           MOVE -1                         TO T1MSGL
+           MOVE 'PRESSIONE ENTER PARA CONFIRMAR OU PF2 PARA CANCELAR'
+                                           TO T1MSGO
+           PERFORM 999-PROTECAO-FASE3
+           PERFORM 999-MANDA-TELA
+           PERFORM 999-CHAMA-FASE3
+           .
+
+       999-MAPFAIL.
+           MOVE 'ERRO MAPA T04MCAD'        TO WS-MSG-ERRO
+           PERFORM 999-ENCERRA-TRANSACAO
+           .
+
+       999-ERROR.
+           MOVE 'ERRO GENERICO T04PCAD'   TO WS-MSG-ERRO
+           PERFORM 999-ENCERRA-TRANSACAO
+           .
+       999-NOTFND.
+           STRING 'INFORME OS DADOS DO PRODUTO PARA INSERIR'
+           DELIMITED BY SIZE               INTO T1MSGO
+           PERFORM 999-TRATA-FASE3
+           .
+       999-DUPREC.
+           MOVE T1CPFI                     TO WS-CPF-ERRO
+           MOVE LOW-VALUES                 TO MAPCADO
+           MOVE SPACES                     TO T1MSGO
+           MOVE 'O USUARIO JA TEM CADASTRO'
+                                           TO T1MSGO
+           PERFORM 999-TRATA-FASE2
+           .
+
