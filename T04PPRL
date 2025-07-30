@@ -162,7 +162,8 @@
        100-FASE1.
            MOVE LOW-VALUES                 TO MAPPRLO
            MOVE -1                         TO T1PRODFL
-           
+           MOVE WS-ID-CPF                  TO WS-ID-CPF-COMMAREA
+           MOVE WS-ID-CPF-COMMAREA         TO T1MSGO
            PERFORM 210-ENTER
 
            PERFORM 999-CARREGA-DETALHES

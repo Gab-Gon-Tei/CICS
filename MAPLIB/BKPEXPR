@@ -1,0 +1,38 @@
+      ******************************************************************
+      * DCLGEN TABLE(PEDIDOS_PRODUTOS)                                 *
+      *        LIBRARY(FS.FSYS004.BOOKLIB(BKPEXPR))                    *
+      *        ACTION(REPLACE)                                         *
+      *        LANGUAGE(COBOL)                                         *
+      *        NAMES(DCLPEPR-)                                         *
+      *        STRUCTURE(DCL-PEDIDOS-PRODUTOS)                         *
+      *        QUOTE                                                   *
+      *        COLSUFFIX(YES)                                          *
+      * ... IS THE DCLGEN COMMAND THAT MADE THE FOLLOWING STATEMENTS   *
+      ******************************************************************
+           EXEC SQL DECLARE PEDIDOS_PRODUTOS TABLE
+           ( NUMERO_PEDIDO_PRODUTO          INTEGER NOT NULL,
+             ID_PRODUTO                     INTEGER NOT NULL,
+             CPF                            CHAR(11) NOT NULL,
+             QTD_PRODUTO                    SMALLINT NOT NULL,
+             VALOR_UNITARIO_PEDIDO          DECIMAL(7, 2) NOT NULL
+           ) END-EXEC.
+      ******************************************************************
+      * COBOL DECLARATION FOR TABLE PEDIDOS_PRODUTOS                   *
+      ******************************************************************
+       01  DCL-PEDIDOS-PRODUTOS.
+      *                       NUMERO_PEDIDO_PRODUTO
+           10 DCLPEPR-NUMERO-PEDIDO-PRODUTO
+              PIC S9(9) USAGE COMP.
+      *                       ID_PRODUTO
+           10 DCLPEPR-ID-PRODUTO   PIC S9(9) USAGE COMP.
+      *                       CPF
+           10 DCLPEPR-CPF          PIC X(11).
+      *                       QTD_PRODUTO
+           10 DCLPEPR-QTD-PRODUTO  PIC S9(4) USAGE COMP.
+      *                       VALOR_UNITARIO_PEDIDO
+           10 DCLPEPR-VALOR-UNITARIO-PEDIDO
+              PIC S9(5)V9(2) USAGE COMP-3.
+      ******************************************************************
+      * THE NUMBER OF COLUMNS DESCRIBED BY THIS DECLARATION IS 5       *
+      ******************************************************************
+

@@ -59,6 +59,11 @@
            EXEC SQL
            INCLUDE BKPROD
            END-EXEC.
+           EXEC SQL
+           INCLUDE BKPEXPR
+           END-EXEC.
+           
+
       *BOOK DE VARIAVEIS DE USO DO SQL
            EXEC SQL
            INCLUDE SQLCA
@@ -100,7 +105,7 @@
            .
 
        100-FASE1.
-           MOVE LOW-VALUES                 TO MAPDTLO
+      *    MOVE LOW-VALUES                 TO MAPDTLO
            MOVE -1                         TO T1QTDL
 
            PERFORM 210-ENTER
@@ -157,11 +162,12 @@
 
        210-ENTER.
                MOVE WS-ID-PROD             TO DCLPROD-ID-PRODUTO
+               MOVE WS-ID-CPF             TO T1MSGO
 
                EXEC SQL
                   SELECT
                      DESCRICAO
-                     ,NOME_PRODUTO
+                    ,NOME_PRODUTO
                     ,QUANTIDADE_ESTOQUE
                     ,VALOR_UNITARIO
                   INTO
@@ -170,31 +176,60 @@
                    ,:DCLPROD-QUANTIDADE-ESTOQUE
                    ,:DCLPROD-VALOR-UNITARIO
                   FROM PRODUTOS 
-                  WHERE ID_PRODUTO = :WS-ID-PROD
+                  WHERE ID_PRODUTO = :DCLPROD-ID-PRODUTO
  
                END-EXEC
 
                EVALUATE SQLCODE
                  WHEN 0
-      *            IF WS-FASE = '1'
-                       PERFORM 999-TRATA-FASE2
-      *            ELSE   
-      *                PERFORM 999-TRATA-FASE3
-      *            END-IF
+                   MOVE DCLPROD-NOME-PRODUTO-TEXT TO T1PRODO
+      *            MOVE DCLPROD-NOME-PRODUTO TO T1MSGO
+                   MOVE DCLPROD-DESCRICAO    TO T1DESCO
+                   MOVE DCLPROD-QUANTIDADE-ESTOQUE TO T1ESTO
+                   MOVE DCLPROD-VALOR-UNITARIO TO T1VALO
                  WHEN -545
                     MOVE ' SQLCODE ERRO -545'
                                            TO T1MSGO
                     PERFORM 999-TRATA-FASE2
                  WHEN OTHER
                     PERFORM 999-ERROR
-               END-EVALUATE
-           MOVE DCLPROD-NOME-PRODUTO TO T1PRODO
-           MOVE DCLPROD-DESCRICAO TO T1DESCO
-           MOVE DCLPROD-QUANTIDADE-ESTOQUE TO T1ESTO
-           MOVE DCLPROD-VALOR-UNITARIO TO T1VALO
-
-           PERFORM 999-TRATA-FASE2
+               END-EVALUATE        
+           IF WS-FASE EQUAL '1'
+               PERFORM 999-TRATA-FASE2
+           ELSE
+               PERFORM 215-INCLUIR
+               PERFORM 220-PF3
+           END-IF
            .
+       215-INCLUIR.
+           MOVE T1QTDI                  TO DCLPEPR-QTD-PRODUTO
+           COMPUTE DCLPEPR-VALOR-UNITARIO-PEDIDO
+               = DCLPROD-VALOR-UNITARIO * DCLPEPR-QTD-PRODUTO
+           MOVE DCLPROD-ID-PRODUTO      TO DCLPEPR-ID-PRODUTO
+           MOVE WS-ID-CPF               TO DCLPEPR-CPF
+           EXEC SQL
+               INSERT INTO PEDIDOS_PRODUTOS
+                 (ID_PRODUTO
+                 ,QTD_PRODUTO
+                 ,VALOR_UNITARIO_PEDIDO
+                 ,CPF)
+                VALUES
+                (:DCLPEPR-ID-PRODUTO
+                 ,:DCLPEPR-QTD-PRODUTO
+                 ,:DCLPEPR-VALOR-UNITARIO-PEDIDO
+                 ,:DCLPEPR-CPF)
+           END-EXEC.
+           EVALUATE SQLCODE
+               WHEN 0
+                   MOVE 'INCLUSAO EFETUADA COM SUCESSO'
+                                           TO T1MSGO
+               WHEN -803
+                   MOVE 'ERRO - PEDIDO JA EXISTE'
+                                           TO T1MSGO
+                   PERFORM 999-TRATA-FASE2
+               WHEN OTHER
+                   PERFORM 999-ERROR
+           END-EVALUATE.
 
        999-ENCERRA-TRANSACAO.
            EXEC CICS SEND TEXT
@@ -259,12 +294,6 @@
 
            PERFORM 999-MANDA-TELA
            PERFORM 999-CHAMA-FASE2
-           .
-
-       999-PROTECAO-FASE3.
-      * PROTEGER OS CAMPOS DE REGISTRO
-
-           MOVE DFHBMPRF                   TO T1QTDA
            .
 
        999-MAPFAIL.
