@@ -107,7 +107,7 @@
            02  FILLER REDEFINES LPRODUTOF.
              03 LPRODUTOA    PICTURE X.
            02  FILLER   PICTURE X(2).
-           02  LPRODUTOI  PIC X(8).
+           02  LPRODUTOI  PIC X(9).
            02  LF10L    COMP  PIC  S9(4).
            02  LF10F    PICTURE X.
            02  FILLER REDEFINES LF10F.
@@ -210,6 +210,12 @@
              03 LENTA    PICTURE X.
            02  FILLER   PICTURE X(2).
            02  LENTI  PIC X(5).
+           02  T1PRODL    COMP  PIC  S9(4).
+           02  T1PRODF    PICTURE X.
+           02  FILLER REDEFINES T1PRODF.
+             03 T1PRODA    PICTURE X.
+           02  FILLER   PICTURE X(2).
+           02  T1PRODI  PIC X(25).
        01  MAPDTLO REDEFINES MAPDTLI.
            02  FILLER PIC X(12).
            02  FILLER PICTURE X(3).
@@ -283,7 +289,7 @@
            02  FILLER PICTURE X(3).
            02  LPRODUTOC    PICTURE X.
            02  LPRODUTOH    PICTURE X.
-           02  LPRODUTOO  PIC X(8).
+           02  LPRODUTOO  PIC X(9).
            02  FILLER PICTURE X(3).
            02  LF10C    PICTURE X.
            02  LF10H    PICTURE X.
@@ -352,4 +358,8 @@
            02  LENTC    PICTURE X.
            02  LENTH    PICTURE X.
            02  LENTO  PIC X(5).
+           02  FILLER PICTURE X(3).
+           02  T1PRODC    PICTURE X.
+           02  T1PRODH    PICTURE X.
+           02  T1PRODO  PIC X(25).
 

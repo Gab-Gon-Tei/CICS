@@ -46,8 +46,8 @@
 
        01  WS-DFHCOMMAREA.
            05 WS-FASE                      PIC X(01).
+           05 WS-ID-PROD                   PIC S9(09) COMP.
            05 WS-ID-CPF                    PIC X(11).
-           05 WS-ID-PRODUTO                PIC 9(9) COMP.
 
       *MAPA REFERENTE A TELA DE CADASTRO
            COPY T04MDTL.
@@ -90,7 +90,6 @@
            EVALUATE WS-FASE
               WHEN '1' PERFORM 100-FASE1
               WHEN '2' PERFORM 200-FASE2
-              WHEN '3' PERFORM 300-FASE3
 
               WHEN OTHER
                  MOVE +80                  TO WS-LENGTH
@@ -105,6 +104,8 @@
            MOVE -1                         TO T1QTDL
 
            PERFORM 210-ENTER
+           PERFORM 999-MANDA-TELA
+           PERFORM 999-CHAMA-FASE2
            .
 
        200-FASE2.
@@ -118,9 +119,9 @@
            END-EXEC
 
            EXEC CICS RECEIVE
-              MAP   ('MAPCAD')
-              MAPSET('T04MCAD')
-              INTO  (MAPCADI)
+              MAP   ('MAPDTL')
+              MAPSET('T04MDTL')
+              INTO  (MAPDTLI)
            END-EXEC
            .
 
@@ -155,27 +156,31 @@
            .
 
        210-ENTER.
-               MOVE WS-ID-PRODUTO            TO DCLPROD-ID-PRODUTO
+               MOVE WS-ID-PROD             TO DCLPROD-ID-PRODUTO
 
                EXEC SQL
                   SELECT
-                    DESCRICAO
-                     ,NOME
+                     DESCRICAO
+                     ,NOME_PRODUTO
                     ,QUANTIDADE_ESTOQUE
                     ,VALOR_UNITARIO
                   INTO
                     :DCLPROD-DESCRICAO
-                   ,:DCLPROD-NOME-PRODUTO-TEXT
+                   ,:DCLPROD-NOME-PRODUTO
                    ,:DCLPROD-QUANTIDADE-ESTOQUE
                    ,:DCLPROD-VALOR-UNITARIO
                   FROM PRODUTOS 
-                  WHERE ID_PRODUTO = :WS-ID-PRODUTO
+                  WHERE ID_PRODUTO = :WS-ID-PROD
  
                END-EXEC
 
                EVALUATE SQLCODE
                  WHEN 0
-                    PERFORM 999-TRATA-FASE3
+      *            IF WS-FASE = '1'
+                       PERFORM 999-TRATA-FASE2
+      *            ELSE   
+      *                PERFORM 999-TRATA-FASE3
+      *            END-IF
                  WHEN -545
                     MOVE ' SQLCODE ERRO -545'
                                            TO T1MSGO
@@ -183,34 +188,12 @@
                  WHEN OTHER
                     PERFORM 999-ERROR
                END-EVALUATE
+           MOVE DCLPROD-NOME-PRODUTO TO T1PRODO
+           MOVE DCLPROD-DESCRICAO TO T1DESCO
+           MOVE DCLPROD-QUANTIDADE-ESTOQUE TO T1ESTO
+           MOVE DCLPROD-VALOR-UNITARIO TO T1VALO
+
            PERFORM 999-TRATA-FASE2
-           .
-       300-FASE3.
-           EXEC CICS HANDLE AID
-              ENTER   (310-ENTER)
-              PF2     (340-PF2)
-              ANYKEY  (250-ANYKEY)
-           END-EXEC
-
-           EXEC CICS RECEIVE
-              MAP   ('MAPDTL')
-              MAPSET('T04MDTL')
-              INTO  (MAPDTLI)
-           END-EXEC
-           .
-
-       310-ENTER.
-           MOVE '1'                        TO WS-FASE
-
-           EXEC CICS XCTL
-               PROGRAM('T04PPRL')
-               COMMAREA(WS-DFHCOMMAREA)
-               LENGTH(LENGTH OF WS-DFHCOMMAREA)
-           END-EXEC
-           .
-
-       340-PF2.
-           PERFORM 999-CHAMA-FASE1
            .
 
        999-ENCERRA-TRANSACAO.
@@ -271,16 +254,6 @@
            END-EXEC
            .
 
-       999-CHAMA-FASE3.
-           MOVE '3'                       TO WS-FASE
-
-           EXEC CICS RETURN
-               TRANSID('FT4D')
-               COMMAREA(WS-DFHCOMMAREA)
-               LENGTH(LENGTH OF WS-DFHCOMMAREA)
-           END-EXEC
-           .
-
        999-TRATA-FASE2.
            MOVE -1                        TO T1QTDL
 
@@ -291,23 +264,7 @@
        999-PROTECAO-FASE3.
       * PROTEGER OS CAMPOS DE REGISTRO
 
-           MOVE DFHBMPRF                   TO T1NOMEA
-           MOVE DFHBMPRF                   TO T1CPFA
-           MOVE DFHBMPRF                   TO T1EMAILA
-           MOVE DFHBMPRF                   TO T1DIAA
-           MOVE DFHBMPRF                   TO T1MESA
-           MOVE DFHBMPRF                   TO T1ANOA
-           MOVE DFHBMPRF                   TO T1USERA
-           MOVE DFHBMPRF                   TO T1SENHAA
-           .
-
-       999-TRATA-FASE3.
-           MOVE -1                         TO T1MSGL
-           MOVE 'PRESSIONE ENTER PARA CONFIRMAR OU PF2 PARA CANCELAR'
-                                           TO T1MSGO
-           PERFORM 999-PROTECAO-FASE3
-           PERFORM 999-MANDA-TELA
-           PERFORM 999-CHAMA-FASE3
+           MOVE DFHBMPRF                   TO T1QTDA
            .
 
        999-MAPFAIL.
@@ -318,18 +275,5 @@
        999-ERROR.
            MOVE 'ERRO GENERICO T04PCAD'   TO WS-MSG-ERRO
            PERFORM 999-ENCERRA-TRANSACAO
-           .
-       999-NOTFND.
-           STRING 'INFORME OS DADOS DO PRODUTO PARA INSERIR'
-           DELIMITED BY SIZE               INTO T1MSGO
-           PERFORM 999-TRATA-FASE3
-           .
-       999-DUPREC.
-           MOVE T1CPFI                     TO WS-CPF-ERRO
-           MOVE LOW-VALUES                 TO MAPCADO
-           MOVE SPACES                     TO T1MSGO
-           MOVE 'O USUARIO JA TEM CADASTRO'
-                                           TO T1MSGO
-           PERFORM 999-TRATA-FASE2
            .
 
