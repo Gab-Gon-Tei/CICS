@@ -10,35 +10,33 @@
       * ... IS THE DCLGEN COMMAND THAT MADE THE FOLLOWING STATEMENTS   *
       ******************************************************************
            EXEC SQL DECLARE PEDIDOS TABLE
-           ( NUMERO_PEDIDO                  INTEGER NOT NULL,
+           ( ID_PEDIDO                      INTEGER NOT NULL,
              CPF                            CHAR(11) NOT NULL,
-             NUMERO_PEDIDO_PRODUTO          INTEGER NOT NULL,
              NUMERO_CARTAO                  DECIMAL(16, 0) NOT NULL,
              TIPO_CARTAO                    CHAR(1) NOT NULL,
-             DATA                           DATE NOT NULL,
-             VALOR_TOTAL                    DECIMAL(7, 2)
+             DATA_PEDIDO                    DATE NOT NULL,
+             VALOR_TOTAL                    DECIMAL(7, 2),
+             ATIVO                          CHAR(1) NOT NULL
            ) END-EXEC.
       ******************************************************************
       * COBOL DECLARATION FOR TABLE PEDIDOS                            *
       ******************************************************************
        01  DCL-PEDIDOS.
-      *                       NUMERO_PEDIDO
-           10 DCLPEDI-NUMERO-PEDIDO
-              PIC S9(9) USAGE COMP.
+      *                       ID_PEDIDO
+           10 DCLPEDI-ID-PEDIDO    PIC S9(9) USAGE COMP.
       *                       CPF
            10 DCLPEDI-CPF          PIC X(11).
-      *                       NUMERO_PEDIDO_PRODUTO
-           10 DCLPEDI-NUMERO-PEDIDO-PRODUTO
-              PIC S9(9) USAGE COMP.
       *                       NUMERO_CARTAO
            10 DCLPEDI-NUMERO-CARTAO
               PIC S9(16)V USAGE COMP-3.
       *                       TIPO_CARTAO
            10 DCLPEDI-TIPO-CARTAO  PIC X(1).
-      *                       DATA
-           10 DCLPEDI-DATA         PIC X(10).
+      *                       DATA_PEDIDO
+           10 DCLPEDI-DATA-PEDIDO  PIC X(10).
       *                       VALOR_TOTAL
            10 DCLPEDI-VALOR-TOTAL  PIC S9(5)V9(2) USAGE COMP-3.
+      *                       ATIVO
+           10 DCLPEDI-ATIVO        PIC X(1).
       ******************************************************************
       * THE NUMBER OF COLUMNS DESCRIBED BY THIS DECLARATION IS 7       *
       ******************************************************************

@@ -20,6 +20,7 @@
        77  WS-LENGTH                       PIC S9(04) COMP.
        77  WS-CPF-ERRO                      PIC X(11).
 
+       77  WS-ATIVO                  PIC X(01) VALUE 'S'.
        01  WS-DATA.
            05 WS-ANO                       PIC X(02).
            05 WS-MES                       PIC X(02).
@@ -46,8 +47,10 @@
 
        01  WS-DFHCOMMAREA.
            05 WS-FASE                      PIC X(01).
-           05 WS-ID-PROD                   PIC S9(09) COMP.
            05 WS-ID-CPF                    PIC X(11).
+           05 WS-ID-PROD                   PIC S9(09).
+           05 WS-CONT-CARR                 PIC S9(09).
+           
 
       *MAPA REFERENTE A TELA DE CADASTRO
            COPY T04MDTL.
@@ -61,6 +64,9 @@
            END-EXEC.
            EXEC SQL
            INCLUDE BKPEXPR
+           END-EXEC.
+           EXEC SQL
+           INCLUDE BKPEDI
            END-EXEC.
            
 
@@ -183,7 +189,6 @@
                EVALUATE SQLCODE
                  WHEN 0
                    MOVE DCLPROD-NOME-PRODUTO-TEXT TO T1PRODO
-      *            MOVE DCLPROD-NOME-PRODUTO TO T1MSGO
                    MOVE DCLPROD-DESCRICAO    TO T1DESCO
                    MOVE DCLPROD-QUANTIDADE-ESTOQUE TO T1ESTO
                    MOVE DCLPROD-VALOR-UNITARIO TO T1VALO
@@ -197,32 +202,70 @@
            IF WS-FASE EQUAL '1'
                PERFORM 999-TRATA-FASE2
            ELSE
+               PERFORM 210-ABRE-PEDIDO
                PERFORM 215-INCLUIR
                PERFORM 220-PF3
            END-IF
            .
-       215-INCLUIR.
-           MOVE T1QTDI                  TO DCLPEPR-QTD-PRODUTO
-           COMPUTE DCLPEPR-VALOR-UNITARIO-PEDIDO
-               = DCLPROD-VALOR-UNITARIO * DCLPEPR-QTD-PRODUTO
-           MOVE DCLPROD-ID-PRODUTO      TO DCLPEPR-ID-PRODUTO
-           MOVE WS-ID-CPF               TO DCLPEPR-CPF
+       210-ABRE-PEDIDO.
            EXEC SQL
-               INSERT INTO PEDIDOS_PRODUTOS
-                 (ID_PRODUTO
-                 ,QTD_PRODUTO
-                 ,VALOR_UNITARIO_PEDIDO
-                 ,CPF)
-                VALUES
-                (:DCLPEPR-ID-PRODUTO
-                 ,:DCLPEPR-QTD-PRODUTO
-                 ,:DCLPEPR-VALOR-UNITARIO-PEDIDO
-                 ,:DCLPEPR-CPF)
-           END-EXEC.
+                SELECT ID_PEDIDO
+                  INTO :DCLCARR-ID-PEDIDO
+                  FROM PEDIDOS
+                  WHERE CPF = :WS-ID-CPF
+                     AND ATIVO = :WS-ATIVO
+              END-EXEC.
            EVALUATE SQLCODE
                WHEN 0
-                   MOVE 'INCLUSAO EFETUADA COM SUCESSO'
+                   CONTINUE
+               WHEN 100
+                   EXEC SQL
+                       INSERT INTO PEDIDOS
+                       (CPF,
+                        NUMERO_CARTAO, 
+                        TIPO_CARTAO, 
+                        DATA_PEDIDO, 
+                        VALOR_TOTAL, 
+                        ATIVO)
+                       VALUES
+                       (:WS-ID-CPF, 0, '0', CURRENT DATE, 0, :WS-ATIVO)
+                   END-EXEC
+                   MOVE DCLPEDI-ID-PEDIDO TO DCLCARR-ID-PEDIDO
+               WHEN OTHER
+                   PERFORM 999-ERROR
+           END-EVALUATE
+           .
+       215-INCLUIR.
+           IF T1QTDL NOT EQUAL 0
+               EXEC CICS BIF DEEDIT FIELD(T1QTDI) END-EXEC
+           ELSE
+               MOVE 'QUANTIDADE DE PRODUTOS NAO PODE SER ZERO'
                                            TO T1MSGO
+               PERFORM 999-TRATA-FASE2
+           END-IF
+           
+           MOVE T1QTDI                  TO DCLCARR-QTD-PRODUTO
+           COMPUTE DCLCARR-VALOR-UNITARIO-PEDIDO
+               = DCLPROD-VALOR-UNITARIO * DCLCARR-QTD-PRODUTO
+           MOVE DCLPROD-ID-PRODUTO      TO DCLCARR-ID-PRODUTO
+           EXEC SQL
+               INSERT INTO CARRINHO
+                 (ID_PEDIDO
+                 ,ID_PRODUTO
+                 ,QTD_PRODUTO
+                 ,VALOR_UNITARIO_PEDIDO
+                 )
+                VALUES
+                (:DCLCARR-ID-PEDIDO
+                 ,:DCLCARR-ID-PRODUTO
+                 ,:DCLCARR-QTD-PRODUTO
+                 ,:DCLCARR-VALOR-UNITARIO-PEDIDO)
+
+           END-EXEC
+           EVALUATE SQLCODE
+               WHEN 0
+                   PERFORM 215-UPDATE-PEDIDO
+                   ADD 1 TO WS-CONT-CARR
                WHEN -803
                    MOVE 'ERRO - PEDIDO JA EXISTE'
                                            TO T1MSGO
@@ -230,7 +273,14 @@
                WHEN OTHER
                    PERFORM 999-ERROR
            END-EVALUATE.
-
+       215-UPDATE-PEDIDO.
+           EXEC SQL
+               UPDATE PEDIDOS
+               SET VALOR_TOTAL = 
+               VALOR_TOTAL + :DCLCARR-VALOR-UNITARIO-PEDIDO
+               WHERE ID_PEDIDO = :DCLCARR-ID-PEDIDO
+           END-EXEC
+           .
        999-ENCERRA-TRANSACAO.
            EXEC CICS SEND TEXT
               FROM (WS-MSG-ERRO)

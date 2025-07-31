@@ -45,16 +45,19 @@
 
        01  WS-DFHCOMMAREA.
            05 WS-FASE                      PIC X(01).
-           05 WS-ID-PROD                   PIC S9(09) COMP.
            05 WS-ID-CPF                    PIC X(11).
+           05 WS-ID-PROD                   PIC S9(09).
+           05 WS-CONT-CARR                 PIC S9(09).
            05 WS-PAGA                      PIC 9(2).
            05 WS-PAGT                      PIC 9(2).
-      *    05 WS-MSG                       PIC X(60).
+
 
        01  WS-DFHCOMMAREA-AUX.
            05 WS-FASE-COMMAREA             PIC X(01).
-           05 WS-ID-PROD-COMMAREA          PIC S9(09) COMP.
            05 WS-ID-CPF-COMMAREA           PIC X(11).
+           05 WS-ID-PROD-COMMAREA          PIC S9(09).
+           05 WS-CONT-CARR                 PIC S9(09).
+           
 
        01  WS-MIN-BUSCA           PIC S9(5)V9(2) COMP-3.
        01  WS-MAX-BUSCA           PIC S9(5)V9(2) COMP-3.
