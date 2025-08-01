@@ -1,0 +1,95 @@
+       01  MAPALOGI.
+           02  FILLER PIC X(12).
+           02  USULOGL    COMP  PIC  S9(4).
+           02  USULOGF    PICTURE X.
+           02  FILLER REDEFINES USULOGF.
+             03 USULOGA    PICTURE X.
+           02  FILLER   PICTURE X(2).
+           02  USULOGI  PIC X(20).
+           02  SENLOGL    COMP  PIC  S9(4).
+           02  SENLOGF    PICTURE X.
+           02  FILLER REDEFINES SENLOGF.
+             03 SENLOGA    PICTURE X.
+           02  FILLER   PICTURE X(2).
+           02  SENLOGI  PIC X(20).
+           02  MENLOGL    COMP  PIC  S9(4).
+           02  MENLOGF    PICTURE X.
+           02  FILLER REDEFINES MENLOGF.
+             03 MENLOGA    PICTURE X.
+           02  FILLER   PICTURE X(2).
+           02  MENLOGI  PIC X(60).
+           02  DATLOGL    COMP  PIC  S9(4).
+           02  DATLOGF    PICTURE X.
+           02  FILLER REDEFINES DATLOGF.
+             03 DATLOGA    PICTURE X.
+           02  FILLER   PICTURE X(2).
+           02  DATLOGI  PIC X(10).
+           02  HORLOGL    COMP  PIC  S9(4).
+           02  HORLOGF    PICTURE X.
+           02  FILLER REDEFINES HORLOGF.
+             03 HORLOGA    PICTURE X.
+           02  FILLER   PICTURE X(2).
+           02  HORLOGI  PIC X(8).
+           02  FASLOGL    COMP  PIC  S9(4).
+           02  FASLOGF    PICTURE X.
+           02  FILLER REDEFINES FASLOGF.
+             03 FASLOGA    PICTURE X.
+           02  FILLER   PICTURE X(2).
+           02  FASLOGI  PIC X(2).
+           02  TASLOGL    COMP  PIC  S9(4).
+           02  TASLOGF    PICTURE X.
+           02  FILLER REDEFINES TASLOGF.
+             03 TASLOGA    PICTURE X.
+           02  FILLER   PICTURE X(2).
+           02  TASLOGI  PIC X(6).
+           02  TERLOGL    COMP  PIC  S9(4).
+           02  TERLOGF    PICTURE X.
+           02  FILLER REDEFINES TERLOGF.
+             03 TERLOGA    PICTURE X.
+           02  FILLER   PICTURE X(2).
+           02  TERLOGI  PIC X(4).
+           02  TRALOGL    COMP  PIC  S9(4).
+           02  TRALOGF    PICTURE X.
+           02  FILLER REDEFINES TRALOGF.
+             03 TRALOGA    PICTURE X.
+           02  FILLER   PICTURE X(2).
+           02  TRALOGI  PIC X(4).
+       01  MAPALOGO REDEFINES MAPALOGI.
+           02  FILLER PIC X(12).
+           02  FILLER PICTURE X(3).
+           02  USULOGC    PICTURE X.
+           02  USULOGH    PICTURE X.
+           02  USULOGO PIC X(20).
+           02  FILLER PICTURE X(3).
+           02  SENLOGC    PICTURE X.
+           02  SENLOGH    PICTURE X.
+           02  SENLOGO  PIC X(20).
+           02  FILLER PICTURE X(3).
+           02  MENLOGC    PICTURE X.
+           02  MENLOGH    PICTURE X.
+           02  MENLOGO PIC X(60).
+           02  FILLER PICTURE X(3).
+           02  DATLOGC    PICTURE X.
+           02  DATLOGH    PICTURE X.
+           02  DATLOGO PIC X(10).
+           02  FILLER PICTURE X(3).
+           02  HORLOGC    PICTURE X.
+           02  HORLOGH    PICTURE X.
+           02  HORLOGO PIC X(08).
+           02  FILLER PICTURE X(3).
+           02  FASLOGC    PICTURE X.
+           02  FASLOGH    PICTURE X.
+           02  FASLOGO PIC 9(02).
+           02  FILLER PICTURE X(3).
+           02  TASLOGC    PICTURE X.
+           02  TASLOGH    PICTURE X.
+           02  TASLOGO PIC 9(06).
+           02  FILLER PICTURE X(3).
+           02  TERLOGC    PICTURE X.
+           02  TERLOGH    PICTURE X.
+           02  TERLOGO PIC 9(04).
+           02  FILLER PICTURE X(3).
+           02  TRALOGC    PICTURE X.
+           02  TRALOGH    PICTURE X.
+           02  TRALOGO PIC 9(04).
+

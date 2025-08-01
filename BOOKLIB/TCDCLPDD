@@ -1,12 +1,12 @@
       ******************************************************************
       * DCLGEN TABLE(PEDIDOS)                                          *
-      *        LIBRARY(FS.FSYS004.BOOKLIB(BKPEDI))                     *
+      *        LIBRARY(FS.FSYS050.DB2LIB(TCDCLPDD))                    *
       *        ACTION(REPLACE)                                         *
       *        LANGUAGE(COBOL)                                         *
-      *        NAMES(DCLPEDI-)                                         *
-      *        STRUCTURE(DCL-PEDIDOS)                                  *
+      *        NAMES(DCLPDD-)                                          *
       *        QUOTE                                                   *
       *        COLSUFFIX(YES)                                          *
+      *        INDVAR(YES)                                             *
       * ... IS THE DCLGEN COMMAND THAT MADE THE FOLLOWING STATEMENTS   *
       ******************************************************************
            EXEC SQL DECLARE PEDIDOS TABLE
@@ -15,29 +15,37 @@
              NUMERO_CARTAO                  DECIMAL(16, 0) NOT NULL,
              TIPO_CARTAO                    CHAR(1) NOT NULL,
              DATA_PEDIDO                    DATE NOT NULL,
+             ENDERECO                       CHAR(255),
              VALOR_TOTAL                    DECIMAL(7, 2),
              ATIVO                          CHAR(1) NOT NULL
            ) END-EXEC.
       ******************************************************************
       * COBOL DECLARATION FOR TABLE PEDIDOS                            *
       ******************************************************************
-       01  DCL-PEDIDOS.
+       01  DCLPEDIDOS.
       *                       ID_PEDIDO
-           10 DCLPEDI-ID-PEDIDO    PIC S9(9) USAGE COMP.
+           10 DCLPDD-ID-PEDIDO     PIC S9(9) USAGE COMP.
       *                       CPF
-           10 DCLPEDI-CPF          PIC X(11).
+           10 DCLPDD-CPF           PIC X(11).
       *                       NUMERO_CARTAO
-           10 DCLPEDI-NUMERO-CARTAO
+           10 DCLPDD-NUMERO-CARTAO
               PIC S9(16)V USAGE COMP-3.
       *                       TIPO_CARTAO
-           10 DCLPEDI-TIPO-CARTAO  PIC X(1).
+           10 DCLPDD-TIPO-CARTAO   PIC X(1).
       *                       DATA_PEDIDO
-           10 DCLPEDI-DATA-PEDIDO  PIC X(10).
+           10 DCLPDD-DATA-PEDIDO   PIC X(10).
+      *                       ENDERECO
+           10 DCLPDD-ENDERECO      PIC X(255).
       *                       VALOR_TOTAL
-           10 DCLPEDI-VALOR-TOTAL  PIC S9(5)V9(2) USAGE COMP-3.
+           10 DCLPDD-VALOR-TOTAL   PIC S9(5)V9(2) USAGE COMP-3.
       *                       ATIVO
-           10 DCLPEDI-ATIVO        PIC X(1).
+           10 DCLPDD-ATIVO         PIC X(1).
       ******************************************************************
-      * THE NUMBER OF COLUMNS DESCRIBED BY THIS DECLARATION IS 7       *
+      * INDICATOR VARIABLE STRUCTURE                                   *
+      ******************************************************************
+       01  IPEDIDOS.
+           10 INDSTRUC           PIC S9(4) USAGE COMP OCCURS 8 TIMES.
+      ******************************************************************
+      * THE NUMBER OF COLUMNS DESCRIBED BY THIS DECLARATION IS 8       *
       ******************************************************************
 

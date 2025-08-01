@@ -1,0 +1,68 @@
+      ******************************************************************
+      * DCLGEN TABLE(CLIENTES)                                         *
+      *        LIBRARY(FS.FSYS050.DB2LIB(TCDCLCLI))                    *
+      *        ACTION(REPLACE)                                         *
+      *        LANGUAGE(COBOL)                                         *
+      *        NAMES(DCLCLI-)                                          *
+      *        QUOTE                                                   *
+      *        COLSUFFIX(YES)                                          *
+      *        INDVAR(YES)                                             *
+      * ... IS THE DCLGEN COMMAND THAT MADE THE FOLLOWING STATEMENTS   *
+      ******************************************************************
+           EXEC SQL DECLARE CLIENTES TABLE
+           ( CPF                            CHAR(11) NOT NULL,
+             NOME                           VARCHAR(100) NOT NULL,
+             EMAIL                          VARCHAR(255) NOT NULL,
+             DATA_NASCIMENTO                DATE,
+             DATA_CADASTRO                  DATE NOT NULL,
+             NOME_USUARIO                   VARCHAR(20) NOT NULL,
+             SENHA                          VARCHAR(255) NOT NULL
+           ) END-EXEC.
+      ******************************************************************
+      * COBOL DECLARATION FOR TABLE CLIENTES                           *
+      ******************************************************************
+       01  DCLCLIENTES.
+      *                       CPF
+           10 DCLCLI-CPF           PIC X(11).
+           10 DCLCLI-NOME.
+      *                       NOME LENGTH
+              49 DCLCLI-NOME-LEN   PIC S9(4) USAGE COMP.
+      *                       NOME
+              49 DCLCLI-NOME-TEXT
+                 PIC X(100).
+           10 DCLCLI-EMAIL.
+      *                       EMAIL LENGTH
+              49 DCLCLI-EMAIL-LEN
+                 PIC S9(4) USAGE COMP.
+      *                       EMAIL
+              49 DCLCLI-EMAIL-TEXT
+                 PIC X(255).
+      *                       DATA_NASCIMENTO
+           10 DCLCLI-DATA-NASCIMENTO
+              PIC X(10).
+      *                       DATA_CADASTRO
+           10 DCLCLI-DATA-CADASTRO
+              PIC X(10).
+           10 DCLCLI-NOME-USUARIO.
+      *                       NOME_USUARIO LENGTH
+              49 DCLCLI-NOME-USUARIO-LEN
+                 PIC S9(4) USAGE COMP.
+      *                       NOME_USUARIO
+              49 DCLCLI-NOME-USUARIO-TEXT
+                 PIC X(20).
+           10 DCLCLI-SENHA.
+      *                       SENHA LENGTH
+              49 DCLCLI-SENHA-LEN
+                 PIC S9(4) USAGE COMP.
+      *                       SENHA
+              49 DCLCLI-SENHA-TEXT
+                 PIC X(255).
+      ******************************************************************
+      * INDICATOR VARIABLE STRUCTURE                                   *
+      ******************************************************************
+       01  ICLIENTES.
+           10 INDSTRUC           PIC S9(4) USAGE COMP OCCURS 7 TIMES.
+      ******************************************************************
+      * THE NUMBER OF COLUMNS DESCRIBED BY THIS DECLARATION IS 7       *
+      ******************************************************************
+

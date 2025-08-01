@@ -1,0 +1,244 @@
+      *----------------------------------------------------------------*
+       IDENTIFICATION                      DIVISION.
+      *----------------------------------------------------------------*
+       PROGRAM-ID.                         T50PLOG.
+       AUTHOR.                             RAQUEL.
+      *----------------------------------------------------------------*
+       ENVIRONMENT                         DIVISION.
+      *----------------------------------------------------------------*
+       CONFIGURATION                       SECTION.
+       SPECIAL-NAMES.
+           DECIMAL-POINT IS COMMA.
+      *----------------------------------------------------------------*
+       DATA                                DIVISION.
+      *----------------------------------------------------------------*
+       WORKING-STORAGE                     SECTION.
+      *----------------------------------------------------------------*
+       77  WS-MSG-ERRO                     PIC X(80).
+       77  WS-LENGTH                       PIC S9(04) COMP.
+       01  WS-DFHCOMMAREA.
+           05 WS-FASE                      PIC X(01).
+       01  WS-VAR-TEMPO.
+           05 WS-DATA                      PIC X(10).
+           05 WS-HORARIO                   PIC X(08).
+      *
+           COPY T50MLOG.
+           COPY DFHAID.
+           COPY DFHBMSCA.
+      *
+           EXEC SQL
+              INCLUDE TCDCLCLI
+           END-EXEC.
+      *
+           EXEC SQL
+              INCLUDE SQLCA
+           END-EXEC.
+      *----------------------------------------------------------------*
+       LINKAGE                             SECTION.
+      *----------------------------------------------------------------*
+       01  DFHCOMMAREA.
+           05 OCCURS 0 TO 24576 TIMES DEPENDING ON EIBCALEN
+                                           PIC X(01).
+      *----------------------------------------------------------------*
+       PROCEDURE                           DIVISION.
+      *----------------------------------------------------------------*
+           EXEC CICS HANDLE CONDITION
+              MAPFAIL(999-MAPFAIL)
+              ERROR(999-ERRO-GENERICO)
+           END-EXEC
+      ******************************************************************
+      *         SELETOR DE FASE - O MENU PRINCIPAL POSSUI 2 FASES
+      *         FASE 1 - ENVIA O MAPA PARA O TERMINAL
+      *         FASE 2 - TRATA O CAMPO T2COD
+      *         FASE 3 - TRATA O CAMPO T2CONF
+      ******************************************************************
+           MOVE DFHCOMMAREA                TO WS-DFHCOMMAREA
+      *
+           IF EIBCALEN EQUAL ZERO
+              MOVE '1'                     TO WS-FASE
+           END-IF
+      *
+           EVALUATE WS-FASE
+              WHEN '1' PERFORM 100-FASE1
+              WHEN '2' PERFORM 200-FASE2
+              WHEN OTHER
+                   MOVE +80                TO WS-LENGTH
+                   MOVE 'ERRO NO NUMERO DA FASE'
+                                           TO MENLOGO
+      *
+                   PERFORM 999-ENCERRA-TRANSACAO
+           END-EVALUATE
+           .
+       100-FASE1.
+      * LIMPAR AS VARIAVEIS DO MAPA
+           MOVE LOW-VALUES                  TO MAPALOGO
+      * POSICINAMENTO LOGICO - DIRETO NO CAMPO DESEJADO
+           MOVE -1                          TO USULOGL
+      * MOVER A MENSAGEM PARA O USUARIO SELECIONAR A OPCAO
+           MOVE 'FACA LOGIN OU CADASTRE-SE'
+                                           TO MENLOGO
+      * DESPROTEGER E PROTEGER OS CAMPOS
+           PERFORM 999-PROTECAO-FASE2
+      * MANDAR A TELA PARA O TERMINAL
+           PERFORM 999-MANDA-TELA
+      * ENCERRA A TRANSACAO AO CHAMAR PROX FASE
+           PERFORM 999-CHAMA-FASE2
+           .
+       200-FASE2.
+           EXEC CICS HANDLE AID
+               ENTER   (210-ENTER)
+               PF2     (220-PF2)
+               PF3     (230-PF3)
+               ANYKEY  (250-ANYKEY)
+           END-EXEC
+      *
+           EXEC CICS RECEIVE
+                MAP     ('MAPALOG')
+                MAPSET  ('T50MLOG')
+                INTO    (MAPALOGI)
+           END-EXEC
+           .
+       210-ENTER.
+           IF USULOGL EQUAL 0 OR USULOGI EQUAL SPACES
+              MOVE 'USUARIO NAO INFORMADO- TENTE NOVAMENTE'
+                                            TO MENLOGO
+              PERFORM 999-TRATA-FASE2
+           END-IF
+           IF SENLOGL EQUAL 0 OR SENLOGI EQUAL SPACES
+              MOVE 'SENHA   NAO INFORMADA- TENTE NOVAMENTE'
+                                            TO MENLOGO
+              PERFORM 999-TRATA-FASE2
+           END-IF
+      *
+           MOVE USULOGI                    TO DCLCLI-NOME-USUARIO
+           MOVE SENLOGI                    TO DCLCLI-SENHA
+      *
+           EXEC SQL
+              SELECT NOME_USUARIO
+                    ,SENHA
+              INTO :DCLCLI-NOME-USUARIO
+                  ,:DCLCLI-SENHA
+              FROM CLIENTES
+              WHERE NOME_USUARIO = :DCLCLI-NOME-USUARIO
+              AND   SENHA = :DCLCLI-SENHA
+           END-EXEC
+      *
+           IF SQLCODE =  100
+              PERFORM 999-NOTFND
+           END-IF
+      *
+           MOVE '1'                        TO WS-FASE
+           EXEC CICS XCTL
+               PROGRAM('T50PPRL')
+               COMMAREA(WS-DFHCOMMAREA)
+               LENGTH(LENGTH OF WS-DFHCOMMAREA)
+           END-EXEC
+           MOVE DCLCLI-CPF                 TO WS-DFHCOMMAREA
+           .
+       220-PF2.
+           MOVE '1'                        TO WS-FASE
+      *
+           EXEC CICS XCTL
+               PROGRAM('T50PCAD')
+               COMMAREA(WS-DFHCOMMAREA)
+               LENGTH(LENGTH OF WS-DFHCOMMAREA)
+           END-EXEC
+      *
+           .
+       230-PF3.
+           MOVE 'TERMINO NORMAL DA TRANSCAO' TO WS-MSG-ERRO
+           PERFORM 999-ENCERRA-TRANSACAO
+           .
+       250-ANYKEY.
+           MOVE 'TECLA PRESSIONADA INVALIDA'
+                                           TO MENLOGO
+           PERFORM 999-TRATA-FASE2
+           .
+       999-PROTECAO-FASE2.
+      * DESPROTEGER
+           MOVE DFHUNIMD                    TO USULOGA
+      *    MOVE DFHUNIMD                    TO SENLOGA
+           .
+       999-ENCERRA-TRANSACAO.
+           MOVE +80                TO WS-LENGTH
+           EXEC CICS SEND TEXT
+               FROM (WS-MSG-ERRO)
+               LENGTH(WS-LENGTH)
+               ERASE FREEKB ALARM
+           END-EXEC
+      *
+           EXEC CICS RETURN
+           END-EXEC
+           .
+       999-MANDA-TELA.
+           MOVE EIBTRMID                    TO TERLOGO
+           MOVE EIBTRNID                    TO TRALOGO
+           MOVE EIBTASKN                    TO TASLOGO
+           MOVE WS-FASE                     TO FASLOGO
+      *
+      *
+           EXEC CICS LINK
+              PROGRAM('AUXCICS1')
+              COMMAREA(WS-VAR-TEMPO)
+              LENGTH(+15)
+           END-EXEC
+           MOVE WS-DATA                    TO DATLOGO
+           MOVE WS-HORARIO                 TO HORLOGO
+      *
+           EXEC CICS SEND
+              MAP      ('MAPALOG')
+              MAPSET   ('T50MLOG')
+              FROM     (MAPALOGO)
+              ERASE  FREEKB ALARM CURSOR
+           END-EXEC
+           .
+       999-CHAMA-FASE1.
+           MOVE '1'                        TO WS-FASE
+      *
+           EXEC CICS XCTL
+               PROGRAM('T50PLOG')
+               COMMAREA(WS-DFHCOMMAREA)
+               LENGTH(LENGTH OF WS-DFHCOMMAREA)
+           END-EXEC
+      *
+           .
+       999-CHAMA-FASE2.
+           MOVE '2'                        TO WS-FASE
+      *
+           EXEC CICS RETURN
+               TRANSID('FTMA')
+               COMMAREA(WS-DFHCOMMAREA)
+               LENGTH (LENGTH OF WS-DFHCOMMAREA)
+           END-EXEC
+           .
+       999-TRATA-FASE2.
+           MOVE -1                         TO USULOGL
+           PERFORM 999-PROTECAO-FASE2
+           PERFORM 999-MANDA-TELA
+           PERFORM 999-CHAMA-FASE2
+           .
+      *999-TRATA-FASE3.
+      *    MOVE -1                         TO T2CONFL
+      *    MOVE 'CONSULTAR OUTRO (S/N)?'   TO T2ACAOO
+      *  MOVER OS CAMPOS DO REGISTRO PARA A TELA
+      *
+      *    PERFORM 999-PROTECAO-FASE3
+      *    PERFORM 999-MANDA-TELA
+      *    PERFORM 999-CHAMA-FASE3
+      *    .
+       999-NOTFND.
+           STRING 'USUARIO '               DELIMITED BY SIZE
+                   USULOGI                 DELIMITED BY SPACE
+                   ' NAO ENCONTRADO'       DELIMITED BY SIZE
+                                   INTO MENLOGO
+           PERFORM 999-TRATA-FASE2
+           .
+       999-MAPFAIL.
+           MOVE 'ERRO MAPA T50MLOG'       TO WS-MSG-ERRO
+           PERFORM 999-ENCERRA-TRANSACAO
+           .
+       999-ERRO-GENERICO.
+           MOVE 'ERRO GENERICO T50PLOG '   TO WS-MSG-ERRO
+           PERFORM 999-ENCERRA-TRANSACAO
+           .
+

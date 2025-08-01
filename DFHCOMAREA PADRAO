@@ -1,0 +1,9 @@
+       01  WS-DFHCOMMAREA.
+           05 WS-FASE                      PIC X(01).
+           05 WS-ID-CPF                    PIC X(11).
+           05 WS-ID-PROD                   PIC S9(09).
+           05 WS-ID-PEDIDO                 PIC S9(09).
+           05 WS-CONT-CARR                 PIC S9(09).
+           05 WS-ID-CONTA-BANCARIA         PIC S9(09).
+      ** PARA MOVER OS IDS NUMERICOS COM COMP OU COMP 3
+      ** UTILIZE UMA VARIAVEL NUMERICA ANTERIOR

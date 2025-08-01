@@ -1,0 +1,39 @@
+      ******************************************************************
+      * DCLGEN TABLE(CARRINHO)                                         *
+      *        LIBRARY(FS.FSYS050.DB2LIB(TCDCLCAR))                    *
+      *        ACTION(REPLACE)                                         *
+      *        LANGUAGE(COBOL)                                         *
+      *        NAMES(DCLCAR-)                                          *
+      *        QUOTE                                                   *
+      *        COLSUFFIX(YES)                                          *
+      *        INDVAR(YES)                                             *
+      * ... IS THE DCLGEN COMMAND THAT MADE THE FOLLOWING STATEMENTS   *
+      ******************************************************************
+           EXEC SQL DECLARE CARRINHO TABLE
+           ( ID_PEDIDO                      INTEGER NOT NULL,
+             ID_PRODUTO                     INTEGER NOT NULL,
+             QTD_PRODUTO                    SMALLINT NOT NULL,
+             VALOR_UNITARIO_PEDIDO          DECIMAL(7, 2) NOT NULL
+           ) END-EXEC.
+      ******************************************************************
+      * COBOL DECLARATION FOR TABLE CARRINHO                           *
+      ******************************************************************
+       01  DCLCARRINHO.
+      *                       ID_PEDIDO
+           10 DCLCAR-ID-PEDIDO     PIC S9(9) USAGE COMP.
+      *                       ID_PRODUTO
+           10 DCLCAR-ID-PRODUTO    PIC S9(9) USAGE COMP.
+      *                       QTD_PRODUTO
+           10 DCLCAR-QTD-PRODUTO   PIC S9(4) USAGE COMP.
+      *                       VALOR_UNITARIO_PEDIDO
+           10 DCLCAR-VALOR-UNITARIO-PEDIDO
+              PIC S9(5)V9(2) USAGE COMP-3.
+      ******************************************************************
+      * INDICATOR VARIABLE STRUCTURE                                   *
+      ******************************************************************
+       01  ICARRINHO.
+           10 INDSTRUC           PIC S9(4) USAGE COMP OCCURS 4 TIMES.
+      ******************************************************************
+      * THE NUMBER OF COLUMNS DESCRIBED BY THIS DECLARATION IS 4       *
+      ******************************************************************
+

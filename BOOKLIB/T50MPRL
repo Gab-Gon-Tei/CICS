@@ -1,0 +1,156 @@
+       01  T50MPRLI.
+           02  FILLER PIC X(12).
+           02  MSGL    COMP  PIC  S9(4).
+           02  MSGF    PICTURE X.
+           02  FILLER REDEFINES MSGF.
+             03 MSGA    PICTURE X.
+           02  FILLER   PICTURE X(2).
+           02  MSGI  PIC X(69).
+           02  DATAL    COMP  PIC  S9(4).
+           02  DATAF    PICTURE X.
+           02  FILLER REDEFINES DATAF.
+             03 DATAA    PICTURE X.
+           02  FILLER   PICTURE X(2).
+           02  DATAI  PIC X(10).
+           02  HORAL    COMP  PIC  S9(4).
+           02  HORAF    PICTURE X.
+           02  FILLER REDEFINES HORAF.
+             03 HORAA    PICTURE X.
+           02  FILLER   PICTURE X(2).
+           02  HORAI  PIC X(5).
+           02  FASEL    COMP  PIC  S9(4).
+           02  FASEF    PICTURE X.
+           02  FILLER REDEFINES FASEF.
+             03 FASEA    PICTURE X.
+           02  FILLER   PICTURE X(2).
+           02  FASEI  PIC X(2).
+           02  TASKL    COMP  PIC  S9(4).
+           02  TASKF    PICTURE X.
+           02  FILLER REDEFINES TASKF.
+             03 TASKA    PICTURE X.
+           02  FILLER   PICTURE X(2).
+           02  TASKI  PIC X(6).
+           02  TERML    COMP  PIC  S9(4).
+           02  TERMF    PICTURE X.
+           02  FILLER REDEFINES TERMF.
+             03 TERMA    PICTURE X.
+           02  FILLER   PICTURE X(2).
+           02  TERMI  PIC X(4).
+           02  TRANSL    COMP  PIC  S9(4).
+           02  TRANSF    PICTURE X.
+           02  FILLER REDEFINES TRANSF.
+             03 TRANSA    PICTURE X.
+           02  FILLER   PICTURE X(2).
+           02  TRANSI  PIC X(4).
+           02  PRDL    COMP  PIC  S9(4).
+           02  PRDF    PICTURE X.
+           02  FILLER REDEFINES PRDF.
+             03 PRDA    PICTURE X.
+           02  FILLER   PICTURE X(2).
+           02  PRDI  PIC X(15).
+           02  VLRMINL    COMP  PIC  S9(4).
+           02  VLRMINF    PICTURE X.
+           02  FILLER REDEFINES VLRMINF.
+             03 VLRMINA    PICTURE X.
+           02  FILLER   PICTURE X(2).
+           02  VLRMINI  PIC 9(07).
+           02  VLRMAXL    COMP  PIC  S9(4).
+           02  VLRMAXF    PICTURE X.
+           02  FILLER REDEFINES VLRMAXF.
+             03 VLRMAXA    PICTURE X.
+           02  FILLER   PICTURE X(2).
+           02  VLRMAXI  PIC 9(07).
+           02  NCARL    COMP  PIC  S9(4).
+           02  NCARF    PICTURE X.
+           02  FILLER REDEFINES NCARF.
+             03 NCARA    PICTURE X.
+           02  FILLER   PICTURE X(2).
+           02  NCARI  PIC X(4).
+           02  FTVDDPRL    COMP  PIC  S9(4).
+           02  FTVDDPRF    PICTURE X.
+           02  FILLER REDEFINES FTVDDPRF.
+             03 FTVDDPRA    PICTURE X.
+           02  FILLER   PICTURE X(2).
+           02  FTVDDPRI  PIC X(15).
+           02  PAGL    COMP  PIC  S9(4).
+           02  PAGF    PICTURE X.
+           02  FILLER REDEFINES PAGF.
+             03 PAGA    PICTURE X.
+           02  FILLER   PICTURE X(2).
+           02  PAGI  PIC X(2).
+           02  PAG2L    COMP  PIC  S9(4).
+           02  PAG2F    PICTURE X.
+           02  FILLER REDEFINES PAG2F.
+             03 PAG2A    PICTURE X.
+           02  FILLER   PICTURE X(2).
+           02  PAG2I  PIC X(2).
+           02  LINDETD OCCURS 12 TIMES.
+             03  LINDETL    COMP  PIC  S9(4).
+             03  LINDETF    PICTURE X.
+             03  FILLER   PICTURE X(2).
+             03  LINDETI  PIC X(79).
+       01  T50MPRLO REDEFINES T50MPRLI.
+           02  FILLER PIC X(12).
+           02  FILLER PICTURE X(3).
+           02  MSGC    PICTURE X.
+           02  MSGH    PICTURE X.
+           02  MSGO PIC X(69).
+           02  FILLER PICTURE X(3).
+           02  DATAC    PICTURE X.
+           02  DATAH    PICTURE X.
+           02  DATAO PIC X(10).
+           02  FILLER PICTURE X(3).
+           02  HORAC    PICTURE X.
+           02  HORAH    PICTURE X.
+           02  HORAO PIC X(5).
+           02  FILLER PICTURE X(3).
+           02  FASEC    PICTURE X.
+           02  FASEH    PICTURE X.
+           02  FASEO PIC X(02).
+           02  FILLER PICTURE X(3).
+           02  TASKC    PICTURE X.
+           02  TASKH    PICTURE X.
+           02  TASKO PIC X(06).
+           02  FILLER PICTURE X(3).
+           02  TERMC    PICTURE X.
+           02  TERMH    PICTURE X.
+           02  TERMO PIC X(4).
+           02  FILLER PICTURE X(3).
+           02  TRANSC    PICTURE X.
+           02  TRANSH    PICTURE X.
+           02  TRANSO PIC X(4).
+           02  FILLER PICTURE X(3).
+           02  PRDC    PICTURE X.
+           02  PRDH    PICTURE X.
+           02  PRDO  PIC X(15).
+           02  FILLER PICTURE X(3).
+           02  VLRMINC    PICTURE X.
+           02  VLRMINH    PICTURE X.
+           02  VLRMINO  PIC X(7).
+           02  FILLER PICTURE X(3).
+           02  VLRMAXC    PICTURE X.
+           02  VLRMAXH    PICTURE X.
+           02  VLRMAXO  PIC X(7).
+           02  FILLER PICTURE X(3).
+           02  NCARC    PICTURE X.
+           02  NCARH    PICTURE X.
+           02  NCARO PIC X(4).
+           02  FILLER PICTURE X(3).
+           02  FTVDDPRC    PICTURE X.
+           02  FTVDDPRH    PICTURE X.
+           02  FTVDDPRO  PIC X(15).
+           02  FILLER PICTURE X(3).
+           02  PAGC    PICTURE X.
+           02  PAGH    PICTURE X.
+           02  PAGO PIC X(02).
+           02  FILLER PICTURE X(3).
+           02  PAG2C    PICTURE X.
+           02  PAG2H    PICTURE X.
+           02  PAG2O PIC X(02).
+           02  DFHMS1 OCCURS 12 TIMES.
+             03  FILLER PICTURE X(2).
+             03  LINDETA    PICTURE X.
+             03  LINDETC    PICTURE X.
+             03  LINDETH    PICTURE X.
+             03  LINDETO PIC X(79).
+

@@ -1,0 +1,331 @@
+      *----------------------------------------------------------------*
+       IDENTIFICATION                      DIVISION.
+      *----------------------------------------------------------------*
+       PROGRAM-ID.                         T50PCAD.
+       AUTHOR.                             RAQUEL.
+      *----------------------------------------------------------------*
+       ENVIRONMENT                         DIVISION.
+      *----------------------------------------------------------------*
+       CONFIGURATION                       SECTION.
+       SPECIAL-NAMES.
+           DECIMAL-POINT IS COMMA.
+      *----------------------------------------------------------------*
+       DATA                                DIVISION.
+      *----------------------------------------------------------------*
+       WORKING-STORAGE                     SECTION.
+      *----------------------------------------------------------------*
+       01 DATA-AUX.
+          05 WS-ANO                       PIC X(04).
+          05 FILLER                       PIC X(01) VALUE '-'.
+          05 WS-MES                       PIC X(02).
+          05 FILLER                       PIC X(01) VALUE '-'.
+          05 WS-DIA                       PIC X(02).
+       77  WS-MSG-ERRO                     PIC X(80).
+       77  WS-LENGTH                       PIC S9(04) COMP.
+       01  WS-DFHCOMMAREA.
+           05 WS-FASE                      PIC X(01).
+           05 WS-CPF-DFHCOMMAREA           PIC X(11).
+       01  WS-VAR-TEMPO.
+           05 WS-DATA                      PIC X(10).
+           05 WS-HORARIO                   PIC X(08).
+       77  WS-SQLCODE                      PIC +9(9).
+      *
+           COPY T50MCAD.
+           COPY DFHAID.
+           COPY DFHBMSCA.
+      *
+           EXEC SQL
+              INCLUDE TCDCLCLI
+           END-EXEC.
+      *
+           EXEC SQL
+              INCLUDE SQLCA
+           END-EXEC.
+      *----------------------------------------------------------------*
+       LINKAGE                             SECTION.
+      *----------------------------------------------------------------*
+       01  DFHCOMMAREA.
+           05 OCCURS 0 TO 24576 TIMES DEPENDING ON EIBCALEN
+                                           PIC X(01).
+      *----------------------------------------------------------------*
+       PROCEDURE                           DIVISION.
+      *----------------------------------------------------------------*
+           EXEC CICS HANDLE CONDITION
+              MAPFAIL(999-MAPFAIL)
+              ERROR(999-ERRO-GENERICO)
+           END-EXEC
+      ******************************************************************
+      *         SELETOR DE FASE - O MENU PRINCIPAL POSSUI 2 FASES
+      *         FASE 1 - ENVIA O MAPA PARA O TERMINAL
+      *         FASE 2 - TRATA O CAMPO T2COD
+      *         FASE 3 - TRATA O CAMPO T2CONF
+      ******************************************************************
+           MOVE DFHCOMMAREA                TO WS-DFHCOMMAREA
+      *
+
+      *    MOVE '1'                TO WS-FASE
+
+      *
+           EVALUATE WS-FASE
+              WHEN '1' PERFORM 100-FASE1
+              WHEN '2' PERFORM 200-FASE2
+              WHEN OTHER
+                   MOVE +80                TO WS-LENGTH
+                   MOVE 'ERRO NO NUMERO DA FASE'
+                                           TO MENCADO
+      *
+                   PERFORM 999-ENCERRA-TRANSACAO
+           END-EVALUATE
+           .
+       100-FASE1.
+      * LIMPAR AS VARIAVEIS DO MAPA
+           MOVE LOW-VALUES                  TO MAPACADO
+      * POSICINAMENTO LOGICO - DIRETO NO CAMPO DESEJADO
+           MOVE -1                          TO NOMCADL
+      * MOVER A MENSAGEM PARA O USUARIO SELECIONAR A OPCAO
+           MOVE 'PREENCHA TODOS OS CAMPOS PARA SE CADASTRAR'
+                                           TO MENCADO
+      * DESPROTEGER E PROTEGER OS CAMPOS
+           PERFORM 999-PROTECAO-FASE2
+      * MANDAR A TELA PARA O TERMINAL
+           PERFORM 999-MANDA-TELA
+      * ENCERRA A TRANSACAO AO CHAMAR PROX FASE
+           PERFORM 999-CHAMA-FASE2
+           .
+       200-FASE2.
+           EXEC CICS HANDLE AID
+               ENTER   (210-ENTER)
+               PF3     (230-PF3)
+               ANYKEY  (250-ANYKEY)
+           END-EXEC
+      *
+           EXEC CICS RECEIVE
+                MAP     ('MAPACAD')
+                MAPSET  ('T50MCAD')
+                INTO    (MAPACADI)
+           END-EXEC
+           .
+       210-ENTER.
+           IF (NOMCADL EQUAL 0 OR NOMCADI EQUAL SPACES) OR
+              (DIACADL EQUAL 0 OR DIACADI EQUAL SPACES) OR
+              (MESCADL EQUAL 0 OR MESCADI EQUAL SPACES) OR
+              (ANOCADL EQUAL 0 OR ANOCADI EQUAL SPACES) OR
+              (CPFCADL EQUAL 0 OR CPFCADI EQUAL SPACES) OR
+              (USUCADL EQUAL 0 OR USUCADI EQUAL SPACES) OR
+              (EMACADL EQUAL 0 OR EMACADI EQUAL SPACES) OR
+              (SENCADL EQUAL 0 OR SENCADI EQUAL SPACES)
+              MOVE 'TODOS OS CAMPOS DEVEM SER PREENCHIDOS!'
+                                            TO MENCADO
+              PERFORM 999-TRATA-FASE2
+           END-IF
+
+           IF CPFCADI IS NOT NUMERIC OR  (CPFCADL < 11)
+              MOVE 'O CAMPO CPF ESTA INCORRETO OU INCOMPLETO'
+                                            TO MENCADO
+              PERFORM 999-TRATA-FASE2
+           END-IF
+           IF NOMCADI IS NOT ALPHABETIC
+              MOVE 'NOME TEM QUE TER APENAS LETRAS'
+                                            TO MENCADO
+              PERFORM 999-TRATA-FASE2
+           END-IF
+           IF SENCADL < 5
+              MOVE 'SENHA TEM QUE TER NO MINIMO 5 CARACTERES'
+                                            TO MENCADO
+              PERFORM 999-TRATA-FASE2
+      *       MOVE -1                       TO SENCADL
+           END-IF
+           IF USUCADL < 5
+              MOVE 'USUARIO TEM QUE TER NO MINIMO 5 CARACTERES'
+                                            TO MENCADO
+              PERFORM 999-TRATA-FASE2
+      *        MOVE -1                       TO USUCADL
+           END-IF
+           EVALUATE TRUE
+                      WHEN DIACADI < '01' OR DIACADI > '31' OR
+                           MESCADI < '01' OR MESCADI > '12' OR
+                           ANOCADI < '1900' OR ANOCADI > '2015'
+
+                           MOVE 'DATA DE NASCIMENTO INVALIDA' TO MENCADO
+                           PERFORM 999-TRATA-FASE2
+                      WHEN OTHER CONTINUE
+           END-EVALUATE
+
+      *
+           MOVE NOMCADI                    TO DCLCLI-NOME
+           MOVE CPFCADI                    TO DCLCLI-CPF
+           MOVE EMACADI                    TO DCLCLI-EMAIL
+
+           MOVE DIACADI                    TO WS-DIA
+           MOVE MESCADI                    TO WS-MES
+           MOVE ANOCADI                    TO WS-ANO
+           MOVE DATA-AUX                   TO DCLCLI-DATA-NASCIMENTO
+
+           MOVE USUCADI                    TO DCLCLI-NOME-USUARIO
+           MOVE SENCADI                    TO DCLCLI-SENHA
+
+           EXEC SQL
+             SELECT   CPF
+              INTO   :DCLCLI-CPF
+              FROM    CLIENTES
+              WHERE CPF = :DCLCLI-CPF
+           END-EXEC
+
+           IF SQLCODE = 0
+              MOVE 'ESTE CPF JA ESTA CADASTRADO' TO MENCADO
+              PERFORM 999-TRATA-FASE2
+           ELSE
+              IF SQLCODE NOT = 100
+                 PERFORM 999-ERROR-DB2
+              END-IF
+           END-IF
+           EXEC SQL
+             SELECT  NOME_USUARIO
+              INTO   :DCLCLI-NOME-USUARIO
+              FROM    CLIENTES
+              WHERE NOME_USUARIO = :DCLCLI-NOME-USUARIO
+           END-EXEC
+
+           IF SQLCODE = 0
+              MOVE 'ESTE NOME DE USUARIO JA ESTA CADASTRADO' TO MENCADO
+              PERFORM 999-TRATA-FASE2
+           ELSE
+              IF SQLCODE NOT = 100
+                 PERFORM 999-ERROR-DB2
+              END-IF
+           END-IF
+           EXEC SQL
+              INSERT INTO CLIENTES
+                (    NOME
+                    ,CPF
+                    ,DATA_NASCIMENTO
+                    ,EMAIL
+                    ,DATA_CADASTRO
+                    ,NOME_USUARIO
+                    ,SENHA
+                )VALUES
+                (   :DCLCLI-NOME
+                   ,:DCLCLI-CPF
+                   ,:DCLCLI-DATA-NASCIMENTO
+                   ,:DCLCLI-EMAIL
+                   ,CURRENT_DATE
+                   ,:DCLCLI-NOME-USUARIO
+                   ,:DCLCLI-SENHA
+                )
+           END-EXEC
+      *
+           EVALUATE SQLCODE
+              WHEN 0
+                 MOVE '1'                  TO WS-FASE
+                 EXEC CICS XCTL
+                     PROGRAM('T50PPRL')
+                     COMMAREA(WS-DFHCOMMAREA)
+                     LENGTH(LENGTH OF WS-DFHCOMMAREA)
+                 END-EXEC
+                 MOVE DCLCLI-CPF           TO WS-CPF-DFHCOMMAREA
+              WHEN OTHER
+                 MOVE "ERRO AO REALIZAR CADASTRO"
+                                            TO MENCADO
+                 PERFORM 999-ERROR-DB2
+           END-EVALUATE
+           .
+       230-PF3.
+           MOVE '1'                        TO WS-FASE
+           EXEC CICS XCTL
+                PROGRAM('T50PLOG')
+                COMMAREA(WS-DFHCOMMAREA)
+                LENGTH(LENGTH OF WS-DFHCOMMAREA)
+           END-EXEC
+           .
+       250-ANYKEY.
+           MOVE 'TECLA PRESSIONADA INVALIDA'
+                                           TO MENCADO
+           PERFORM 999-TRATA-FASE2
+           .
+       999-PROTECAO-FASE2.
+      * UNDERLINE
+           MOVE DFHUNDLN                    TO CPFCADH
+           MOVE DFHUNDLN                    TO NOMCADH
+           MOVE DFHUNDLN                    TO SENCADH
+           MOVE DFHUNDLN                    TO EMACADH
+           MOVE DFHUNDLN                    TO USUCADH
+           MOVE DFHUNDLN                    TO DIACADH
+           MOVE DFHUNDLN                    TO MESCADH
+           MOVE DFHUNDLN                    TO ANOCADH
+           .
+       999-ENCERRA-TRANSACAO.
+           MOVE +80                TO WS-LENGTH
+           EXEC CICS SEND TEXT
+               FROM (WS-MSG-ERRO)
+               LENGTH(WS-LENGTH)
+               ERASE FREEKB ALARM
+           END-EXEC
+      *
+           EXEC CICS RETURN
+           END-EXEC
+           .
+       999-MANDA-TELA.
+           MOVE EIBTRMID                    TO TERLOGO
+           MOVE EIBTRNID                    TO TRALOGO
+           MOVE EIBTASKN                    TO TASCADO
+           MOVE WS-FASE                     TO FASCADO
+      *
+      *
+           EXEC CICS LINK
+              PROGRAM('AUXCICS1')
+              COMMAREA(WS-VAR-TEMPO)
+              LENGTH(+15)
+           END-EXEC
+           MOVE WS-DATA                    TO DASCADO
+           MOVE WS-HORARIO                 TO HOSCADO
+      *
+           EXEC CICS SEND
+              MAP      ('MAPACAD')
+              MAPSET   ('T50MCAD')
+              FROM     (MAPACADO)
+              ERASE  FREEKB ALARM CURSOR
+           END-EXEC
+           .
+       999-CHAMA-FASE1.
+           MOVE '1'                        TO WS-FASE
+      *
+           EXEC CICS RETURN
+               TRANSID('FTMB')
+               COMMAREA(WS-DFHCOMMAREA)
+               LENGTH(LENGTH OF WS-DFHCOMMAREA)
+           END-EXEC
+      *
+           .
+       999-CHAMA-FASE2.
+           MOVE '2'                        TO WS-FASE
+      *
+           EXEC CICS RETURN
+               TRANSID('FTMB')
+               COMMAREA(WS-DFHCOMMAREA)
+               LENGTH (LENGTH OF WS-DFHCOMMAREA)
+           END-EXEC
+           .
+       999-TRATA-FASE2.
+           PERFORM 999-PROTECAO-FASE2
+           PERFORM 999-MANDA-TELA
+           PERFORM 999-CHAMA-FASE2
+           MOVE LOW-VALUES                 TO MAPACADO
+           MOVE -1                         TO NOMCADL
+           .
+       999-MAPFAIL.
+           MOVE 'ERRO MAPA T50MCAD'       TO WS-MSG-ERRO
+           PERFORM 999-ENCERRA-TRANSACAO
+           .
+       999-ERRO-GENERICO.
+           MOVE 'ERRO GENERICO T50PCAD'   TO WS-MSG-ERRO
+           PERFORM 999-ENCERRA-TRANSACAO
+           .
+       999-ERROR-DB2.
+            MOVE +80                        TO WS-LENGTH
+            MOVE SQLCODE               TO WS-SQLCODE
+            PERFORM 999-ENCERRA-TRANSACAO
+            STRING 'ERRO DB2 SQL CODE: '  WS-SQLCODE
+                   DELIMITED BY SIZE INTO WS-MSG-ERRO
+            PERFORM 999-TRATA-FASE2
+            .
+
