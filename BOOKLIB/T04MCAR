@@ -1,0 +1,106 @@
+       01  MAPCARI.
+           02  FILLER PIC X(12).
+           02  T3LINHAD OCCURS 10 TIMES.
+             03  T3LINHAL    COMP  PIC  S9(4).
+             03  T3LINHAF    PICTURE X.
+             03  FILLER   PICTURE X(2).
+             03  T3LINHAI  PIC X(79).
+           02  T3MSGL    COMP  PIC  S9(4).
+           02  T3MSGF    PICTURE X.
+           02  FILLER REDEFINES T3MSGF.
+             03 T3MSGA    PICTURE X.
+           02  FILLER   PICTURE X(2).
+           02  T3MSGI  PIC X(60).
+           02  T3DATAL    COMP  PIC  S9(4).
+           02  T3DATAF    PICTURE X.
+           02  FILLER REDEFINES T3DATAF.
+             03 T3DATAA    PICTURE X.
+           02  FILLER   PICTURE X(2).
+           02  T3DATAI  PIC X(10).
+           02  T3HORAL    COMP  PIC  S9(4).
+           02  T3HORAF    PICTURE X.
+           02  FILLER REDEFINES T3HORAF.
+             03 T3HORAA    PICTURE X.
+           02  FILLER   PICTURE X(2).
+           02  T3HORAI  PIC X(8).
+           02  T3FASEL    COMP  PIC  S9(4).
+           02  T3FASEF    PICTURE X.
+           02  FILLER REDEFINES T3FASEF.
+             03 T3FASEA    PICTURE X.
+           02  FILLER   PICTURE X(2).
+           02  T3FASEI  PIC X(1).
+           02  T3TASKL    COMP  PIC  S9(4).
+           02  T3TASKF    PICTURE X.
+           02  FILLER REDEFINES T3TASKF.
+             03 T3TASKA    PICTURE X.
+           02  FILLER   PICTURE X(2).
+           02  T3TASKI  PIC X(7).
+           02  T3TERML    COMP  PIC  S9(4).
+           02  T3TERMF    PICTURE X.
+           02  FILLER REDEFINES T3TERMF.
+             03 T3TERMA    PICTURE X.
+           02  FILLER   PICTURE X(2).
+           02  T3TERMI  PIC X(4).
+           02  T3TRANL    COMP  PIC  S9(4).
+           02  T3TRANF    PICTURE X.
+           02  FILLER REDEFINES T3TRANF.
+             03 T3TRANA    PICTURE X.
+           02  FILLER   PICTURE X(2).
+           02  T3TRANI  PIC X(4).
+           02  L1CONL    COMP  PIC  S9(4).
+           02  L1CONF    PICTURE X.
+           02  FILLER REDEFINES L1CONF.
+             03 L1CONA    PICTURE X.
+           02  FILLER   PICTURE X(2).
+           02  L1CONI  PIC X(15).
+           02  L1ENTL    COMP  PIC  S9(4).
+           02  L1ENTF    PICTURE X.
+           02  FILLER REDEFINES L1ENTF.
+             03 L1ENTA    PICTURE X.
+           02  FILLER   PICTURE X(2).
+           02  L1ENTI  PIC X(5).
+       01  MAPCARO REDEFINES MAPCARI.
+           02  FILLER PIC X(12).
+           02  DFHMS1 OCCURS 10 TIMES.
+             03  FILLER PICTURE X(2).
+             03  T3LINHAA    PICTURE X.
+             03  T3LINHAC    PICTURE X.
+             03  T3LINHAH    PICTURE X.
+             03  T3LINHAO PIC X(79).
+           02  FILLER PICTURE X(3).
+           02  T3MSGC    PICTURE X.
+           02  T3MSGH    PICTURE X.
+           02  T3MSGO PIC X(60).
+           02  FILLER PICTURE X(3).
+           02  T3DATAC    PICTURE X.
+           02  T3DATAH    PICTURE X.
+           02  T3DATAO PIC X(10).
+           02  FILLER PICTURE X(3).
+           02  T3HORAC    PICTURE X.
+           02  T3HORAH    PICTURE X.
+           02  T3HORAO PIC X(08).
+           02  FILLER PICTURE X(3).
+           02  T3FASEC    PICTURE X.
+           02  T3FASEH    PICTURE X.
+           02  T3FASEO PIC 9(01).
+           02  FILLER PICTURE X(3).
+           02  T3TASKC    PICTURE X.
+           02  T3TASKH    PICTURE X.
+           02  T3TASKO PIC 9(07).
+           02  FILLER PICTURE X(3).
+           02  T3TERMC    PICTURE X.
+           02  T3TERMH    PICTURE X.
+           02  T3TERMO PIC X(04).
+           02  FILLER PICTURE X(3).
+           02  T3TRANC    PICTURE X.
+           02  T3TRANH    PICTURE X.
+           02  T3TRANO PIC X(04).
+           02  FILLER PICTURE X(3).
+           02  L1CONC    PICTURE X.
+           02  L1CONH    PICTURE X.
+           02  L1CONO  PIC X(15).
+           02  FILLER PICTURE X(3).
+           02  L1ENTC    PICTURE X.
+           02  L1ENTH    PICTURE X.
+           02  L1ENTO  PIC X(5).
+

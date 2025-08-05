@@ -27,12 +27,7 @@
            10 DCLPDD-ID-PEDIDO     PIC S9(9) USAGE COMP.
       *                       CPF
            10 DCLPDD-CPF           PIC X(11).
-      *                       NUMERO_CARTAO
-           10 DCLPDD-NUMERO-CARTAO
-              PIC S9(16)V USAGE COMP-3.
-      *                       TIPO_CARTAO
-           10 DCLPDD-TIPO-CARTAO   PIC X(1).
-      *                       DATA_PEDIDO
+      *                     
            10 DCLPDD-DATA-PEDIDO   PIC X(10).
       *                       ENDERECO
            10 DCLPDD-ENDERECO      PIC X(255).

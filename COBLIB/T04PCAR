@@ -1,8 +1,8 @@
       *----------------------------------------------------------------*
        IDENTIFICATION                      DIVISION.
       *----------------------------------------------------------------*
-       PROGRAM-ID.                         T04PPRL.
-       AUTHOR.                             FELIPE.
+       PROGRAM-ID.                         T04PCAR.
+       AUTHOR.                             GABRIEL/GUILHERME.
 
       *----------------------------------------------------------------*
        ENVIRONMENT                         DIVISION.
@@ -23,20 +23,20 @@
       *    IMPRESSAO DO MAPA                           *
       *----------------------------------------------------------------*
        01  LD-LINDET.
-           05 FILLER                       PIC X(01) VALUE SPACES.
-
-           05 LD-ID                        PIC ZZZZZ9.
-           05 FILLER                       PIC X(03) VALUE SPACES.
+           05 FILLER                       PIC X(05) VALUE SPACES.
 
            05 LD-PRODUTO                   PIC X(25).
-           05 FILLER                       PIC X(02) VALUE SPACES.
+           05 FILLER                       PIC X(03) VALUE SPACES.
 
            05 LD-VNDDPOR                   PIC X(20).
+           05 FILLER                       PIC X(03) VALUE SPACES. 
+
+           05 LD-QTD                       PIC X(20).
            05 FILLER                       PIC X(03) VALUE SPACES.
 
            05 FILLER                       PIC X(02) VALUE 'R$'.
            05 LD-VALOR                     PIC Z.ZZZ.ZZ9,99.
-           05 FILLER                       PIC X(06) VALUE SPACES.
+           05 FILLER                       PIC X(05) VALUE SPACES.
 
       *----------------------------------------------------------------*
       *    VARIAVEIS DE DATA
@@ -76,17 +76,16 @@
            05 WS-ID-PRODUTO                PIC 9(09).
            05 WS-CONT-CARR                 PIC 9(09).
            05 WS-ID-PEDIDO                 PIC 9(09).
-           05 WS-ID-CONTA-BANCARIA         PIC 9(09).
-           05 WS-PAGA                      PIC 9(02).
-           05 WS-PAGT                      PIC 9(02).
-           
-           
+
+       77  WS-PAGA                         PIC 9(02).
+       77  WS-PAGT                         PIC 9(02).
+                      
        77  WS-EIBRESP                      PIC X(30).
        77  WS-SQLCODE                      PIC +9(9).
        77  WS-FILE-NAME                    PIC X(08)
                                                    VALUE 'T04MPRLT'.
        77  WS-QUEUE-NAME                   PIC X(08)
-                                                   VALUE 'QT3PPRD'.
+                                                   VALUE 'QT3PCAR'.
        77  WS-ITEM                         PIC S9(04) COMP.
        77  WS-RESP                         PIC S9(08) COMP.
        77  WS-RESTO                        PIC 9(01).
@@ -99,7 +98,6 @@
       *----------------------------------------------------------------*
       *    AUXILIARES
       *----------------------------------------------------------------*
-
        01  WS-AUXILIARES.
            05  WS-PRODUTO                   PIC X(24).
            05  WS-PRODUTO-AUX               PIC X(24).
@@ -116,15 +114,22 @@
            05 WS-ID-CPF                    PIC X(11).
            05 WS-ID-PROD                   PIC 9(09).
            05 WS-CONT-CARR                 PIC 9(09).
+           05 WS-ID-PEDIDO                 PIC 9(09).
 
-           COPY T04MPRL.
+           COPY T04MCAR.
 
            COPY DFHAID.
            COPY DFHBMSCA.
 
            EXEC SQL
-              INCLUDE TCDCLPRD
+              INCLUDE TCDCLPDD
            END-EXEC.
+             EXEC SQL
+               INCLUDE TCDCLPRD
+             END-EXEC.
+             EXEC SQL
+               INCLUDE TCDCLCAR
+             END-EXEC.
 
            EXEC SQL
               INCLUDE SQLCA
@@ -168,28 +173,19 @@
 
         100-FASE1.
            MOVE '1'                        TO WS-FASE
-           MOVE -1                         TO PRDL
+      *    MOVE -1                         TO PRDL
 
            INITIALIZE WS-AUXILIARES
 
            EXEC SQL
                DECLARE LISTADB2 CURSOR FOR
-               SELECT ID_PRODUTO
-                     ,NOME_PRODUTO
-                     ,VENDIDO_POR
-                     ,VALOR_UNITARIO
-               FROM PRODUTOS
-               WHERE UPPER(NOME_PRODUTO) LIKE :WS-PRODUTO-MAIN
-               AND VALOR_UNITARIO
-               BETWEEN :WS-VALOR-MINIMO AND :WS-VALOR-MAXIMO
-               AND VENDIDO_POR LIKE :WS-VENDIDO-MAIN
-               ORDER BY NOME_PRODUTO
+               SELECT PR.NOME_PRODUTO, CR.QTD_PRODUTO, 
+                      CR.VALOR_UNITARIO_PEDIDO, PR.VENDIDO_POR
+               FROM PEDIDOS PD
+               JOIN CARRINHO CR ON PD.ID_PEDIDO = CR.ID_PEDIDO
+               JOIN PRODUTOS PR ON CR.ID_PRODUTO = PR.ID_PRODUTO
+               WHERE PD.ID_PEDIDO = :WS-ID-PEDIDO
            END-EXEC
-
-           MOVE '%'                        TO WS-PRODUTO
-           MOVE 0                          TO WS-VALOR-MINIMO
-           MOVE 99999                      TO WS-VALOR-MAXIMO
-           MOVE '%'                        TO WS-VENDIDO-POR
 
            PERFORM 999-CHAMA-CURSOR
            .
@@ -203,11 +199,8 @@
            EXEC CICS HANDLE AID
                ENTER   (200-ENTER)
                PF1     (210-PF1)
-               PF2     (220-PF2)
-               PF5     (250-PF5)
                PF7     (270-PF7)
                PF8     (280-PF8)
-               PF12    (212-PF12)
               ANYKEY   (240-ANYKEY)
            END-EXEC
 
@@ -374,20 +367,20 @@
         999-CARREGA-TS.
            EXEC SQL
                FETCH LISTADB2 INTO
-                    :DCLPRD-ID-PRODUTO,
                     :DCLPRD-NOME-PRODUTO,
                     :DCLPRD-VENDIDO-POR,
-                    :DCLPRD-VALOR-UNITARIO
+                    :DCLCAR-QTD-PRODUTO,
+                    :DCLCAR-VALOR-UNITARIO-PEDIDO
            END-EXEC
 
            EVALUATE SQLCODE
                WHEN 0
-                    ADD 1                    TO WS-ITEM
-                    MOVE DCLPRD-ID-PRODUTO      TO LD-ID
-      *             MOVE WS-ID                  TO LD-ID
+                    ADD 1                       TO WS-ITEM
                     MOVE DCLPRD-NOME-PRODUTO    TO LD-PRODUTO
                     MOVE DCLPRD-VENDIDO-POR     TO LD-VNDDPOR
-                    MOVE DCLPRD-VALOR-UNITARIO  TO LD-VALOR
+                    MOVE DCLCAR-VALOR-UNITARIO-PEDIDO
+                                                TO LD-VALOR
+                    MOVE DCLCAR-QTD-PRODUTO     TO LD-QTD
 
                   EXEC CICS WRITEQ TS
                      QUEUE(WS-QUEUE-NAME)
@@ -402,7 +395,7 @@
 
                WHEN +100
                 IF WS-ITEM = 0
-                   MOVE 'PRODUTO NAO ENCONTRADO'     TO MSGO
+                   MOVE 'CARRINHO VAZIO'     TO T3MSGO
                    PERFORM 999-TRATA-FASE2
                 ELSE
                    SET ENDFILE-YES TO TRUE
@@ -410,20 +403,6 @@
             .
 
         999-CHAMA-CURSOR.
-           MOVE FUNCTION REVERSE(WS-PRODUTO) TO WS-PRODUTO-AUX
-           INSPECT WS-PRODUTO-AUX REPLACING LEADING SPACES BY '%'
-           MOVE FUNCTION REVERSE(WS-PRODUTO-AUX) TO WS-PRODUTO
-
-           MOVE FUNCTION REVERSE(WS-VENDIDO-POR) TO WS-VENDIDO-POR-AUX
-           INSPECT WS-VENDIDO-POR-AUX REPLACING LEADING SPACES BY '%'
-           MOVE FUNCTION REVERSE(WS-VENDIDO-POR-AUX) TO WS-VENDIDO-POR
-
-           MOVE '%'                        TO WS-PRODUTO-MAIN(1:1)
-           MOVE WS-PRODUTO                 TO WS-PRODUTO-MAIN(2:24)
-
-           MOVE '%'                        TO WS-VENDIDO-MAIN(1:1)
-           MOVE WS-VENDIDO-POR             TO WS-VENDIDO-MAIN(2:19)
-
            EXEC CICS DELETEQ TS
               QUEUE(WS-QUEUE-NAME)
               RESP(WS-RESP)
@@ -473,12 +452,12 @@
 
               IF WS-RESP = DFHRESP(NORMAL)
                  ADD 1 TO WS-INDEX
-                 MOVE LD-LINDET            TO LINDETO(WS-INDEX)
+                 MOVE LD-LINDET            TO T3LINHAO(WS-INDEX)
               ELSE
                  IF WS-RESP = DFHRESP(ITEMERR)
                     PERFORM WITH TEST AFTER UNTIL WS-INDEX = 10
                        ADD 1 TO WS-INDEX
-                       MOVE SPACES         TO LINDETO(WS-INDEX)
+                       MOVE SPACES         TO T3LINHAO(WS-INDEX)
                     END-PERFORM
                  ELSE
                     PERFORM 999-ERROR
@@ -493,10 +472,10 @@
       *----------------------------------------------------------------*
 
         999-MANDA-TELA.
-           MOVE EIBTRMID                  TO TERMO
-           MOVE EIBTRNID                  TO TRANSO
-           MOVE EIBTASKN                  TO TASKO
-           MOVE WS-FASE                   TO FASEO
+           MOVE EIBTRMID                  TO T3TERMO
+           MOVE EIBTRNID                  TO T3TRANO
+           MOVE EIBTASKN                  TO T3TASKO
+           MOVE WS-FASE                   TO T3FASEO
 
            ACCEPT WS-DATA    FROM DATE
            ACCEPT WS-HORARIO FROM TIME
@@ -509,16 +488,16 @@
            MOVE WS-MIN     TO WS-MIN-F
            MOVE WS-SEG     TO WS-SEG-F
 
-           MOVE WS-DATA-F                 TO DATAO
-           MOVE WS-HORARIO-F              TO HORAO
+           MOVE WS-DATA-F                 TO T3DATAO
+           MOVE WS-HORARIO-F              TO T3HORAO
 
-           MOVE WS-PAGA                   TO PAGO
-           MOVE WS-PAGT                   TO PAG2O
+           MOVE WS-PAGA                   TO T3PAGAO
+           MOVE WS-PAGT                   TO T3PAGTO
 
            EXEC CICS SEND
-               MAP ('T04MPRL')
-               MAPSET('T04MPRL')
-               FROM(T04MPRLO)
+               MAP ('MAPCAR')
+               MAPSET('T04MCAR')
+               FROM(MAPCARO)
                ERASE FREEKB ALARM CURSOR
            END-EXEC
            .
@@ -537,17 +516,16 @@
            MOVE '2'                        TO WS-FASE
 
            EXEC CICS RETURN
-               TRANSID('FT4C')
+               TRANSID('FT4F')
                COMMAREA(WS-DFHCOMMAREA)
                LENGTH(LENGTH OF WS-DFHCOMMAREA)
            END-EXEC
            .
-
+           
         999-TRATA-FASE2.
-           MOVE -1 TO PRDL
+      *    MOVE -1 TO PRDL
            PERFORM 999-MANDA-TELA
            PERFORM 999-CHAMA-FASE2
-      *     PERFORM 999-CHAMA-CURSOR
            .
 
         999-ENCERRA-TRANSACAO.
