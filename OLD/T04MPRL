@@ -1,0 +1,506 @@
+       01  MAPPRLI.
+           02  FILLER PIC X(12).
+           02  LABEL1L    COMP  PIC  S9(4).
+           02  LABEL1F    PICTURE X.
+           02  FILLER REDEFINES LABEL1F.
+             03 LABEL1A    PICTURE X.
+           02  FILLER   PICTURE X(2).
+           02  LABEL1I  PIC X(10).
+           02  LABEL2L    COMP  PIC  S9(4).
+           02  LABEL2F    PICTURE X.
+           02  FILLER REDEFINES LABEL2F.
+             03 LABEL2A    PICTURE X.
+           02  FILLER   PICTURE X(2).
+           02  LABEL2I  PIC X(29).
+           02  T1MSGL    COMP  PIC  S9(4).
+           02  T1MSGF    PICTURE X.
+           02  FILLER REDEFINES T1MSGF.
+             03 T1MSGA    PICTURE X.
+           02  FILLER   PICTURE X(2).
+           02  T1MSGI  PIC X(60).
+           02  T1DATAL    COMP  PIC  S9(4).
+           02  T1DATAF    PICTURE X.
+           02  FILLER REDEFINES T1DATAF.
+             03 T1DATAA    PICTURE X.
+           02  FILLER   PICTURE X(2).
+           02  T1DATAI  PIC X(8).
+           02  LMSGL    COMP  PIC  S9(4).
+           02  LMSGF    PICTURE X.
+           02  FILLER REDEFINES LMSGF.
+             03 LMSGA    PICTURE X.
+           02  FILLER   PICTURE X(2).
+           02  LMSGI  PIC X(11).
+           02  T1HORAL    COMP  PIC  S9(4).
+           02  T1HORAF    PICTURE X.
+           02  FILLER REDEFINES T1HORAF.
+             03 T1HORAA    PICTURE X.
+           02  FILLER   PICTURE X(2).
+           02  T1HORAI  PIC X(8).
+           02  LFASEL    COMP  PIC  S9(4).
+           02  LFASEF    PICTURE X.
+           02  FILLER REDEFINES LFASEF.
+             03 LFASEA    PICTURE X.
+           02  FILLER   PICTURE X(2).
+           02  LFASEI  PIC X(5).
+           02  T1FASEL    COMP  PIC  S9(4).
+           02  T1FASEF    PICTURE X.
+           02  FILLER REDEFINES T1FASEF.
+             03 T1FASEA    PICTURE X.
+           02  FILLER   PICTURE X(2).
+           02  T1FASEI  PIC X(2).
+           02  LTASKL    COMP  PIC  S9(4).
+           02  LTASKF    PICTURE X.
+           02  FILLER REDEFINES LTASKF.
+             03 LTASKA    PICTURE X.
+           02  FILLER   PICTURE X(2).
+           02  LTASKI  PIC X(5).
+           02  T1TASKL    COMP  PIC  S9(4).
+           02  T1TASKF    PICTURE X.
+           02  FILLER REDEFINES T1TASKF.
+             03 T1TASKA    PICTURE X.
+           02  FILLER   PICTURE X(2).
+           02  T1TASKI  PIC X(6).
+           02  LTERML    COMP  PIC  S9(4).
+           02  LTERMF    PICTURE X.
+           02  FILLER REDEFINES LTERMF.
+             03 LTERMA    PICTURE X.
+           02  FILLER   PICTURE X(2).
+           02  LTERMI  PIC X(9).
+           02  T1TERML    COMP  PIC  S9(4).
+           02  T1TERMF    PICTURE X.
+           02  FILLER REDEFINES T1TERMF.
+             03 T1TERMA    PICTURE X.
+           02  FILLER   PICTURE X(2).
+           02  T1TERMI  PIC X(4).
+           02  LTRANSL    COMP  PIC  S9(4).
+           02  LTRANSF    PICTURE X.
+           02  FILLER REDEFINES LTRANSF.
+             03 LTRANSA    PICTURE X.
+           02  FILLER   PICTURE X(2).
+           02  LTRANSI  PIC X(10).
+           02  T1TRANSL    COMP  PIC  S9(4).
+           02  T1TRANSF    PICTURE X.
+           02  FILLER REDEFINES T1TRANSF.
+             03 T1TRANSA    PICTURE X.
+           02  FILLER   PICTURE X(2).
+           02  T1TRANSI  PIC X(4).
+           02  LCADAL    COMP  PIC  S9(4).
+           02  LCADAF    PICTURE X.
+           02  FILLER REDEFINES LCADAF.
+             03 LCADAA    PICTURE X.
+           02  FILLER   PICTURE X(2).
+           02  LCADAI  PIC X(3).
+           02  LLOGL    COMP  PIC  S9(4).
+           02  LLOGF    PICTURE X.
+           02  FILLER REDEFINES LLOGF.
+             03 LLOGA    PICTURE X.
+           02  FILLER   PICTURE X(2).
+           02  LLOGI  PIC X(6).
+           02  LFILTROL    COMP  PIC  S9(4).
+           02  LFILTROF    PICTURE X.
+           02  FILLER REDEFINES LFILTROF.
+             03 LFILTROA    PICTURE X.
+           02  FILLER   PICTURE X(2).
+           02  LFILTROI  PIC X(6).
+           02  LPRODUTL    COMP  PIC  S9(4).
+           02  LPRODUTF    PICTURE X.
+           02  FILLER REDEFINES LPRODUTF.
+             03 LPRODUTA    PICTURE X.
+           02  FILLER   PICTURE X(2).
+           02  LPRODUTI  PIC X(8).
+           02  LVALORL    COMP  PIC  S9(4).
+           02  LVALORF    PICTURE X.
+           02  FILLER REDEFINES LVALORF.
+             03 LVALORA    PICTURE X.
+           02  FILLER   PICTURE X(2).
+           02  LVALORI  PIC X(6).
+           02  LDE1L    COMP  PIC  S9(4).
+           02  LDE1F    PICTURE X.
+           02  FILLER REDEFINES LDE1F.
+             03 LDE1A    PICTURE X.
+           02  FILLER   PICTURE X(2).
+           02  LDE1I  PIC X(3).
+           02  LATE1L    COMP  PIC  S9(4).
+           02  LATE1F    PICTURE X.
+           02  FILLER REDEFINES LATE1F.
+             03 LATE1A    PICTURE X.
+           02  FILLER   PICTURE X(2).
+           02  LATE1I  PIC X(3).
+           02  LVENDIFL    COMP  PIC  S9(4).
+           02  LVENDIFF    PICTURE X.
+           02  FILLER REDEFINES LVENDIFF.
+             03 LVENDIFA    PICTURE X.
+           02  FILLER   PICTURE X(2).
+           02  LVENDIFI  PIC X(14).
+           02  LPAG1L    COMP  PIC  S9(4).
+           02  LPAG1F    PICTURE X.
+           02  FILLER REDEFINES LPAG1F.
+             03 LPAG1A    PICTURE X.
+           02  FILLER   PICTURE X(2).
+           02  LPAG1I  PIC X(5).
+           02  LDE2L    COMP  PIC  S9(4).
+           02  LDE2F    PICTURE X.
+           02  FILLER REDEFINES LDE2F.
+             03 LDE2A    PICTURE X.
+           02  FILLER   PICTURE X(2).
+           02  LDE2I  PIC X(3).
+           02  LPROD2L    COMP  PIC  S9(4).
+           02  LPROD2F    PICTURE X.
+           02  FILLER REDEFINES LPROD2F.
+             03 LPROD2A    PICTURE X.
+           02  FILLER   PICTURE X(2).
+           02  LPROD2I  PIC X(7).
+           02  LDELIMOL    COMP  PIC  S9(4).
+           02  LDELIMOF    PICTURE X.
+           02  FILLER REDEFINES LDELIMOF.
+             03 LDELIMOA    PICTURE X.
+           02  FILLER   PICTURE X(2).
+           02  LDELIMOI  PIC X(25).
+           02  LVENDIDL    COMP  PIC  S9(4).
+           02  LVENDIDF    PICTURE X.
+           02  FILLER REDEFINES LVENDIDF.
+             03 LVENDIDA    PICTURE X.
+           02  FILLER   PICTURE X(2).
+           02  LVENDIDI  PIC X(11).
+           02  LDELIMIL    COMP  PIC  S9(4).
+           02  LDELIMIF    PICTURE X.
+           02  FILLER REDEFINES LDELIMIF.
+             03 LDELIMIA    PICTURE X.
+           02  FILLER   PICTURE X(2).
+           02  LDELIMII  PIC X(19).
+           02  LVALUEL    COMP  PIC  S9(4).
+           02  LVALUEF    PICTURE X.
+           02  FILLER REDEFINES LVALUEF.
+             03 LVALUEA    PICTURE X.
+           02  FILLER   PICTURE X(2).
+           02  LVALUEI  PIC X(5).
+           02  LDELMTL    COMP  PIC  S9(4).
+           02  LDELMTF    PICTURE X.
+           02  FILLER REDEFINES LDELMTF.
+             03 LDELMTA    PICTURE X.
+           02  FILLER   PICTURE X(2).
+           02  LDELMTI  PIC X(11).
+           02  T1LINDED OCCURS 12 TIMES.
+             03  T1LINDEL    COMP  PIC  S9(4).
+             03  T1LINDEF    PICTURE X.
+             03  FILLER   PICTURE X(2).
+             03  T1LINDEI  PIC X(78).
+           02  LANTL    COMP  PIC  S9(4).
+           02  LANTF    PICTURE X.
+           02  FILLER REDEFINES LANTF.
+             03 LANTA    PICTURE X.
+           02  FILLER   PICTURE X(2).
+           02  LANTI  PIC X(8).
+           02  LPF7L    COMP  PIC  S9(4).
+           02  LPF7F    PICTURE X.
+           02  FILLER REDEFINES LPF7F.
+             03 LPF7A    PICTURE X.
+           02  FILLER   PICTURE X(2).
+           02  LPF7I  PIC X(2).
+           02  LSELL    COMP  PIC  S9(4).
+           02  LSELF    PICTURE X.
+           02  FILLER REDEFINES LSELF.
+             03 LSELA    PICTURE X.
+           02  FILLER   PICTURE X(2).
+           02  LSELI  PIC X(10).
+           02  LXL    COMP  PIC  S9(4).
+           02  LXF    PICTURE X.
+           02  FILLER REDEFINES LXF.
+             03 LXA    PICTURE X.
+           02  FILLER   PICTURE X(2).
+           02  LXI  PIC X(2).
+           02  LCONFL    COMP  PIC  S9(4).
+           02  LCONFF    PICTURE X.
+           02  FILLER REDEFINES LCONFF.
+             03 LCONFA    PICTURE X.
+           02  FILLER   PICTURE X(2).
+           02  LCONFI  PIC X(9).
+           02  LENTL    COMP  PIC  S9(4).
+           02  LENTF    PICTURE X.
+           02  FILLER REDEFINES LENTF.
+             03 LENTA    PICTURE X.
+           02  FILLER   PICTURE X(2).
+           02  LENTI  PIC X(5).
+           02  LPROL    COMP  PIC  S9(4).
+           02  LPROF    PICTURE X.
+           02  FILLER REDEFINES LPROF.
+             03 LPROA    PICTURE X.
+           02  FILLER   PICTURE X(2).
+           02  LPROI  PIC X(7).
+           02  LPF8L    COMP  PIC  S9(4).
+           02  LPF8F    PICTURE X.
+           02  FILLER REDEFINES LPF8F.
+             03 LPF8A    PICTURE X.
+           02  FILLER   PICTURE X(2).
+           02  LPF8I  PIC X(2).
+           02  LF10L    COMP  PIC  S9(4).
+           02  LF10F    PICTURE X.
+           02  FILLER REDEFINES LF10F.
+             03 LF10A    PICTURE X.
+           02  FILLER   PICTURE X(2).
+           02  LF10I  PIC X(3).
+           02  LCARRL    COMP  PIC  S9(4).
+           02  LCARRF    PICTURE X.
+           02  FILLER REDEFINES LCARRF.
+             03 LCARRA    PICTURE X.
+           02  FILLER   PICTURE X(2).
+           02  LCARRI  PIC X(8).
+           02  LF11L    COMP  PIC  S9(4).
+           02  LF11F    PICTURE X.
+           02  FILLER REDEFINES LF11F.
+             03 LF11A    PICTURE X.
+           02  FILLER   PICTURE X(2).
+           02  LF11I  PIC X(3).
+           02  LPEDL    COMP  PIC  S9(4).
+           02  LPEDF    PICTURE X.
+           02  FILLER REDEFINES LPEDF.
+             03 LPEDA    PICTURE X.
+           02  FILLER   PICTURE X(2).
+           02  LPEDI  PIC X(7).
+           02  T1TOTCL    COMP  PIC  S9(4).
+           02  T1TOTCF    PICTURE X.
+           02  FILLER REDEFINES T1TOTCF.
+             03 T1TOTCA    PICTURE X.
+           02  FILLER   PICTURE X(2).
+           02  T1TOTCI  PIC X(4).
+           02  T1FVALL    COMP  PIC  S9(4).
+           02  T1FVALF    PICTURE X.
+           02  FILLER REDEFINES T1FVALF.
+             03 T1FVALA    PICTURE X.
+           02  FILLER   PICTURE X(2).
+           02  T1FVALI  PIC X(7).
+           02  T1FVALTL    COMP  PIC  S9(4).
+           02  T1FVALTF    PICTURE X.
+           02  FILLER REDEFINES T1FVALTF.
+             03 T1FVALTA    PICTURE X.
+           02  FILLER   PICTURE X(2).
+           02  T1FVALTI  PIC X(7).
+           02  T1VENDFL    COMP  PIC  S9(4).
+           02  T1VENDFF    PICTURE X.
+           02  FILLER REDEFINES T1VENDFF.
+             03 T1VENDFA    PICTURE X.
+           02  FILLER   PICTURE X(2).
+           02  T1VENDFI  PIC X(15).
+           02  T1PAGAL    COMP  PIC  S9(4).
+           02  T1PAGAF    PICTURE X.
+           02  FILLER REDEFINES T1PAGAF.
+             03 T1PAGAA    PICTURE X.
+           02  FILLER   PICTURE X(2).
+           02  T1PAGAI  PIC X(2).
+           02  T1PRODFL    COMP  PIC  S9(4).
+           02  T1PRODFF    PICTURE X.
+           02  FILLER REDEFINES T1PRODFF.
+             03 T1PRODFA    PICTURE X.
+           02  FILLER   PICTURE X(2).
+           02  T1PRODFI  PIC X(15).
+           02  T1PAGTL    COMP  PIC  S9(4).
+           02  T1PAGTF    PICTURE X.
+           02  FILLER REDEFINES T1PAGTF.
+             03 T1PAGTA    PICTURE X.
+           02  FILLER   PICTURE X(2).
+           02  T1PAGTI  PIC X(2).
+       01  MAPPRLO REDEFINES MAPPRLI.
+           02  FILLER PIC X(12).
+           02  FILLER PICTURE X(3).
+           02  LABEL1C    PICTURE X.
+           02  LABEL1H    PICTURE X.
+           02  LABEL1O  PIC X(10).
+           02  FILLER PICTURE X(3).
+           02  LABEL2C    PICTURE X.
+           02  LABEL2H    PICTURE X.
+           02  LABEL2O  PIC X(29).
+           02  FILLER PICTURE X(3).
+           02  T1MSGC    PICTURE X.
+           02  T1MSGH    PICTURE X.
+           02  T1MSGO PIC X(60).
+           02  FILLER PICTURE X(3).
+           02  T1DATAC    PICTURE X.
+           02  T1DATAH    PICTURE X.
+           02  T1DATAO PIC X(8).
+           02  FILLER PICTURE X(3).
+           02  LMSGC    PICTURE X.
+           02  LMSGH    PICTURE X.
+           02  LMSGO  PIC X(11).
+           02  FILLER PICTURE X(3).
+           02  T1HORAC    PICTURE X.
+           02  T1HORAH    PICTURE X.
+           02  T1HORAO PIC X(8).
+           02  FILLER PICTURE X(3).
+           02  LFASEC    PICTURE X.
+           02  LFASEH    PICTURE X.
+           02  LFASEO  PIC X(5).
+           02  FILLER PICTURE X(3).
+           02  T1FASEC    PICTURE X.
+           02  T1FASEH    PICTURE X.
+           02  T1FASEO PIC 9(2).
+           02  FILLER PICTURE X(3).
+           02  LTASKC    PICTURE X.
+           02  LTASKH    PICTURE X.
+           02  LTASKO  PIC X(5).
+           02  FILLER PICTURE X(3).
+           02  T1TASKC    PICTURE X.
+           02  T1TASKH    PICTURE X.
+           02  T1TASKO PIC 9(6).
+           02  FILLER PICTURE X(3).
+           02  LTERMC    PICTURE X.
+           02  LTERMH    PICTURE X.
+           02  LTERMO  PIC X(9).
+           02  FILLER PICTURE X(3).
+           02  T1TERMC    PICTURE X.
+           02  T1TERMH    PICTURE X.
+           02  T1TERMO PIC 9(4).
+           02  FILLER PICTURE X(3).
+           02  LTRANSC    PICTURE X.
+           02  LTRANSH    PICTURE X.
+           02  LTRANSO  PIC X(10).
+           02  FILLER PICTURE X(3).
+           02  T1TRANSC    PICTURE X.
+           02  T1TRANSH    PICTURE X.
+           02  T1TRANSO PIC 9(4).
+           02  FILLER PICTURE X(3).
+           02  LCADAC    PICTURE X.
+           02  LCADAH    PICTURE X.
+           02  LCADAO  PIC X(3).
+           02  FILLER PICTURE X(3).
+           02  LLOGC    PICTURE X.
+           02  LLOGH    PICTURE X.
+           02  LLOGO  PIC X(6).
+           02  FILLER PICTURE X(3).
+           02  LFILTROC    PICTURE X.
+           02  LFILTROH    PICTURE X.
+           02  LFILTROO  PIC X(6).
+           02  FILLER PICTURE X(3).
+           02  LPRODUTC    PICTURE X.
+           02  LPRODUTH    PICTURE X.
+           02  LPRODUTO  PIC X(8).
+           02  FILLER PICTURE X(3).
+           02  LVALORC    PICTURE X.
+           02  LVALORH    PICTURE X.
+           02  LVALORO  PIC X(6).
+           02  FILLER PICTURE X(3).
+           02  LDE1C    PICTURE X.
+           02  LDE1H    PICTURE X.
+           02  LDE1O  PIC X(3).
+           02  FILLER PICTURE X(3).
+           02  LATE1C    PICTURE X.
+           02  LATE1H    PICTURE X.
+           02  LATE1O  PIC X(3).
+           02  FILLER PICTURE X(3).
+           02  LVENDIFC    PICTURE X.
+           02  LVENDIFH    PICTURE X.
+           02  LVENDIFO  PIC X(14).
+           02  FILLER PICTURE X(3).
+           02  LPAG1C    PICTURE X.
+           02  LPAG1H    PICTURE X.
+           02  LPAG1O  PIC X(5).
+           02  FILLER PICTURE X(3).
+           02  LDE2C    PICTURE X.
+           02  LDE2H    PICTURE X.
+           02  LDE2O  PIC X(3).
+           02  FILLER PICTURE X(3).
+           02  LPROD2C    PICTURE X.
+           02  LPROD2H    PICTURE X.
+           02  LPROD2O  PIC X(7).
+           02  FILLER PICTURE X(3).
+           02  LDELIMOC    PICTURE X.
+           02  LDELIMOH    PICTURE X.
+           02  LDELIMOO  PIC X(25).
+           02  FILLER PICTURE X(3).
+           02  LVENDIDC    PICTURE X.
+           02  LVENDIDH    PICTURE X.
+           02  LVENDIDO  PIC X(11).
+           02  FILLER PICTURE X(3).
+           02  LDELIMIC    PICTURE X.
+           02  LDELIMIH    PICTURE X.
+           02  LDELIMIO  PIC X(19).
+           02  FILLER PICTURE X(3).
+           02  LVALUEC    PICTURE X.
+           02  LVALUEH    PICTURE X.
+           02  LVALUEO  PIC X(5).
+           02  FILLER PICTURE X(3).
+           02  LDELMTC    PICTURE X.
+           02  LDELMTH    PICTURE X.
+           02  LDELMTO  PIC X(11).
+           02  DFHMS1 OCCURS 12 TIMES.
+             03  FILLER PICTURE X(2).
+             03  T1LINDEA    PICTURE X.
+             03  T1LINDEC    PICTURE X.
+             03  T1LINDEH    PICTURE X.
+             03  T1LINDEO  PIC X(78).
+           02  FILLER PICTURE X(3).
+           02  LANTC    PICTURE X.
+           02  LANTH    PICTURE X.
+           02  LANTO  PIC X(8).
+           02  FILLER PICTURE X(3).
+           02  LPF7C    PICTURE X.
+           02  LPF7H    PICTURE X.
+           02  LPF7O  PIC X(2).
+           02  FILLER PICTURE X(3).
+           02  LSELC    PICTURE X.
+           02  LSELH    PICTURE X.
+           02  LSELO  PIC X(10).
+           02  FILLER PICTURE X(3).
+           02  LXC    PICTURE X.
+           02  LXH    PICTURE X.
+           02  LXO  PIC X(2).
+           02  FILLER PICTURE X(3).
+           02  LCONFC    PICTURE X.
+           02  LCONFH    PICTURE X.
+           02  LCONFO  PIC X(9).
+           02  FILLER PICTURE X(3).
+           02  LENTC    PICTURE X.
+           02  LENTH    PICTURE X.
+           02  LENTO  PIC X(5).
+           02  FILLER PICTURE X(3).
+           02  LPROC    PICTURE X.
+           02  LPROH    PICTURE X.
+           02  LPROO  PIC X(7).
+           02  FILLER PICTURE X(3).
+           02  LPF8C    PICTURE X.
+           02  LPF8H    PICTURE X.
+           02  LPF8O  PIC X(2).
+           02  FILLER PICTURE X(3).
+           02  LF10C    PICTURE X.
+           02  LF10H    PICTURE X.
+           02  LF10O  PIC X(3).
+           02  FILLER PICTURE X(3).
+           02  LCARRC    PICTURE X.
+           02  LCARRH    PICTURE X.
+           02  LCARRO  PIC X(8).
+           02  FILLER PICTURE X(3).
+           02  LF11C    PICTURE X.
+           02  LF11H    PICTURE X.
+           02  LF11O  PIC X(3).
+           02  FILLER PICTURE X(3).
+           02  LPEDC    PICTURE X.
+           02  LPEDH    PICTURE X.
+           02  LPEDO  PIC X(7).
+           02  FILLER PICTURE X(3).
+           02  T1TOTCC    PICTURE X.
+           02  T1TOTCH    PICTURE X.
+           02  T1TOTCO  PIC X(4).
+           02  FILLER PICTURE X(3).
+           02  T1FVALC    PICTURE X.
+           02  T1FVALH    PICTURE X.
+           02  T1FVALO  PIC X(7).
+           02  FILLER PICTURE X(3).
+           02  T1FVALTC    PICTURE X.
+           02  T1FVALTH    PICTURE X.
+           02  T1FVALTO  PIC X(7).
+           02  FILLER PICTURE X(3).
+           02  T1VENDFC    PICTURE X.
+           02  T1VENDFH    PICTURE X.
+           02  T1VENDFO  PIC X(15).
+           02  FILLER PICTURE X(3).
+           02  T1PAGAC    PICTURE X.
+           02  T1PAGAH    PICTURE X.
+           02  T1PAGAO  PIC X(2).
+           02  FILLER PICTURE X(3).
+           02  T1PRODFC    PICTURE X.
+           02  T1PRODFH    PICTURE X.
+           02  T1PRODFO  PIC X(15).
+           02  FILLER PICTURE X(3).
+           02  T1PAGTC    PICTURE X.
+           02  T1PAGTH    PICTURE X.
+           02  T1PAGTO  PIC X(2).
+

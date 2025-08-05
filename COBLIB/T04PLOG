@@ -1,7 +1,7 @@
       *----------------------------------------------------------------*
        IDENTIFICATION                      DIVISION.
       *----------------------------------------------------------------*
-       PROGRAM-ID.                         T50PLOG.
+       PROGRAM-ID.                         T04PLOG.
        AUTHOR.                             RAQUEL.
       *----------------------------------------------------------------*
        ENVIRONMENT                         DIVISION.
@@ -18,11 +18,12 @@
        77  WS-LENGTH                       PIC S9(04) COMP.
        01  WS-DFHCOMMAREA.
            05 WS-FASE                      PIC X(01).
+           05 WS-ID-CPF                    PIC X(11).
        01  WS-VAR-TEMPO.
            05 WS-DATA                      PIC X(10).
            05 WS-HORARIO                   PIC X(08).
       *
-           COPY T50MLOG.
+           COPY T04MLOG.
            COPY DFHAID.
            COPY DFHBMSCA.
       *
@@ -94,7 +95,7 @@
       *
            EXEC CICS RECEIVE
                 MAP     ('MAPALOG')
-                MAPSET  ('T50MLOG')
+                MAPSET  ('T04MLOG')
                 INTO    (MAPALOGI)
            END-EXEC
            .
@@ -116,8 +117,10 @@
            EXEC SQL
               SELECT NOME_USUARIO
                     ,SENHA
+                    ,CPF
               INTO :DCLCLI-NOME-USUARIO
                   ,:DCLCLI-SENHA
+                  ,:DCLCLI-CPF
               FROM CLIENTES
               WHERE NOME_USUARIO = :DCLCLI-NOME-USUARIO
               AND   SENHA = :DCLCLI-SENHA
@@ -128,18 +131,18 @@
            END-IF
       *
            MOVE '1'                        TO WS-FASE
+           MOVE DCLCLI-CPF                 TO WS-ID-CPF
            EXEC CICS XCTL
-               PROGRAM('T50PPRL')
+               PROGRAM('T04PPRL')
                COMMAREA(WS-DFHCOMMAREA)
                LENGTH(LENGTH OF WS-DFHCOMMAREA)
            END-EXEC
-           MOVE DCLCLI-CPF                 TO WS-DFHCOMMAREA
            .
        220-PF2.
            MOVE '1'                        TO WS-FASE
       *
            EXEC CICS XCTL
-               PROGRAM('T50PCAD')
+               PROGRAM('T04PCAD')
                COMMAREA(WS-DFHCOMMAREA)
                LENGTH(LENGTH OF WS-DFHCOMMAREA)
            END-EXEC
@@ -187,7 +190,7 @@
       *
            EXEC CICS SEND
               MAP      ('MAPALOG')
-              MAPSET   ('T50MLOG')
+              MAPSET   ('T04MLOG')
               FROM     (MAPALOGO)
               ERASE  FREEKB ALARM CURSOR
            END-EXEC
@@ -196,7 +199,7 @@
            MOVE '1'                        TO WS-FASE
       *
            EXEC CICS XCTL
-               PROGRAM('T50PLOG')
+               PROGRAM('T04PLOG')
                COMMAREA(WS-DFHCOMMAREA)
                LENGTH(LENGTH OF WS-DFHCOMMAREA)
            END-EXEC
@@ -206,7 +209,7 @@
            MOVE '2'                        TO WS-FASE
       *
            EXEC CICS RETURN
-               TRANSID('FTMA')
+               TRANSID('FT4A')
                COMMAREA(WS-DFHCOMMAREA)
                LENGTH (LENGTH OF WS-DFHCOMMAREA)
            END-EXEC
@@ -234,11 +237,11 @@
            PERFORM 999-TRATA-FASE2
            .
        999-MAPFAIL.
-           MOVE 'ERRO MAPA T50MLOG'       TO WS-MSG-ERRO
+           MOVE 'ERRO MAPA T04MLOG'       TO WS-MSG-ERRO
            PERFORM 999-ENCERRA-TRANSACAO
            .
        999-ERRO-GENERICO.
-           MOVE 'ERRO GENERICO T50PLOG '   TO WS-MSG-ERRO
+           MOVE 'ERRO GENERICO T04PLOG '   TO WS-MSG-ERRO
            PERFORM 999-ENCERRA-TRANSACAO
            .
 

@@ -1,7 +1,7 @@
       *----------------------------------------------------------------*
        IDENTIFICATION                      DIVISION.
       *----------------------------------------------------------------*
-       PROGRAM-ID.                         T50PPRL.
+       PROGRAM-ID.                         T04PPRL.
        AUTHOR.                             FELIPE.
 
       *----------------------------------------------------------------*
@@ -25,7 +25,7 @@
        01  LD-LINDET.
            05 FILLER                       PIC X(01) VALUE SPACES.
 
-           05 LD-ID                        PIC ZZZZZZ.
+           05 LD-ID                        PIC ZZZZZ9.
            05 FILLER                       PIC X(03) VALUE SPACES.
 
            05 LD-PRODUTO                   PIC X(25).
@@ -72,15 +72,19 @@
 
        01  WS-DFHCOMMAREA.
            05 WS-FASE                      PIC X(01).
+           05 WS-CPF-DFHCOMMAREA           PIC X(11).
+           05 WS-ID-PRODUTO                PIC 9(09).
+           05 WS-CONT-CARR                 PIC 9(09).
+           05 WS-ID-PEDIDO                 PIC 9(09).
+           05 WS-ID-CONTA-BANCARIA         PIC 9(09).
            05 WS-PAGA                      PIC 9(02).
            05 WS-PAGT                      PIC 9(02).
-           05 WS-ID-PRODUTO                PIC X(05).
-           05 WS-CPF-DFHCOMMAREA           PIC X(11).
-
+           
+           
        77  WS-EIBRESP                      PIC X(30).
        77  WS-SQLCODE                      PIC +9(9).
        77  WS-FILE-NAME                    PIC X(08)
-                                                   VALUE 'T50MPRLT'.
+                                                   VALUE 'T04MPRLT'.
        77  WS-QUEUE-NAME                   PIC X(08)
                                                    VALUE 'QT3PPRD'.
        77  WS-ITEM                         PIC S9(04) COMP.
@@ -107,7 +111,13 @@
            05  WS-VALOR-MINIMO              PIC S9(7) USAGE COMP-3.
            05  WS-VALOR-MAXIMO              PIC S9(7) USAGE COMP-3.
 
-           COPY T50MPRL.
+       01  WS-DFHCOMMAREA-AUX.
+           05 WS-FASE-AUX                  PIC X(01).
+           05 WS-ID-CPF                    PIC X(11).
+           05 WS-ID-PROD                   PIC 9(09).
+           05 WS-CONT-CARR                 PIC 9(09).
+
+           COPY T04MPRL.
 
            COPY DFHAID.
            COPY DFHBMSCA.
@@ -194,7 +204,6 @@
                ENTER   (200-ENTER)
                PF1     (210-PF1)
                PF2     (220-PF2)
-               PF3     (230-PF3)
                PF5     (250-PF5)
                PF7     (270-PF7)
                PF8     (280-PF8)
@@ -203,9 +212,9 @@
            END-EXEC
 
            EXEC CICS RECEIVE
-              MAP   ('T50MPRL')
-              MAPSET('T50MPRL')
-              INTO  (T50MPRLI)
+              MAP   ('T04MPRL')
+              MAPSET('T04MPRL')
+              INTO  (T04MPRLI)
            END-EXEC
            .
 
@@ -213,7 +222,7 @@
            INITIALIZE WS-AUXILIARES
 
            IF PRDL EQUAL 0 OR PRDI EQUAL SPACES
-               MOVE ALL '%'                TO WS-PRODUTO
+               MOVE '%'                TO WS-PRODUTO
            ELSE
                IF PRDI(1:1) = SPACE
                    MOVE PRDI                   TO WS-PRODUTO
@@ -253,49 +262,53 @@
            .
 
         210-PF1.
-           IF EIBCPOSN <= 640 OR EIBCPOSN >= 1439
+           IF EIBCPOSN <= 560 OR EIBCPOSN >= 1520
               MOVE 'POSICAO INVALIDA DO CURSOR'
                                            TO MSGO
              PERFORM 999-TRATA-FASE2
-             PERFORM 999-CHAMA-CURSOR
+      *      PERFORM 999-CHAMA-CURSOR
            END-IF
 
-           COMPUTE WS-INDEX = EIBCPOSN / 80 - 7
+           COMPUTE WS-INDEX = EIBCPOSN / 80 - 6
            MOVE LINDETI(WS-INDEX)         TO LD-LINDET
 
            IF LD-PRODUTO EQUAL SPACES
               MOVE 'POSICAO NAO CONTEM PRODUTO'
                                            TO MSGO
               PERFORM 999-TRATA-FASE2
-              PERFORM 999-CHAMA-CURSOR
-           ELSE
-           STRING 'PRODUTO '                   DELIMITED BY SIZE
-                  LD-PRODUTO                   DELIMITED BY SPACES
-                  ' SELECIONADO PARA CONSULTA' DELIMITED BY SIZE
-             INTO MSGO
+      *       PERFORM 999-CHAMA-CURSOR
+      *    ELSE
+      *    STRING 'PRODUTO '                   DELIMITED BY SIZE
+      *           LD-PRODUTO                   DELIMITED BY SPACES
+      *           ' SELECIONADO PARA CONSULTA' DELIMITED BY SIZE
+      *      INTO MSGO
+           END-IF
 
-           MOVE '1'                            TO WS-FASE
+           MOVE '1'                            TO WS-FASE-AUX
+           MOVE WS-CPF-DFHCOMMAREA             TO WS-ID-CPF
+      *    STRING WS-INDEX  DELIMITED BY SPACE
+      *    '/'                                   DELIMITED BY SIZE
+      *    LD-ID                                 DELIMITED BY SIZE    
+      *    INTO MSGO
+
+           MOVE LD-ID                          TO WS-ID-PROD
+      *    PERFORM 999-TRATA-FASE2
 
            EXEC CICS XCTL
-                PROGRAM('T50PLOG')
-                COMMAREA(WS-DFHCOMMAREA)
-                LENGTH(LENGTH OF WS-DFHCOMMAREA)
+                PROGRAM('T04PDTL')
+                COMMAREA(WS-DFHCOMMAREA-AUX)
+                LENGTH(LENGTH OF WS-DFHCOMMAREA-AUX)
            END-EXEC
-           END-IF
            .
 
         220-PF2.
            MOVE '1'                          TO WS-FASE
 
            EXEC CICS XCTL
-               PROGRAM('T50PLOG')
+               PROGRAM('T04PLOG')
                COMMAREA(WS-DFHCOMMAREA)
                LENGTH(LENGTH OF WS-DFHCOMMAREA)
            END-EXEC
-           .
-
-        230-PF3.
-           PERFORM 999-ENCERRA-TRANSACAO
            .
 
         240-ANYKEY.
@@ -311,7 +324,7 @@
            MOVE 'LIMPEZA DE TELA EXECUTADA' TO MSGO
            MOVE -1                          TO PRDL
            EXEC CICS XCTL
-               PROGRAM('T50PPRL')
+               PROGRAM('T04PPRL')
                COMMAREA(WS-DFHCOMMAREA)
                LENGTH(LENGTH OF WS-DFHCOMMAREA)
            END-EXEC
@@ -349,7 +362,7 @@
            MOVE '1'                          TO WS-FASE
 
            EXEC CICS XCTL
-               PROGRAM('T50PLOG')
+               PROGRAM('T04PLOG')
                COMMAREA(WS-DFHCOMMAREA)
                LENGTH(LENGTH OF WS-DFHCOMMAREA)
            END-EXEC.
@@ -370,8 +383,8 @@
            EVALUATE SQLCODE
                WHEN 0
                     ADD 1                    TO WS-ITEM
-                    MOVE DCLPRD-ID-PRODUTO      TO WS-ID
-                    MOVE WS-ID                  TO LD-ID
+                    MOVE DCLPRD-ID-PRODUTO      TO LD-ID
+      *             MOVE WS-ID                  TO LD-ID
                     MOVE DCLPRD-NOME-PRODUTO    TO LD-PRODUTO
                     MOVE DCLPRD-VENDIDO-POR     TO LD-VNDDPOR
                     MOVE DCLPRD-VALOR-UNITARIO  TO LD-VALOR
@@ -447,10 +460,10 @@
            .
 
         999-CARREGA-DETALHES.
-           COMPUTE WS-ITEM = (WS-PAGA - 1) * 12 + 1
+           COMPUTE WS-ITEM = (WS-PAGA - 1) * 10 + 1
            MOVE 0                          TO WS-INDEX
 
-           PERFORM WITH TEST AFTER UNTIL WS-INDEX = 12
+           PERFORM WITH TEST AFTER UNTIL WS-INDEX = 10
               EXEC CICS READQ TS
                  QUEUE (WS-QUEUE-NAME)
                  INTO  (LD-LINDET)
@@ -463,7 +476,7 @@
                  MOVE LD-LINDET            TO LINDETO(WS-INDEX)
               ELSE
                  IF WS-RESP = DFHRESP(ITEMERR)
-                    PERFORM WITH TEST AFTER UNTIL WS-INDEX = 12
+                    PERFORM WITH TEST AFTER UNTIL WS-INDEX = 10
                        ADD 1 TO WS-INDEX
                        MOVE SPACES         TO LINDETO(WS-INDEX)
                     END-PERFORM
@@ -503,9 +516,9 @@
            MOVE WS-PAGT                   TO PAG2O
 
            EXEC CICS SEND
-               MAP ('T50MPRL')
-               MAPSET('T50MPRL')
-               FROM(T50MPRLO)
+               MAP ('T04MPRL')
+               MAPSET('T04MPRL')
+               FROM(T04MPRLO)
                ERASE FREEKB ALARM CURSOR
            END-EXEC
            .
@@ -514,7 +527,7 @@
            MOVE '1'                        TO WS-FASE
 
            EXEC CICS XCTL
-               PROGRAM('T50PPRL')
+               PROGRAM('T04PPRL')
                COMMAREA(WS-DFHCOMMAREA)
                LENGTH(LENGTH OF WS-DFHCOMMAREA)
            END-EXEC
@@ -524,7 +537,7 @@
            MOVE '2'                        TO WS-FASE
 
            EXEC CICS RETURN
-               TRANSID('FTMC')
+               TRANSID('FT4C')
                COMMAREA(WS-DFHCOMMAREA)
                LENGTH(LENGTH OF WS-DFHCOMMAREA)
            END-EXEC

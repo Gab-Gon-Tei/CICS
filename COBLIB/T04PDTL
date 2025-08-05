@@ -21,6 +21,7 @@
        77  WS-CPF-ERRO                      PIC X(11).
 
        77  WS-ATIVO                  PIC X(01) VALUE 'A'.
+       77  WS-TIPO-CARTAO           PIC X(01) VALUE '0'.
        01  WS-DATA.
            05 WS-ANO                       PIC X(02).
            05 WS-MES                       PIC X(02).
@@ -48,9 +49,9 @@
        01  WS-DFHCOMMAREA.
            05 WS-FASE                      PIC X(01).
            05 WS-ID-CPF                    PIC X(11).
-           05 WS-ID-PROD                   PIC S9(09).
-           05 WS-CONT-CARR                 PIC S9(09).
-           05 WS-ID-PEDIDO                 PIC S9(09).
+           05 WS-ID-PROD                   PIC 9(09).
+           05 WS-CONT-CARR                 PIC 9(09).
+           05 WS-ID-PEDIDO                 PIC 9(09).
 
       *MAPA REFERENTE A TELA DE CADASTRO
            COPY T04MDTL.
@@ -225,7 +226,7 @@
                         DATA_PEDIDO, 
                         VALOR_TOTAL)
                        VALUES
-                       (:WS-ID-CPF, 0, '0', CURRENT DATE, 0)
+                       (:WS-ID-CPF, 0, :WS-TIPO-CARTAO, CURRENT DATE, 0)
                    END-EXEC
                    MOVE DCLPDD-ID-PEDIDO TO DCLCAR-ID-PEDIDO
                WHEN OTHER

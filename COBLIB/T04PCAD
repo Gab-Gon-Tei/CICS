@@ -1,7 +1,7 @@
       *----------------------------------------------------------------*
        IDENTIFICATION                      DIVISION.
       *----------------------------------------------------------------*
-       PROGRAM-ID.                         T50PCAD.
+       PROGRAM-ID.                         T04PCAD.
        AUTHOR.                             RAQUEL.
       *----------------------------------------------------------------*
        ENVIRONMENT                         DIVISION.
@@ -30,7 +30,7 @@
            05 WS-HORARIO                   PIC X(08).
        77  WS-SQLCODE                      PIC +9(9).
       *
-           COPY T50MCAD.
+           COPY T04MCAD.
            COPY DFHAID.
            COPY DFHBMSCA.
       *
@@ -101,7 +101,7 @@
       *
            EXEC CICS RECEIVE
                 MAP     ('MAPACAD')
-                MAPSET  ('T50MCAD')
+                MAPSET  ('T04MCAD')
                 INTO    (MAPACADI)
            END-EXEC
            .
@@ -218,7 +218,7 @@
               WHEN 0
                  MOVE '1'                  TO WS-FASE
                  EXEC CICS XCTL
-                     PROGRAM('T50PPRL')
+                     PROGRAM('T04PPRL')
                      COMMAREA(WS-DFHCOMMAREA)
                      LENGTH(LENGTH OF WS-DFHCOMMAREA)
                  END-EXEC
@@ -232,7 +232,7 @@
        230-PF3.
            MOVE '1'                        TO WS-FASE
            EXEC CICS XCTL
-                PROGRAM('T50PLOG')
+                PROGRAM('T04PLOG')
                 COMMAREA(WS-DFHCOMMAREA)
                 LENGTH(LENGTH OF WS-DFHCOMMAREA)
            END-EXEC
@@ -281,7 +281,7 @@
       *
            EXEC CICS SEND
               MAP      ('MAPACAD')
-              MAPSET   ('T50MCAD')
+              MAPSET   ('T04MCAD')
               FROM     (MAPACADO)
               ERASE  FREEKB ALARM CURSOR
            END-EXEC
@@ -290,7 +290,7 @@
            MOVE '1'                        TO WS-FASE
       *
            EXEC CICS RETURN
-               TRANSID('FTMB')
+               TRANSID('FT4B')
                COMMAREA(WS-DFHCOMMAREA)
                LENGTH(LENGTH OF WS-DFHCOMMAREA)
            END-EXEC
@@ -300,7 +300,7 @@
            MOVE '2'                        TO WS-FASE
       *
            EXEC CICS RETURN
-               TRANSID('FTMB')
+               TRANSID('FT4B')
                COMMAREA(WS-DFHCOMMAREA)
                LENGTH (LENGTH OF WS-DFHCOMMAREA)
            END-EXEC
@@ -313,11 +313,11 @@
            MOVE -1                         TO NOMCADL
            .
        999-MAPFAIL.
-           MOVE 'ERRO MAPA T50MCAD'       TO WS-MSG-ERRO
+           MOVE 'ERRO MAPA T04MCAD'       TO WS-MSG-ERRO
            PERFORM 999-ENCERRA-TRANSACAO
            .
        999-ERRO-GENERICO.
-           MOVE 'ERRO GENERICO T50PCAD'   TO WS-MSG-ERRO
+           MOVE 'ERRO GENERICO T04PCAD'   TO WS-MSG-ERRO
            PERFORM 999-ENCERRA-TRANSACAO
            .
        999-ERROR-DB2.

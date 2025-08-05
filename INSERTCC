@@ -1,3 +1,4 @@
+--DROP DAS TABELAS  
   DROP TABLE CLIENTES;
   DROP TABLE PRODUTOS;
   DROP TABLE CONTA_BANCARIA;
@@ -62,7 +63,7 @@
   ON DELETE RESTRICT;
 
 --**********************
---* CARTOES             *
+--* CARTOES            *
 --**********************
   CREATE TABLE CARTOES (
        NUMERO_CARTAO     DECIMAL(16,0) NOT NULL PRIMARY KEY,
@@ -89,11 +90,11 @@ CREATE TABLE PEDIDOS (
     ID_PEDIDO INTEGER GENERATED ALWAYS AS IDENTITY
         (START WITH 1 INCREMENT BY 1) PRIMARY KEY,
     CPF             CHAR(11) NOT NULL,
-    NUMERO_CARTAO   DECIMAL(16,0) NOT NULL,
-    TIPO_CARTAO     CHAR(1)       NOT NULL,
-    DATA_PEDIDO     DATE          NOT NULL,
+    NUMERO_CARTAO   DECIMAL(16,0) NOT NULL DEFAULT 0,
+    TIPO_CARTAO     CHAR(1)       NOT NULL DEFAULT 'N',
+    DATA_PEDIDO     DATE          NOT NULL DEFAULT CURRENT_DATE,
     ENDERECO        CHAR(255),
-    VALOR_TOTAL DECIMAL(7,2)               DEFAULT 0,
+    VALOR_TOTAL     DECIMAL(7,2)       DEFAULT 0,
     ATIVO          CHAR(1)        NOT NULL DEFAULT 'A'
 );
 --                                'A' PEDIDO ABERTO, 'F'PEDIDO FECHADO
@@ -129,6 +130,1807 @@ CREATE TABLE CARRINHO (
  ON CARRINHO (ID_PEDIDO, ID_PRODUTO);
  ALTER TABLE CARRINHO
  ADD PRIMARY KEY (ID_PEDIDO, ID_PRODUTO);
+
+--INSERTS DE DADOS NA TABELA PRODUTOS 
+  INSERT INTO PRODUTOS (NOME_PRODUTO, DESCRICAO, VENDIDO_POR,
+  DATA_CADASTRO, QUANTIDADE_ESTOQUE, VALOR_UNITARIO) VALUES
+  ('The Legend of Zelda: Tea ', 'Aventura epica em Hyrule.',
+  'Nintendo eShop     ', '2023-05-12', 450, 299.99);
+
+  INSERT INTO PRODUTOS (NOME_PRODUTO, DESCRICAO, VENDIDO_POR,
+  DATA_CADASTRO, QUANTIDADE_ESTOQUE, VALOR_UNITARIO) VALUES
+  ('Elden Ring               ', 'RPG de acao desafiador.',
+  'Bandai Namco Store ', '2022-02-25', 380, 249.90);
+
+  INSERT INTO PRODUTOS (NOME_PRODUTO, DESCRICAO, VENDIDO_POR,
+  DATA_CADASTRO, QUANTIDADE_ESTOQUE, VALOR_UNITARIO) VALUES
+  ('Cyberpunk 2077           ', 'RPG mundo aberto futurista.',
+  'CD Projekt Store   ', '2020-12-10', 520, 199.99);
+
+  INSERT INTO PRODUTOS (NOME_PRODUTO, DESCRICAO, VENDIDO_POR,
+  DATA_CADASTRO, QUANTIDADE_ESTOQUE, VALOR_UNITARIO) VALUES
+  ('Grand Theft Auto V       ', 'Acao e aventura mundo aberto.',
+  'Rockstar Games Stor', '2013-09-17', 700, 99.50);
+
+  INSERT INTO PRODUTOS (NOME_PRODUTO, DESCRICAO, VENDIDO_POR,
+  DATA_CADASTRO, QUANTIDADE_ESTOQUE, VALOR_UNITARIO) VALUES
+  ('Red Dead Redemption 2    ', 'Faroeste epico mundo aberto.',
+  'Rockstar Games Stor', '2018-10-26', 650, 149.99);
+
+  INSERT INTO PRODUTOS (NOME_PRODUTO, DESCRICAO, VENDIDO_POR,
+  DATA_CADASTRO, QUANTIDADE_ESTOQUE, VALOR_UNITARIO) VALUES
+  ('Minecraft                ', 'Jogo de construcao e aventura.',
+  'Mojang Studios      ', '2011-11-18', 900, 79.90);
+
+  INSERT INTO PRODUTOS (NOME_PRODUTO, DESCRICAO, VENDIDO_POR,
+  DATA_CADASTRO, QUANTIDADE_ESTOQUE, VALOR_UNITARIO) VALUES
+  ('Fortnite                 ', 'Battle Royale popular.',
+  'Epic Games Store   ', '2017-07-25', 850, 0.00);
+
+  INSERT INTO PRODUTOS (NOME_PRODUTO, DESCRICAO, VENDIDO_POR,
+  DATA_CADASTRO, QUANTIDADE_ESTOQUE, VALOR_UNITARIO) VALUES
+  ('Valorant                 ', 'Tiro tatico em 1a pessoa.',
+  'Riot Games         ', '2020-06-02', 780, 0.00);
+
+  INSERT INTO PRODUTOS (NOME_PRODUTO, DESCRICAO, VENDIDO_POR,
+  DATA_CADASTRO, QUANTIDADE_ESTOQUE, VALOR_UNITARIO) VALUES
+  ('League of Legends        ', 'MOBA competitivo.',
+  'Riot Games         ', '2009-10-27', 950, 0.00);
+
+  INSERT INTO PRODUTOS (NOME_PRODUTO, DESCRICAO, VENDIDO_POR,
+  DATA_CADASTRO, QUANTIDADE_ESTOQUE, VALOR_UNITARIO) VALUES
+  ('Overwatch 2              ', 'Jogo de tiro em equipe.',
+  'Blizzard Store     ', '2022-10-04', 600, 0.00);
+
+  INSERT INTO PRODUTOS (NOME_PRODUTO, DESCRICAO, VENDIDO_POR,
+  DATA_CADASTRO, QUANTIDADE_ESTOQUE, VALOR_UNITARIO) VALUES
+  ('Call of Duty: Modern Warf', 'Novo capitulo da serie.',
+  'Activision Store   ', '2023-11-10', 400, 279.99);
+
+  INSERT INTO PRODUTOS (NOME_PRODUTO, DESCRICAO, VENDIDO_POR,
+  DATA_CADASTRO, QUANTIDADE_ESTOQUE, VALOR_UNITARIO) VALUES
+  ('FIFA 25                  ', 'Simulador de futebol realista.',
+  'EA Sports          ', '2024-09-27', 550, 269.90);
+
+  INSERT INTO PRODUTOS (NOME_PRODUTO, DESCRICAO, VENDIDO_POR,
+  DATA_CADASTRO, QUANTIDADE_ESTOQUE, VALOR_UNITARIO) VALUES
+  ('NBA 2K25                 ', 'Simulador de basquete.',
+  '2K Games           ', '2024-09-06', 480, 259.90);
+
+  INSERT INTO PRODUTOS (NOME_PRODUTO, DESCRICAO, VENDIDO_POR,
+  DATA_CADASTRO, QUANTIDADE_ESTOQUE, VALOR_UNITARIO) VALUES
+  ('Assassins Creed Mirage   ', 'Aventura furtiva.',
+  'Ubisoft Store      ', '2023-10-05', 320, 229.99);
+
+  INSERT INTO PRODUTOS (NOME_PRODUTO, DESCRICAO, VENDIDO_POR,
+  DATA_CADASTRO, QUANTIDADE_ESTOQUE, VALOR_UNITARIO) VALUES
+  ('Starfield                ', 'RPG de ficcao cientifica.',
+  'Bethesda Store     ', '2023-09-06', 390, 289.90);
+
+  INSERT INTO PRODUTOS (NOME_PRODUTO, DESCRICAO, VENDIDO_POR,
+  DATA_CADASTRO, QUANTIDADE_ESTOQUE, VALOR_UNITARIO) VALUES
+  ('Baldurs Gate 3           ', 'RPG tatico baseado em D&D.',
+  'Larian Studios     ', '2023-08-03', 280, 239.99);
+
+  INSERT INTO PRODUTOS (NOME_PRODUTO, DESCRICAO, VENDIDO_POR,
+  DATA_CADASTRO, QUANTIDADE_ESTOQUE, VALOR_UNITARIO) VALUES
+  ('Hogwarts Legacy          ', 'RPG mundo aberto Harry Potter.',
+  'Warner Bros. Games ', '2023-02-10', 410, 219.99);
+
+  INSERT INTO PRODUTOS (NOME_PRODUTO, DESCRICAO, VENDIDO_POR,
+  DATA_CADASTRO, QUANTIDADE_ESTOQUE, VALOR_UNITARIO) VALUES
+  ('Marvels Spider-Man 2     ', 'Aventura super-herois.',
+  'PlayStation Store  ', '2023-10-20', 360, 299.99);
+
+  INSERT INTO PRODUTOS (NOME_PRODUTO, DESCRICAO, VENDIDO_POR,
+  DATA_CADASTRO, QUANTIDADE_ESTOQUE, VALOR_UNITARIO) VALUES
+  ('God of War Ragnarok      ', 'Aventura nordica epica.',
+  'PlayStation Store  ', '2022-11-09', 300, 279.90);
+
+  INSERT INTO PRODUTOS (NOME_PRODUTO, DESCRICAO, VENDIDO_POR,
+  DATA_CADASTRO, QUANTIDADE_ESTOQUE, VALOR_UNITARIO) VALUES
+  ('Super Mario Bros. Wonder ', 'Plataforma 2D inovador.',
+  'Nintendo eShop     ', '2023-10-20', 470, 299.99);
+
+  INSERT INTO PRODUTOS (NOME_PRODUTO, DESCRICAO, VENDIDO_POR,
+  DATA_CADASTRO, QUANTIDADE_ESTOQUE, VALOR_UNITARIO) VALUES
+  ('Diablo IV                ', 'RPG de acao sombrio.',
+  'Blizzard Store     ', '2023-06-06', 340, 269.90);
+
+  INSERT INTO PRODUTOS (NOME_PRODUTO, DESCRICAO, VENDIDO_POR,
+  DATA_CADASTRO, QUANTIDADE_ESTOQUE, VALOR_UNITARIO) VALUES
+  ('Street Fighter 6         ', 'Novo capitulo de luta.',
+  'Capcom Store       ', '2023-06-02', 290, 209.99);
+
+  INSERT INTO PRODUTOS (NOME_PRODUTO, DESCRICAO, VENDIDO_POR,
+  DATA_CADASTRO, QUANTIDADE_ESTOQUE, VALOR_UNITARIO) VALUES
+  ('Tekken 8                 ', 'Jogo de luta 3D.',
+  'Bandai Namco Store ', '2024-01-26', 270, 219.90);
+
+  INSERT INTO PRODUTOS (NOME_PRODUTO, DESCRICAO, VENDIDO_POR,
+  DATA_CADASTRO, QUANTIDADE_ESTOQUE, VALOR_UNITARIO) VALUES
+  ('Final Fantasy VII Rebir  ', 'Segunda parte do remake.',
+  'Square Enix Store  ', '2024-02-29', 250, 319.99);
+
+  INSERT INTO PRODUTOS (NOME_PRODUTO, DESCRICAO, VENDIDO_POR,
+  DATA_CADASTRO, QUANTIDADE_ESTOQUE, VALOR_UNITARIO) VALUES
+  ('Resident Evil 4 Remake   ', 'Reimaginacao de terror.',
+  'Capcom Store       ', '2023-03-24', 310, 189.99);
+
+  INSERT INTO PRODUTOS (NOME_PRODUTO, DESCRICAO, VENDIDO_POR,
+  DATA_CADASTRO, QUANTIDADE_ESTOQUE, VALOR_UNITARIO) VALUES
+  ('Alan Wake 2              ', 'Terror psicologico.',
+  'Epic Games Store   ', '2023-10-27', 260, 179.90);
+
+  INSERT INTO PRODUTOS (NOME_PRODUTO, DESCRICAO, VENDIDO_POR,
+  DATA_CADASTRO, QUANTIDADE_ESTOQUE, VALOR_UNITARIO) VALUES
+  ('Marvels Midnight Suns    ', 'RPG tatico com herois.',
+  '2K Games           ', '2022-12-02', 200, 159.99);
+
+  INSERT INTO PRODUTOS (NOME_PRODUTO, DESCRICAO, VENDIDO_POR,
+  DATA_CADASTRO, QUANTIDADE_ESTOQUE, VALOR_UNITARIO) VALUES
+  ('Forza Motorsport         ', 'Simulador de corrida.',
+  'Xbox Store         ', '2023-10-10', 330, 249.99);
+
+  INSERT INTO PRODUTOS (NOME_PRODUTO, DESCRICAO, VENDIDO_POR,
+  DATA_CADASTRO, QUANTIDADE_ESTOQUE, VALOR_UNITARIO) VALUES
+  ('F1 24                    ', 'Simulador oficial F1.',
+  'EA Sports          ', '2024-05-31', 290, 239.90);
+
+  INSERT INTO PRODUTOS (NOME_PRODUTO, DESCRICAO, VENDIDO_POR,
+  DATA_CADASTRO, QUANTIDADE_ESTOQUE, VALOR_UNITARIO) VALUES
+  ('Madden NFL 25            ', 'Simulador futebol americano.',
+  'EA Sports          ', '2024-08-16', 300, 259.99);
+
+  INSERT INTO PRODUTOS (NOME_PRODUTO, DESCRICAO, VENDIDO_POR,
+  DATA_CADASTRO, QUANTIDADE_ESTOQUE, VALOR_UNITARIO) VALUES
+  ('EA Sports FC 25          ', 'Novo nome para futebol EA.',
+  'EA Sports          ', '2024-09-27', 500, 269.90);
+
+  INSERT INTO PRODUTOS (NOME_PRODUTO, DESCRICAO, VENDIDO_POR,
+  DATA_CADASTRO, QUANTIDADE_ESTOQUE, VALOR_UNITARIO) VALUES
+  ('Palworld                 ', 'Sobrevivencia criaturas.',
+  'Pocketpair         ', '2024-01-19', 600, 120.00);
+
+  INSERT INTO PRODUTOS (NOME_PRODUTO, DESCRICAO, VENDIDO_POR,
+  DATA_CADASTRO, QUANTIDADE_ESTOQUE, VALOR_UNITARIO) VALUES
+  ('Helldivers 2             ', 'Tiro cooperativo.',
+  'PlayStation Store  ', '2024-02-08', 400, 150.00);
+
+  INSERT INTO PRODUTOS (NOME_PRODUTO, DESCRICAO, VENDIDO_POR,
+  DATA_CADASTRO, QUANTIDADE_ESTOQUE, VALOR_UNITARIO) VALUES
+  ('Genshin Impact           ', 'RPG acao mundo aberto anime.',
+  'miHoYo             ', '2020-09-28', 999, 0.00);
+
+  INSERT INTO PRODUTOS (NOME_PRODUTO, DESCRICAO, VENDIDO_POR,
+  DATA_CADASTRO, QUANTIDADE_ESTOQUE, VALOR_UNITARIO) VALUES
+  ('Honkai: Star Rail        ', 'RPG estrategia por turnos.',
+  'miHoYo             ', '2023-04-26', 800, 0.00);
+
+  INSERT INTO PRODUTOS (NOME_PRODUTO, DESCRICAO, VENDIDO_POR,
+  DATA_CADASTRO, QUANTIDADE_ESTOQUE, VALOR_UNITARIO) VALUES
+  ('Apex Legends             ', 'Battle Royale rapido.',
+  'EA Games           ', '2019-02-04', 750, 0.00);
+
+  INSERT INTO PRODUTOS (NOME_PRODUTO, DESCRICAO, VENDIDO_POR,
+  DATA_CADASTRO, QUANTIDADE_ESTOQUE, VALOR_UNITARIO) VALUES
+  ('Rainbow Six Siege        ', 'Tiro tatico com destruicao.',
+  'Ubisoft Store      ', '2015-12-01', 580, 79.90);
+
+  INSERT INTO PRODUTOS (NOME_PRODUTO, DESCRICAO, VENDIDO_POR,
+  DATA_CADASTRO, QUANTIDADE_ESTOQUE, VALOR_UNITARIO) VALUES
+  ('Destiny 2                ', 'MMO de tiro com vasto conteudo.',
+  'Bungie             ', '2017-09-06', 620, 0.00);
+
+  INSERT INTO PRODUTOS (NOME_PRODUTO, DESCRICAO, VENDIDO_POR,
+  DATA_CADASTRO, QUANTIDADE_ESTOQUE, VALOR_UNITARIO) VALUES
+  ('Warframe                 ', 'Tiro e acao cooperativo.',
+  'Digital Extremes   ', '2013-03-25', 700, 0.00);
+
+  INSERT INTO PRODUTOS (NOME_PRODUTO, DESCRICAO, VENDIDO_POR,
+  DATA_CADASTRO, QUANTIDADE_ESTOQUE, VALOR_UNITARIO) VALUES
+  ('Rocket League            ', 'Futebol com carros.',
+  'Psyonix            ', '2015-07-07', 880, 0.00);
+
+  INSERT INTO PRODUTOS (NOME_PRODUTO, DESCRICAO, VENDIDO_POR,
+  DATA_CADASTRO, QUANTIDADE_ESTOQUE, VALOR_UNITARIO) VALUES
+  ('Fall Guys                ', 'Plataforma Battle Royale.',
+  'Mediatonic         ', '2020-08-04', 920, 0.00);
+
+  INSERT INTO PRODUTOS (NOME_PRODUTO, DESCRICAO, VENDIDO_POR,
+  DATA_CADASTRO, QUANTIDADE_ESTOQUE, VALOR_UNITARIO) VALUES
+  ('Among Us                 ', 'Jogo de deducao social.',
+  'Innersloth         ', '2018-06-15', 950, 20.00);
+
+  INSERT INTO PRODUTOS (NOME_PRODUTO, DESCRICAO, VENDIDO_POR,
+  DATA_CADASTRO, QUANTIDADE_ESTOQUE, VALOR_UNITARIO) VALUES
+  ('Stardew Valley           ', 'Simulador de fazenda e vida.',
+  'ConcernedApe       ', '2016-02-26', 890, 49.99);
+
+  INSERT INTO PRODUTOS (NOME_PRODUTO, DESCRICAO, VENDIDO_POR,
+  DATA_CADASTRO, QUANTIDADE_ESTOQUE, VALOR_UNITARIO) VALUES
+  ('Terraria                 ', 'Sandbox de aventura 2D.',
+  'Re-Logic           ', '2011-05-16', 870, 39.99);
+
+  INSERT INTO PRODUTOS (NOME_PRODUTO, DESCRICAO, VENDIDO_POR,
+  DATA_CADASTRO, QUANTIDADE_ESTOQUE, VALOR_UNITARIO) VALUES
+  ('Factorio                 ', 'Construcao de fabrica.',
+  'Wube Software      ', '2020-08-14', 250, 100.00);
+
+  INSERT INTO PRODUTOS (NOME_PRODUTO, DESCRICAO, VENDIDO_POR,
+  DATA_CADASTRO, QUANTIDADE_ESTOQUE, VALOR_UNITARIO) VALUES
+  ('Satisfactory             ', 'Construcao de fabrica 1a.',
+  'Coffee Stain Studi', '2020-06-08', 230, 90.00);
+
+  INSERT INTO PRODUTOS (NOME_PRODUTO, DESCRICAO, VENDIDO_POR,
+  DATA_CADASTRO, QUANTIDADE_ESTOQUE, VALOR_UNITARIO) VALUES
+  ('RimWorld                 ', 'Simulador de colonia.',
+  'Ludeon Studios     ', '2018-10-17', 280, 110.00);
+
+  INSERT INTO PRODUTOS (NOME_PRODUTO, DESCRICAO, VENDIDO_POR,
+  DATA_CADASTRO, QUANTIDADE_ESTOQUE, VALOR_UNITARIO) VALUES
+  ('Oxygen Not Included      ', 'Simulador colonia espacial.',
+  'Klei Entertainment ', '2019-07-30', 270, 80.00);
+
+  INSERT INTO PRODUTOS (NOME_PRODUTO, DESCRICAO, VENDIDO_POR,
+  DATA_CADASTRO, QUANTIDADE_ESTOQUE, VALOR_UNITARIO) VALUES
+  ('Cities: Skylines II      ', 'Simulador construcao cidades.',
+  'Paradox Interactiv', '2023-10-24', 310, 180.00);
+
+  INSERT INTO PRODUTOS (NOME_PRODUTO, DESCRICAO, VENDIDO_POR,
+  DATA_CADASTRO, QUANTIDADE_ESTOQUE, VALOR_UNITARIO) VALUES
+  ('Civilization VI          ', 'Estrategia por turnos.',
+  '2K Games           ', '2016-10-21', 450, 120.00);
+
+  INSERT INTO PRODUTOS (NOME_PRODUTO, DESCRICAO, VENDIDO_POR,
+  DATA_CADASTRO, QUANTIDADE_ESTOQUE, VALOR_UNITARIO) VALUES
+  ('Crusader Kings III       ', 'Simulador dinastia medieval.',
+  'Paradox Interactiv', '2020-09-01', 290, 150.00);
+
+  INSERT INTO PRODUTOS (NOME_PRODUTO, DESCRICAO, VENDIDO_POR,
+  DATA_CADASTRO, QUANTIDADE_ESTOQUE, VALOR_UNITARIO) VALUES
+  ('Total War: Warhammer I   ', 'Estrategia em tempo real.',
+  'SEGA               ', '2022-02-17', 260, 170.00);
+
+  INSERT INTO PRODUTOS (NOME_PRODUTO, DESCRICAO, VENDIDO_POR,
+  DATA_CADASTRO, QUANTIDADE_ESTOQUE, VALOR_UNITARIO) VALUES
+  ('Age of Empires IV        ', 'Estrategia em tempo real.',
+  'Xbox Game Studios  ', '2021-10-28', 350, 160.00);
+
+  INSERT INTO PRODUTOS (NOME_PRODUTO, DESCRICAO, VENDIDO_POR,
+  DATA_CADASTRO, QUANTIDADE_ESTOQUE, VALOR_UNITARIO) VALUES
+  ('StarCraft II             ', 'Estrategia ficcao cientifica.',
+  'Blizzard Store     ', '2010-07-27', 400, 0.00);
+
+  INSERT INTO PRODUTOS (NOME_PRODUTO, DESCRICAO, VENDIDO_POR,
+  DATA_CADASTRO, QUANTIDADE_ESTOQUE, VALOR_UNITARIO) VALUES
+  ('Dota 2                   ', 'MOBA competitivo.',
+  'Valve Corporation  ', '2013-07-09', 980, 0.00);
+
+  INSERT INTO PRODUTOS (NOME_PRODUTO, DESCRICAO, VENDIDO_POR,
+  DATA_CADASTRO, QUANTIDADE_ESTOQUE, VALOR_UNITARIO) VALUES
+  ('Counter-Strike 2         ', 'Novo FPS tatico.',
+  'Valve Corporation  ', '2023-09-27', 700, 0.00);
+
+  INSERT INTO PRODUTOS (NOME_PRODUTO, DESCRICAO, VENDIDO_POR,
+  DATA_CADASTRO, QUANTIDADE_ESTOQUE, VALOR_UNITARIO) VALUES
+  ('Roblox                   ', 'Plataforma criacao jogos.',
+  'Roblox Corporation ', '2006-09-01', 999, 0.00);
+
+  INSERT INTO PRODUTOS (NOME_PRODUTO, DESCRICAO, VENDIDO_POR,
+  DATA_CADASTRO, QUANTIDADE_ESTOQUE, VALOR_UNITARIO) VALUES
+  ('Pokemon Scarlet and Vio  ', 'Novos jogos Pokemon.',
+  'Nintendo eShop     ', '2022-11-18', 500, 299.99);
+
+  INSERT INTO PRODUTOS (NOME_PRODUTO, DESCRICAO, VENDIDO_POR,
+  DATA_CADASTRO, QUANTIDADE_ESTOQUE, VALOR_UNITARIO) VALUES
+  ('Metroid Prime Remastere  ', 'Remaster classico aventura.',
+  'Nintendo eShop     ', '2023-02-08', 300, 249.99);
+
+  INSERT INTO PRODUTOS (NOME_PRODUTO, DESCRICAO, VENDIDO_POR,
+  DATA_CADASTRO, QUANTIDADE_ESTOQUE, VALOR_UNITARIO) VALUES
+  ('Bayonetta Origins: Cere  ', 'Aventura acao historia.',
+  'Nintendo eShop     ', '2023-03-17', 200, 229.99);
+
+  INSERT INTO PRODUTOS (NOME_PRODUTO, DESCRICAO, VENDIDO_POR,
+  DATA_CADASTRO, QUANTIDADE_ESTOQUE, VALOR_UNITARIO) VALUES
+  ('Pikmin 4                 ', 'Estrategia e aventura.',
+  'Nintendo eShop     ', '2023-07-21', 350, 299.99);
+
+  INSERT INTO PRODUTOS (NOME_PRODUTO, DESCRICAO, VENDIDO_POR,
+  DATA_CADASTRO, QUANTIDADE_ESTOQUE, VALOR_UNITARIO) VALUES
+  ('Advance Wars 1+2 Re-Boo  ', 'Remake classicos estrategia.',
+  'Nintendo eShop     ', '2023-04-21', 250, 249.99);
+
+  INSERT INTO PRODUTOS (NOME_PRODUTO, DESCRICAO, VENDIDO_POR,
+  DATA_CADASTRO, QUANTIDADE_ESTOQUE, VALOR_UNITARIO) VALUES
+  ('Octopath Traveler II     ', 'RPG HD-2D.',
+  'Square Enix Store  ', '2023-02-24', 220, 269.90);
+
+  INSERT INTO PRODUTOS (NOME_PRODUTO, DESCRICAO, VENDIDO_POR,
+  DATA_CADASTRO, QUANTIDADE_ESTOQUE, VALOR_UNITARIO) VALUES
+  ('Persona 3 Reload         ', 'Remake moderno RPG.',
+  'Atlus              ', '2024-02-02', 280, 249.99);
+
+  INSERT INTO PRODUTOS (NOME_PRODUTO, DESCRICAO, VENDIDO_POR,
+  DATA_CADASTRO, QUANTIDADE_ESTOQUE, VALOR_UNITARIO) VALUES
+  ('Like a Dragon: Infinite  ', 'Novo RPG acao Yakuza.',
+  'SEGA               ', '2024-01-26', 260, 239.99);
+
+  INSERT INTO PRODUTOS (NOME_PRODUTO, DESCRICAO, VENDIDO_POR,
+  DATA_CADASTRO, QUANTIDADE_ESTOQUE, VALOR_UNITARIO) VALUES
+  ('Prince of Persia: The L  ', 'Plataforma acao 2D.',
+  'Ubisoft Store      ', '2024-01-18', 210, 199.99);
+
+  INSERT INTO PRODUTOS (NOME_PRODUTO, DESCRICAO, VENDIDO_POR,
+  DATA_CADASTRO, QUANTIDADE_ESTOQUE, VALOR_UNITARIO) VALUES
+  ('Suicide Squad: Kill the  ', 'Acao cooperativa vilaos DC.',
+  'Warner Bros. Games ', '2024-02-02', 180, 259.99);
+
+  INSERT INTO PRODUTOS (NOME_PRODUTO, DESCRICAO, VENDIDO_POR,
+  DATA_CADASTRO, QUANTIDADE_ESTOQUE, VALOR_UNITARIO) VALUES
+  ('Skull and Bones          ', 'Jogo de piratas.',
+  'Ubisoft Store      ', '2024-02-16', 190, 249.99);
+
+  INSERT INTO PRODUTOS (NOME_PRODUTO, DESCRICAO, VENDIDO_POR,
+  DATA_CADASTRO, QUANTIDADE_ESTOQUE, VALOR_UNITARIO) VALUES
+  ('Braid, Anniversary Edit  ', 'Remaster classico plataforma.',
+  'Thekla, Inc.       ', '2024-04-30', 150, 79.99);
+
+  INSERT INTO PRODUTOS (NOME_PRODUTO, DESCRICAO, VENDIDO_POR,
+  DATA_CADASTRO, QUANTIDADE_ESTOQUE, VALOR_UNITARIO) VALUES
+  ('Paper Mario: The Thousa  ', 'Remake RPG Paper Mario.',
+  'Nintendo eShop     ', '2024-05-23', 300, 299.99);
+
+  INSERT INTO PRODUTOS (NOME_PRODUTO, DESCRICAO, VENDIDO_POR,
+  DATA_CADASTRO, QUANTIDADE_ESTOQUE, VALOR_UNITARIO) VALUES
+  ('Luigis Mansion 2 HD      ', 'Versao HD aventura.',
+  'Nintendo eShop     ', '2024-06-27', 280, 279.99);
+
+  INSERT INTO PRODUTOS (NOME_PRODUTO, DESCRICAO, VENDIDO_POR,
+  DATA_CADASTRO, QUANTIDADE_ESTOQUE, VALOR_UNITARIO) VALUES
+  ('Endless Ocean Luminous   ', 'Exploracao submarina.',
+  'Nintendo eShop     ', '2024-05-02', 250, 269.99);
+
+  INSERT INTO PRODUTOS (NOME_PRODUTO, DESCRICAO, VENDIDO_POR,
+  DATA_CADASTRO, QUANTIDADE_ESTOQUE, VALOR_UNITARIO) VALUES
+  ('Princess Peach: Showtim  ', 'Aventura plataforma Peach.',
+  'Nintendo eShop     ', '2024-03-22', 320, 299.99);
+
+  INSERT INTO PRODUTOS (NOME_PRODUTO, DESCRICAO, VENDIDO_POR,
+  DATA_CADASTRO, QUANTIDADE_ESTOQUE, VALOR_UNITARIO) VALUES
+  ('Mario vs. Donkey Kong    ', 'Quebra-cabeca plataforma.',
+  'Nintendo eShop     ', '2024-02-16', 270, 249.99);
+
+  INSERT INTO PRODUTOS (NOME_PRODUTO, DESCRICAO, VENDIDO_POR,
+  DATA_CADASTRO, QUANTIDADE_ESTOQUE, VALOR_UNITARIO) VALUES
+  ('Another Code: Recollect  ', 'Remake classicos aventura.',
+  'Nintendo eShop     ', '2024-01-19', 200, 259.99);
+
+  INSERT INTO PRODUTOS (NOME_PRODUTO, DESCRICAO, VENDIDO_POR,
+  DATA_CADASTRO, QUANTIDADE_ESTOQUE, VALOR_UNITARIO) VALUES
+  ('Unicorn Overlord         ', 'RPG tatico fantasia.',
+  'Atlus              ', '2024-03-08', 180, 239.99);
+
+  INSERT INTO PRODUTOS (NOME_PRODUTO, DESCRICAO, VENDIDO_POR,
+  DATA_CADASTRO, QUANTIDADE_ESTOQUE, VALOR_UNITARIO) VALUES
+  ('The Last of Us Part II   ', 'Versao aprimorada sobrevivencia.',
+  'PlayStation Store  ', '2024-01-19', 240, 249.99);
+
+  INSERT INTO PRODUTOS (NOME_PRODUTO, DESCRICAO, VENDIDO_POR,
+  DATA_CADASTRO, QUANTIDADE_ESTOQUE, VALOR_UNITARIO) VALUES
+  ('Rise of the Ronin        ', 'RPG acao Japao feudal.',
+  'PlayStation Store  ', '2024-03-22', 230, 299.99);
+
+  INSERT INTO PRODUTOS (NOME_PRODUTO, DESCRICAO, VENDIDO_POR,
+  DATA_CADASTRO, QUANTIDADE_ESTOQUE, VALOR_UNITARIO) VALUES
+  ('Dragons Dogma 2          ', 'RPG acao e fantasia.',
+  'Capcom Store       ', '2024-03-22', 260, 289.99);
+
+  INSERT INTO PRODUTOS (NOME_PRODUTO, DESCRICAO, VENDIDO_POR,
+  DATA_CADASTRO, QUANTIDADE_ESTOQUE, VALOR_UNITARIO) VALUES
+  ('Stellar Blade            ', 'Acao futurista combate.',
+  'PlayStation Store  ', '2024-04-26', 210, 279.99);
+
+  INSERT INTO PRODUTOS (NOME_PRODUTO, DESCRICAO, VENDIDO_POR,
+  DATA_CADASTRO, QUANTIDADE_ESTOQUE, VALOR_UNITARIO) VALUES
+  ('Sand Land                ', 'RPG acao manga.',
+  'Bandai Namco Store ', '2024-04-26', 190, 219.99);
+
+  INSERT INTO PRODUTOS (NOME_PRODUTO, DESCRICAO, VENDIDO_POR,
+  DATA_CADASTRO, QUANTIDADE_ESTOQUE, VALOR_UNITARIO) VALUES
+  ('Visions of Mana          ', 'Novo capitulo serie Mana.',
+  'Square Enix Store  ', '2024-07-01', 170, 269.99);
+
+  INSERT INTO PRODUTOS (NOME_PRODUTO, DESCRICAO, VENDIDO_POR,
+  DATA_CADASTRO, QUANTIDADE_ESTOQUE, VALOR_UNITARIO) VALUES
+  ('Black Myth: Wukong       ', 'RPG acao mitologia chinesa.',
+  'Game Science       ', '2024-08-20', 150, 299.99);
+
+  INSERT INTO PRODUTOS (NOME_PRODUTO, DESCRICAO, VENDIDO_POR,
+  DATA_CADASTRO, QUANTIDADE_ESTOQUE, VALOR_UNITARIO) VALUES
+  ('Avowed                   ', 'RPG fantasia Obsidian.',
+  'Xbox Game Studios  ', '2024-10-01', 160, 279.99);
+
+  INSERT INTO PRODUTOS (NOME_PRODUTO, DESCRICAO, VENDIDO_POR,
+  DATA_CADASTRO, QUANTIDADE_ESTOQUE, VALOR_UNITARIO) VALUES
+  ('Fable                    ', 'Reboot classico RPG.',
+  'Xbox Game Studios  ', '2025-01-01', 140, 289.99);
+
+  INSERT INTO PRODUTOS (NOME_PRODUTO, DESCRICAO, VENDIDO_POR,
+  DATA_CADASTRO, QUANTIDADE_ESTOQUE, VALOR_UNITARIO) VALUES
+  ('The Witcher 4            ', 'Novo capitulo saga Witcher.',
+  'CD Projekt Store   ', '2025-03-01', 130, 319.99);
+
+  INSERT INTO PRODUTOS (NOME_PRODUTO, DESCRICAO, VENDIDO_POR,
+  DATA_CADASTRO, QUANTIDADE_ESTOQUE, VALOR_UNITARIO) VALUES
+  ('Grand Theft Auto VI      ', 'Proximo capitulo GTA.',
+  'Rockstar Games Stor', '2025-05-01', 120, 349.99);
+
+  INSERT INTO PRODUTOS (NOME_PRODUTO, DESCRICAO, VENDIDO_POR,
+  DATA_CADASTRO, QUANTIDADE_ESTOQUE, VALOR_UNITARIO) VALUES
+  ('State of Decay 3         ', 'Sobrevivencia zumbi.',
+  'Xbox Game Studios  ', '2025-02-01', 110, 269.99);
+
+  INSERT INTO PRODUTOS (NOME_PRODUTO, DESCRICAO, VENDIDO_POR,
+  DATA_CADASTRO, QUANTIDADE_ESTOQUE, VALOR_UNITARIO) VALUES
+  ('Perfect Dark             ', 'Reboot espionagem tiro.',
+  'Xbox Game Studios  ', '2025-04-01', 100, 279.99);
+
+  INSERT INTO PRODUTOS (NOME_PRODUTO, DESCRICAO, VENDIDO_POR,
+  DATA_CADASTRO, QUANTIDADE_ESTOQUE, VALOR_UNITARIO) VALUES
+  ('Everwild                 ', 'Aventura fantasia.',
+  'Xbox Game Studios  ', '2025-06-01', 90, 259.99);
+
+  INSERT INTO PRODUTOS (NOME_PRODUTO, DESCRICAO, VENDIDO_POR,
+  DATA_CADASTRO, QUANTIDADE_ESTOQUE, VALOR_UNITARIO) VALUES
+  ('Contraband               ', 'Jogo mundo aberto cooperativo.',
+  'Xbox Game Studios  ', '2025-07-01', 80, 269.99);
+
+  INSERT INTO PRODUTOS (NOME_PRODUTO, DESCRICAO, VENDIDO_POR,
+  DATA_CADASTRO, QUANTIDADE_ESTOQUE, VALOR_UNITARIO) VALUES
+  ('Indiana Jones and the G  ', 'Aventura acao Indiana Jones.',
+  'Bethesda Store     ', '2024-12-01', 200, 299.99);
+
+  INSERT INTO PRODUTOS (NOME_PRODUTO, DESCRICAO, VENDIDO_POR,
+  DATA_CADASTRO, QUANTIDADE_ESTOQUE, VALOR_UNITARIO) VALUES
+  ('South of Midnight        ', 'Aventura acao folclore.',
+  'Xbox Game Studios  ', '2025-03-01', 70, 249.99);
+
+  INSERT INTO PRODUTOS (NOME_PRODUTO, DESCRICAO, VENDIDO_POR,
+  DATA_CADASTRO, QUANTIDADE_ESTOQUE, VALOR_UNITARIO) VALUES
+  ('Clockwork Revolution     ', 'RPG acao steampunk.',
+  'Xbox Game Studios  ', '2025-05-01', 60, 279.99);
+
+  INSERT INTO PRODUTOS (NOME_PRODUTO, DESCRICAO, VENDIDO_POR,
+  DATA_CADASTRO, QUANTIDADE_ESTOQUE, VALOR_UNITARIO) VALUES
+  ('Microsoft Flight Simul   ', 'Nova geracao simulador voo.',
+  'Xbox Game Studios  ', '2024-11-01', 250, 239.99);
+
+  INSERT INTO PRODUTOS (NOME_PRODUTO, DESCRICAO, VENDIDO_POR,
+  DATA_CADASTRO, QUANTIDADE_ESTOQUE, VALOR_UNITARIO) VALUES
+  ('Age of Mythology: Retol  ', 'Remake estrategia mitologia.',
+  'Xbox Game Studios  ', '2024-09-01', 180, 199.99);
+
+  INSERT INTO PRODUTOS (NOME_PRODUTO, DESCRICAO, VENDIDO_POR,
+  DATA_CADASTRO, QUANTIDADE_ESTOQUE, VALOR_UNITARIO) VALUES
+  ('Doom: The Dark Ages      ', 'Novo jogo serie Doom.',
+  'Bethesda Store     ', '2025-02-01', 170, 289.99);
+
+  INSERT INTO PRODUTOS (NOME_PRODUTO, DESCRICAO, VENDIDO_POR,
+  DATA_CADASTRO, QUANTIDADE_ESTOQUE, VALOR_UNITARIO) VALUES
+  ('Call of Duty: Black Ops  ', 'Novo capitulo Black Ops.',
+  'Activision Store   ', '2024-10-25', 300, 279.99);
+
+  INSERT INTO PRODUTOS (NOME_PRODUTO, DESCRICAO, VENDIDO_POR,
+  DATA_CADASTRO, QUANTIDADE_ESTOQUE, VALOR_UNITARIO) VALUES
+  ('Assassins Creed Shadow   ', 'Aventura Japao feudal.',
+  'Ubisoft Store      ', '2024-11-15', 280, 269.99);
+
+  INSERT INTO PRODUTOS (NOME_PRODUTO, DESCRICAO, VENDIDO_POR,
+  DATA_CADASTRO, QUANTIDADE_ESTOQUE, VALOR_UNITARIO) VALUES
+  ('Star Wars Outlaws        ', 'Aventura mundo aberto Star Wars.',
+  'Ubisoft Store      ', '2024-08-30', 270, 289.99);
+
+  INSERT INTO PRODUTOS (NOME_PRODUTO, DESCRICAO, VENDIDO_POR,
+  DATA_CADASTRO, QUANTIDADE_ESTOQUE, VALOR_UNITARIO) VALUES
+  ('Gears of War: E-Day      ', 'Novo jogo serie Gears.',
+  'Xbox Game Studios  ', '2025-04-01', 220, 279.99);
+
+  INSERT INTO PRODUTOS (NOME_PRODUTO, DESCRICAO, VENDIDO_POR,
+  DATA_CADASTRO, QUANTIDADE_ESTOQUE, VALOR_UNITARIO) VALUES
+  ('The Outer Worlds 2       ', 'Novo RPG ficcao cientifica.',
+  'Xbox Game Studios  ', '2025-01-01', 150, 269.99);
+
+  INSERT INTO PRODUTOS (NOME_PRODUTO, DESCRICAO, VENDIDO_POR,
+  DATA_CADASTRO, QUANTIDADE_ESTOQUE, VALOR_UNITARIO) VALUES
+  ('Project Mara             ', 'Terror psicologico.',
+  'Xbox Game Studios  ', '2025-06-01', 50, 239.99);
+
+  INSERT INTO PRODUTOS (NOME_PRODUTO, DESCRICAO, VENDIDO_POR,
+  DATA_CADASTRO, QUANTIDADE_ESTOQUE, VALOR_UNITARIO) VALUES
+  ('Senuas Saga: Hellblade   ', 'Aventura sombria.',
+  'Xbox Game Studios  ', '2024-05-21', 190, 249.99);
+
+  INSERT INTO PRODUTOS (NOME_PRODUTO, DESCRICAO, VENDIDO_POR,
+  DATA_CADASTRO, QUANTIDADE_ESTOQUE, VALOR_UNITARIO) VALUES
+  ('Hi-Fi Rush               ', 'Jogo ritmo e acao.',
+  'Bethesda Store     ', '2023-01-25', 350, 149.99);
+
+  INSERT INTO PRODUTOS (NOME_PRODUTO, DESCRICAO, VENDIDO_POR,
+  DATA_CADASTRO, QUANTIDADE_ESTOQUE, VALOR_UNITARIO) VALUES
+  ('Pentiment                ', 'Aventura narrativa medieval.',
+  'Xbox Game Studios  ', '2022-11-15', 200, 129.99);
+
+  INSERT INTO PRODUTOS (NOME_PRODUTO, DESCRICAO, VENDIDO_POR,
+  DATA_CADASTRO, QUANTIDADE_ESTOQUE, VALOR_UNITARIO) VALUES
+  ('Grounded                 ', 'Sobrevivencia quintal gigante.',
+  'Xbox Game Studios  ', '2020-07-28', 400, 119.99);
+
+  INSERT INTO PRODUTOS (NOME_PRODUTO, DESCRICAO, VENDIDO_POR,
+  DATA_CADASTRO, QUANTIDADE_ESTOQUE, VALOR_UNITARIO) VALUES
+  ('Sea of Thieves           ', 'Aventura de piratas.',
+  'Xbox Game Studios  ', '2018-03-20', 500, 139.99);
+
+  INSERT INTO PRODUTOS (NOME_PRODUTO, DESCRICAO, VENDIDO_POR,
+  DATA_CADASTRO, QUANTIDADE_ESTOQUE, VALOR_UNITARIO) VALUES
+  ('Bleeding Edge            ', 'Brawler de equipe.',
+  'Xbox Game Studios  ', '2020-03-24', 100, 99.99);
+
+  INSERT INTO PRODUTOS (NOME_PRODUTO, DESCRICAO, VENDIDO_POR,
+  DATA_CADASTRO, QUANTIDADE_ESTOQUE, VALOR_UNITARIO) VALUES
+  ('Ori and the Will of the  ', 'Plataforma de aventura.',
+  'Xbox Game Studios  ', '2020-03-11', 300, 129.99);
+
+  INSERT INTO PRODUTOS (NOME_PRODUTO, DESCRICAO, VENDIDO_POR,
+  DATA_CADASTRO, QUANTIDADE_ESTOQUE, VALOR_UNITARIO) VALUES
+  ('Psychonauts 2            ', 'Plataforma aventura psiquica.',
+  'Xbox Game Studios  ', '2021-08-25', 250, 149.99);
+
+  INSERT INTO PRODUTOS (NOME_PRODUTO, DESCRICAO, VENDIDO_POR,
+  DATA_CADASTRO, QUANTIDADE_ESTOQUE, VALOR_UNITARIO) VALUES
+  ('Microsoft Flight Simul   ', 'Simulador de voo.',
+  'Xbox Game Studios  ', '2020-08-18', 300, 199.99);
+
+  INSERT INTO PRODUTOS (NOME_PRODUTO, DESCRICAO, VENDIDO_POR,
+  DATA_CADASTRO, QUANTIDADE_ESTOQUE, VALOR_UNITARIO) VALUES
+  ('Age of Empires II: Defi  ', 'Remaster estrategia.',
+  'Xbox Game Studios  ', '2019-11-14', 400, 99.99);
+
+  INSERT INTO PRODUTOS (NOME_PRODUTO, DESCRICAO, VENDIDO_POR,
+  DATA_CADASTRO, QUANTIDADE_ESTOQUE, VALOR_UNITARIO) VALUES
+  ('Age of Empires III: Def  ', 'Remaster terceiro Age.',
+  'Xbox Game Studios  ', '2020-10-15', 350, 99.99);
+
+  INSERT INTO PRODUTOS (NOME_PRODUTO, DESCRICAO, VENDIDO_POR,
+  DATA_CADASTRO, QUANTIDADE_ESTOQUE, VALOR_UNITARIO) VALUES
+  ('Halo Infinite            ', 'Novo capitulo Halo.',
+  'Xbox Game Studios  ', '2021-12-08', 450, 0.00);
+
+  INSERT INTO PRODUTOS (NOME_PRODUTO, DESCRICAO, VENDIDO_POR,
+  DATA_CADASTRO, QUANTIDADE_ESTOQUE, VALOR_UNITARIO) VALUES
+  ('Forza Horizon 5          ', 'Corrida mundo aberto Mexico.',
+  'Xbox Game Studios  ', '2021-11-09', 500, 229.99);
+
+  INSERT INTO PRODUTOS (NOME_PRODUTO, DESCRICAO, VENDIDO_POR,
+  DATA_CADASTRO, QUANTIDADE_ESTOQUE, VALOR_UNITARIO) VALUES
+  ('Gears 5                  ', 'Tiro terceira pessoa.',
+  'Xbox Game Studios  ', '2019-09-10', 380, 149.99);
+
+  INSERT INTO PRODUTOS (NOME_PRODUTO, DESCRICAO, VENDIDO_POR,
+  DATA_CADASTRO, QUANTIDADE_ESTOQUE, VALOR_UNITARIO) VALUES
+  ('State of Decay 2         ', 'Sobrevivencia zumbi.',
+  'Xbox Game Studios  ', '2018-05-22', 420, 119.99);
+
+  INSERT INTO PRODUTOS (NOME_PRODUTO, DESCRICAO, VENDIDO_POR,
+  DATA_CADASTRO, QUANTIDADE_ESTOQUE, VALOR_UNITARIO) VALUES
+  ('Forza Motorsport 7       ', 'Simulador de corrida.',
+  'Xbox Game Studios  ', '2017-10-03', 200, 99.99);
+
+  INSERT INTO PRODUTOS (NOME_PRODUTO, DESCRICAO, VENDIDO_POR,
+  DATA_CADASTRO, QUANTIDADE_ESTOQUE, VALOR_UNITARIO) VALUES
+  ('Ori and the Blind Fores  ', 'Plataforma aventura.',
+  'Xbox Game Studios  ', '2015-03-11', 250, 79.99);
+
+  INSERT INTO PRODUTOS (NOME_PRODUTO, DESCRICAO, VENDIDO_POR,
+  DATA_CADASTRO, QUANTIDADE_ESTOQUE, VALOR_UNITARIO) VALUES
+  ('Cuphead                  ', 'Plataforma de tiro.',
+  'Studio MDHR        ', '2017-09-29', 300, 69.99);
+
+  INSERT INTO PRODUTOS (NOME_PRODUTO, DESCRICAO, VENDIDO_POR,
+  DATA_CADASTRO, QUANTIDADE_ESTOQUE, VALOR_UNITARIO) VALUES
+  ('Hollow Knight            ', 'Metroidvania aclamado.',
+  'Team Cherry        ', '2017-02-24', 350, 59.99);
+
+  INSERT INTO PRODUTOS (NOME_PRODUTO, DESCRICAO, VENDIDO_POR,
+  DATA_CADASTRO, QUANTIDADE_ESTOQUE, VALOR_UNITARIO) VALUES
+  ('Dead Cells               ', 'Roguelike de acao.',
+  'Motion Twin        ', '2018-08-07', 280, 79.99);
+
+  INSERT INTO PRODUTOS (NOME_PRODUTO, DESCRICAO, VENDIDO_POR,
+  DATA_CADASTRO, QUANTIDADE_ESTOQUE, VALOR_UNITARIO) VALUES
+  ('Hades                    ', 'Roguelike de acao.',
+  'Supergiant Games   ', '2020-09-17', 320, 89.99);
+
+  INSERT INTO PRODUTOS (NOME_PRODUTO, DESCRICAO, VENDIDO_POR,
+  DATA_CADASTRO, QUANTIDADE_ESTOQUE, VALOR_UNITARIO) VALUES
+  ('Celeste                  ', 'Plataforma desafiador.',
+  'Extremely OK Games ', '2018-01-25', 270, 59.99);
+
+  INSERT INTO PRODUTOS (NOME_PRODUTO, DESCRICAO, VENDIDO_POR,
+  DATA_CADASTRO, QUANTIDADE_ESTOQUE, VALOR_UNITARIO) VALUES
+  ('Disco Elysium            ', 'RPG investigativo.',
+  'ZA/UM              ', '2019-10-15', 180, 119.99);
+
+  INSERT INTO PRODUTOS (NOME_PRODUTO, DESCRICAO, VENDIDO_POR,
+  DATA_CADASTRO, QUANTIDADE_ESTOQUE, VALOR_UNITARIO) VALUES
+  ('Divinity: Original Sin   ', 'RPG de fantasia.',
+  'Larian Studios     ', '2017-09-14', 220, 139.99);
+
+  INSERT INTO PRODUTOS (NOME_PRODUTO, DESCRICAO, VENDIDO_POR,
+  DATA_CADASTRO, QUANTIDADE_ESTOQUE, VALOR_UNITARIO) VALUES
+  ('Path of Exile            ', 'RPG de acao online.',
+  'Grinding Gear Game ', '2013-10-23', 900, 0.00);
+
+  INSERT INTO PRODUTOS (NOME_PRODUTO, DESCRICAO, VENDIDO_POR,
+  DATA_CADASTRO, QUANTIDADE_ESTOQUE, VALOR_UNITARIO) VALUES
+  ('War Thunder              ', 'Jogo de combate militar.',
+  'Gaijin Entertainmen', '2012-11-01', 700, 0.00);
+
+  INSERT INTO PRODUTOS (NOME_PRODUTO, DESCRICAO, VENDIDO_POR,
+  DATA_CADASTRO, QUANTIDADE_ESTOQUE, VALOR_UNITARIO) VALUES
+  ('World of Tanks           ', 'MMO de tanques.',
+  'Wargaming          ', '2010-08-12', 650, 0.00);
+
+  INSERT INTO PRODUTOS (NOME_PRODUTO, DESCRICAO, VENDIDO_POR,
+  DATA_CADASTRO, QUANTIDADE_ESTOQUE, VALOR_UNITARIO) VALUES
+  ('Dota Underlords          ', 'Auto Chess estrategico.',
+  'Valve Corporation  ', '2019-06-13', 500, 0.00);
+
+  INSERT INTO PRODUTOS (NOME_PRODUTO, DESCRICAO, VENDIDO_POR,
+  DATA_CADASTRO, QUANTIDADE_ESTOQUE, VALOR_UNITARIO) VALUES
+  ('Teamfight Tactics        ', 'Auto Chess estrategico.',
+  'Riot Games         ', '2019-06-26', 550, 0.00);
+
+  INSERT INTO PRODUTOS (NOME_PRODUTO, DESCRICAO, VENDIDO_POR,
+  DATA_CADASTRO, QUANTIDADE_ESTOQUE, VALOR_UNITARIO) VALUES
+  ('Legends of Runeterra     ', 'Jogo de cartas colecionaveis.',
+  'Riot Games         ', '2020-04-29', 600, 0.00);
+
+  INSERT INTO PRODUTOS (NOME_PRODUTO, DESCRICAO, VENDIDO_POR,
+  DATA_CADASTRO, QUANTIDADE_ESTOQUE, VALOR_UNITARIO) VALUES
+  ('Gwent: The Witcher Card  ', 'Jogo de cartas The Witcher.',
+  'CD Projekt Store   ', '2018-10-23', 400, 0.00);
+
+  INSERT INTO PRODUTOS (NOME_PRODUTO, DESCRICAO, VENDIDO_POR,
+  DATA_CADASTRO, QUANTIDADE_ESTOQUE, VALOR_UNITARIO) VALUES
+  ('Hearthstone              ', 'Jogo de cartas Blizzard.',
+  'Blizzard Store     ', '2014-03-11', 700, 0.00);
+
+  INSERT INTO PRODUTOS (NOME_PRODUTO, DESCRICAO, VENDIDO_POR,
+  DATA_CADASTRO, QUANTIDADE_ESTOQUE, VALOR_UNITARIO) VALUES
+  ('Magic: The Gathering Ar  ', 'Jogo de cartas digital.',
+  'Wizards of the Coas', '2019-09-26', 600, 0.00);
+
+  INSERT INTO PRODUTOS (NOME_PRODUTO, DESCRICAO, VENDIDO_POR,
+  DATA_CADASTRO, QUANTIDADE_ESTOQUE, VALOR_UNITARIO) VALUES
+  ('Slay the Spire           ', 'Roguelike de baralho.',
+  'MegaCrit           ', '2019-01-23', 300, 69.99);
+
+  INSERT INTO PRODUTOS (NOME_PRODUTO, DESCRICAO, VENDIDO_POR,
+  DATA_CADASTRO, QUANTIDADE_ESTOQUE, VALOR_UNITARIO) VALUES
+  ('Monster Hunter: World    ', 'RPG de acao caca monstros.',
+  'Capcom Store       ', '2018-01-26', 400, 159.99);
+
+  INSERT INTO PRODUTOS (NOME_PRODUTO, DESCRICAO, VENDIDO_POR,
+  DATA_CADASTRO, QUANTIDADE_ESTOQUE, VALOR_UNITARIO) VALUES
+  ('Monster Hunter Rise      ', 'RPG de acao caca monstros.',
+  'Capcom Store       ', '2021-03-26', 350, 179.99);
+
+  INSERT INTO PRODUTOS (NOME_PRODUTO, DESCRICAO, VENDIDO_POR,
+  DATA_CADASTRO, QUANTIDADE_ESTOQUE, VALOR_UNITARIO) VALUES
+  ('Death Stranding          ', 'Aventura pos-apocaliptica.',
+  'Kojima Productions ', '2019-11-08', 250, 169.99);
+
+  INSERT INTO PRODUTOS (NOME_PRODUTO, DESCRICAO, VENDIDO_POR,
+  DATA_CADASTRO, QUANTIDADE_ESTOQUE, VALOR_UNITARIO) VALUES
+  ('Control                  ', 'Acao e aventura paranormais.',
+  'Remedy Entertainmen', '2019-08-27', 280, 129.99);
+
+  INSERT INTO PRODUTOS (NOME_PRODUTO, DESCRICAO, VENDIDO_POR,
+  DATA_CADASTRO, QUANTIDADE_ESTOQUE, VALOR_UNITARIO) VALUES
+  ('Doom Eternal             ', 'Tiro em 1a pessoa.',
+  'Bethesda Store     ', '2020-03-20', 320, 159.99);
+
+  INSERT INTO PRODUTOS (NOME_PRODUTO, DESCRICAO, VENDIDO_POR,
+  DATA_CADASTRO, QUANTIDADE_ESTOQUE, VALOR_UNITARIO) VALUES
+  ('Wolfenstein II: The New  ', 'Tiro em 1a pessoa.',
+  'Bethesda Store     ', '2017-10-27', 200, 99.99);
+
+  INSERT INTO PRODUTOS (NOME_PRODUTO, DESCRICAO, VENDIDO_POR,
+  DATA_CADASTRO, QUANTIDADE_ESTOQUE, VALOR_UNITARIO) VALUES
+  ('Prey                     ', 'Tiro em 1a pessoa RPG.',
+  'Bethesda Store     ', '2017-05-05', 180, 89.99);
+
+  INSERT INTO PRODUTOS (NOME_PRODUTO, DESCRICAO, VENDIDO_POR,
+  DATA_CADASTRO, QUANTIDADE_ESTOQUE, VALOR_UNITARIO) VALUES
+  ('Dishonored 2             ', 'Acao furtiva sobrenatural.',
+  'Bethesda Store     ', '2016-11-11', 220, 79.99);
+
+  INSERT INTO PRODUTOS (NOME_PRODUTO, DESCRICAO, VENDIDO_POR,
+  DATA_CADASTRO, QUANTIDADE_ESTOQUE, VALOR_UNITARIO) VALUES
+  ('The Elder Scrolls V: Sk  ', 'RPG mundo aberto fantasia.',
+  'Bethesda Store     ', '2011-11-11', 600, 99.99);
+
+  INSERT INTO PRODUTOS (NOME_PRODUTO, DESCRICAO, VENDIDO_POR,
+  DATA_CADASTRO, QUANTIDADE_ESTOQUE, VALOR_UNITARIO) VALUES
+  ('Fallout 4                ', 'RPG mundo aberto pos-apocaliptico.',
+  'Bethesda Store     ', '2015-11-10', 500, 89.99);
+
+  INSERT INTO PRODUTOS (NOME_PRODUTO, DESCRICAO, VENDIDO_POR,
+  DATA_CADASTRO, QUANTIDADE_ESTOQUE, VALOR_UNITARIO) VALUES
+  ('Fallout 76               ', 'RPG online mundo aberto.',
+  'Bethesda Store     ', '2018-11-14', 400, 0.00);
+
+  INSERT INTO PRODUTOS (NOME_PRODUTO, DESCRICAO, VENDIDO_POR,
+  DATA_CADASTRO, QUANTIDADE_ESTOQUE, VALOR_UNITARIO) VALUES
+  ('No Mans Sky              ', 'Exploracao espacial.',
+  'Hello Games        ', '2016-08-09', 300, 119.99);
+
+  INSERT INTO PRODUTOS (NOME_PRODUTO, DESCRICAO, VENDIDO_POR,
+  DATA_CADASTRO, QUANTIDADE_ESTOQUE, VALOR_UNITARIO) VALUES
+  ('Elite Dangerous          ', 'Simulador espacial.',
+  'Frontier Developmen', '2014-12-16', 250, 89.99);
+
+  INSERT INTO PRODUTOS (NOME_PRODUTO, DESCRICAO, VENDIDO_POR,
+  DATA_CADASTRO, QUANTIDADE_ESTOQUE, VALOR_UNITARIO) VALUES
+  ('Star Citizen             ', 'Simulador espacial ambicioso.',
+  'Cloud Imperium Game', '2025-01-01', 100, 0.00);
+
+  INSERT INTO PRODUTOS (NOME_PRODUTO, DESCRICAO, VENDIDO_POR,
+  DATA_CADASTRO, QUANTIDADE_ESTOQUE, VALOR_UNITARIO) VALUES
+  ('Kerbal Space Program     ', 'Simulador engenharia espacial.',
+  'Private Division   ', '2015-04-27', 200, 79.99);
+
+  INSERT INTO PRODUTOS (NOME_PRODUTO, DESCRICAO, VENDIDO_POR,
+  DATA_CADASTRO, QUANTIDADE_ESTOQUE, VALOR_UNITARIO) VALUES
+  ('Subnautica               ', 'Aventura sobrevivencia.',
+  'Unknown Worlds Entr', '2018-01-23', 300, 89.99);
+
+  INSERT INTO PRODUTOS (NOME_PRODUTO, DESCRICAO, VENDIDO_POR,
+  DATA_CADASTRO, QUANTIDADE_ESTOQUE, VALOR_UNITARIO) VALUES
+  ('Subnautica: Below Zero   ', 'Continuacao aventura.',
+  'Unknown Worlds Entr', '2021-05-14', 280, 99.99);
+
+  INSERT INTO PRODUTOS (NOME_PRODUTO, DESCRICAO, VENDIDO_POR,
+  DATA_CADASTRO, QUANTIDADE_ESTOQUE, VALOR_UNITARIO) VALUES
+  ('Outer Wilds              ', 'Aventura exploracao espacial.',
+  'Mobius Digital     ', '2019-05-28', 200, 79.99);
+
+  INSERT INTO PRODUTOS (NOME_PRODUTO, DESCRICAO, VENDIDO_POR,
+  DATA_CADASTRO, QUANTIDADE_ESTOQUE, VALOR_UNITARIO) VALUES
+  ('Journey                  ', 'Aventura artistica.',
+  'Thatgamecompany    ', '2012-03-13', 150, 49.99);
+
+  INSERT INTO PRODUTOS (NOME_PRODUTO, DESCRICAO, VENDIDO_POR,
+  DATA_CADASTRO, QUANTIDADE_ESTOQUE, VALOR_UNITARIO) VALUES
+  ('Gris                     ', 'Plataforma artistica.',
+  'Nomada Studio      ', '2018-12-13', 180, 59.99);
+
+  INSERT INTO PRODUTOS (NOME_PRODUTO, DESCRICAO, VENDIDO_POR,
+  DATA_CADASTRO, QUANTIDADE_ESTOQUE, VALOR_UNITARIO) VALUES
+  ('Spiritfarer              ', 'Gerenciamento de recursos.',
+  'Thunder Lotus Game ', '2020-08-18', 220, 69.99);
+
+  INSERT INTO PRODUTOS (NOME_PRODUTO, DESCRICAO, VENDIDO_POR,
+  DATA_CADASTRO, QUANTIDADE_ESTOQUE, VALOR_UNITARIO) VALUES
+  ('Disco Elysium - The Fi   ', 'Versao definitiva RPG.',
+  'ZA/UM              ', '2021-03-30', 200, 129.99);
+
+  INSERT INTO PRODUTOS (NOME_PRODUTO, DESCRICAO, VENDIDO_POR,
+  DATA_CADASTRO, QUANTIDADE_ESTOQUE, VALOR_UNITARIO) VALUES
+  ('Cyberpunk 2077: Phanto   ', 'Expansao Cyberpunk.',
+  'CD Projekt Store   ', '2023-09-26', 300, 120.00);
+
+  INSERT INTO PRODUTOS (NOME_PRODUTO, DESCRICAO, VENDIDO_POR,
+  DATA_CADASTRO, QUANTIDADE_ESTOQUE, VALOR_UNITARIO) VALUES
+  ('Dying Light 2 Stay Huma  ', 'Acao sobrevivencia zumbi.',
+  'Techland           ', '2022-02-04', 280, 199.99);
+
+  INSERT INTO PRODUTOS (NOME_PRODUTO, DESCRICAO, VENDIDO_POR,
+  DATA_CADASTRO, QUANTIDADE_ESTOQUE, VALOR_UNITARIO) VALUES
+  ('Ghost of Tsushima        ', 'Acao e aventura Japao feudal.',
+  'PlayStation Store  ', '2020-07-17', 350, 189.99);
+
+  INSERT INTO PRODUTOS (NOME_PRODUTO, DESCRICAO, VENDIDO_POR,
+  DATA_CADASTRO, QUANTIDADE_ESTOQUE, VALOR_UNITARIO) VALUES
+  ('Marvels Spider-Man: Mi   ', 'Aventura super-herois.',
+  'PlayStation Store  ', '2020-11-12', 300, 169.99);
+
+  INSERT INTO PRODUTOS (NOME_PRODUTO, DESCRICAO, VENDIDO_POR,
+  DATA_CADASTRO, QUANTIDADE_ESTOQUE, VALOR_UNITARIO) VALUES
+  ('Horizon Forbidden West   ', 'Aventura mundo aberto.',
+  'PlayStation Store  ', '2022-02-18', 320, 249.99);
+
+  INSERT INTO PRODUTOS (NOME_PRODUTO, DESCRICAO, VENDIDO_POR,
+  DATA_CADASTRO, QUANTIDADE_ESTOQUE, VALOR_UNITARIO) VALUES
+  ('God of War (2018)        ', 'Aventura nordica.',
+  'PlayStation Store  ', '2018-04-20', 400, 129.99);
+
+  INSERT INTO PRODUTOS (NOME_PRODUTO, DESCRICAO, VENDIDO_POR,
+  DATA_CADASTRO, QUANTIDADE_ESTOQUE, VALOR_UNITARIO) VALUES
+  ('The Last of Us Part I    ', 'Remake sobrevivencia.',
+  'PlayStation Store  ', '2022-09-02', 280, 279.99);
+
+  INSERT INTO PRODUTOS (NOME_PRODUTO, DESCRICAO, VENDIDO_POR,
+  DATA_CADASTRO, QUANTIDADE_ESTOQUE, VALOR_UNITARIO) VALUES
+  ('Bloodborne               ', 'RPG acao desafiador.',
+  'PlayStation Store  ', '2015-03-24', 250, 99.99);
+
+  INSERT INTO PRODUTOS (NOME_PRODUTO, DESCRICAO, VENDIDO_POR,
+  DATA_CADASTRO, QUANTIDADE_ESTOQUE, VALOR_UNITARIO) VALUES
+  ('Demons Souls (Remake)    ', 'Remake RPG acao.',
+  'PlayStation Store  ', '2020-11-12', 200, 269.99);
+
+  INSERT INTO PRODUTOS (NOME_PRODUTO, DESCRICAO, VENDIDO_POR,
+  DATA_CADASTRO, QUANTIDADE_ESTOQUE, VALOR_UNITARIO) VALUES
+  ('Returnal                 ', 'Tiro terceira pessoa.',
+  'PlayStation Store  ', '2021-04-30', 180, 239.99);
+
+  INSERT INTO PRODUTOS (NOME_PRODUTO, DESCRICAO, VENDIDO_POR,
+  DATA_CADASTRO, QUANTIDADE_ESTOQUE, VALOR_UNITARIO) VALUES
+  ('Ratchet & Clank: Rift A  ', 'Plataforma acao.',
+  'PlayStation Store  ', '2021-06-11', 220, 259.99);
+
+  INSERT INTO PRODUTOS (NOME_PRODUTO, DESCRICAO, VENDIDO_POR,
+  DATA_CADASTRO, QUANTIDADE_ESTOQUE, VALOR_UNITARIO) VALUES
+  ('Astros Playroom          ', 'Plataforma divertido.',
+  'PlayStation Store  ', '2020-11-12', 999, 0.00);
+
+  INSERT INTO PRODUTOS (NOME_PRODUTO, DESCRICAO, VENDIDO_POR,
+  DATA_CADASTRO, QUANTIDADE_ESTOQUE, VALOR_UNITARIO) VALUES
+  ('Gran Turismo 7           ', 'Simulador corrida.',
+  'PlayStation Store  ', '2022-03-04', 280, 249.99);
+
+  INSERT INTO PRODUTOS (NOME_PRODUTO, DESCRICAO, VENDIDO_POR,
+  DATA_CADASTRO, QUANTIDADE_ESTOQUE, VALOR_UNITARIO) VALUES
+  ('Ghostwire: Tokyo         ', 'Acao e aventura Japao.',
+  'Bethesda Store     ', '2022-03-25', 180, 199.99);
+
+  INSERT INTO PRODUTOS (NOME_PRODUTO, DESCRICAO, VENDIDO_POR,
+  DATA_CADASTRO, QUANTIDADE_ESTOQUE, VALOR_UNITARIO) VALUES
+  ('Deathloop                ', 'Tiro primeira pessoa.',
+  'Bethesda Store     ', '2021-09-14', 200, 179.99);
+
+  INSERT INTO PRODUTOS (NOME_PRODUTO, DESCRICAO, VENDIDO_POR,
+  DATA_CADASTRO, QUANTIDADE_ESTOQUE, VALOR_UNITARIO) VALUES
+  ('Psychonauts              ', 'Plataforma aventura.',
+  'Xbox Game Studios  ', '2005-04-19', 150, 49.99);
+
+  INSERT INTO PRODUTOS (NOME_PRODUTO, DESCRICAO, VENDIDO_POR,
+  DATA_CADASTRO, QUANTIDADE_ESTOQUE, VALOR_UNITARIO) VALUES
+  ('Gears of War: Ultimate   ', 'Remaster Gears.',
+  'Xbox Game Studios  ', '2015-08-25', 180, 79.99);
+
+  INSERT INTO PRODUTOS (NOME_PRODUTO, DESCRICAO, VENDIDO_POR,
+  DATA_CADASTRO, QUANTIDADE_ESTOQUE, VALOR_UNITARIO) VALUES
+  ('Halo: The Master Chief   ', 'Colecao Halo.',
+  'Xbox Game Studios  ', '2014-11-11', 300, 149.99);
+
+  INSERT INTO PRODUTOS (NOME_PRODUTO, DESCRICAO, VENDIDO_POR,
+  DATA_CADASTRO, QUANTIDADE_ESTOQUE, VALOR_UNITARIO) VALUES
+  ('Sunset Overdrive         ', 'Acao mundo aberto.',
+  'Xbox Game Studios  ', '2014-10-28', 120, 69.99);
+
+  INSERT INTO PRODUTOS (NOME_PRODUTO, DESCRICAO, VENDIDO_POR,
+  DATA_CADASTRO, QUANTIDADE_ESTOQUE, VALOR_UNITARIO) VALUES
+  ('Ryse: Son of Rome        ', 'Acao e aventura Roma Antiga.',
+  'Xbox Game Studios  ', '2013-11-22', 100, 59.99);
+
+  INSERT INTO PRODUTOS (NOME_PRODUTO, DESCRICAO, VENDIDO_POR,
+  DATA_CADASTRO, QUANTIDADE_ESTOQUE, VALOR_UNITARIO) VALUES
+  ('Quantum Break            ', 'Acao e aventura.',
+  'Xbox Game Studios  ', '2016-04-05', 90, 69.99);
+
+  INSERT INTO PRODUTOS (NOME_PRODUTO, DESCRICAO, VENDIDO_POR,
+  DATA_CADASTRO, QUANTIDADE_ESTOQUE, VALOR_UNITARIO) VALUES
+  ('Crackdown 3              ', 'Acao mundo aberto.',
+  'Xbox Game Studios  ', '2019-02-15', 80, 79.99);
+
+  INSERT INTO PRODUTOS (NOME_PRODUTO, DESCRICAO, VENDIDO_POR,
+  DATA_CADASTRO, QUANTIDADE_ESTOQUE, VALOR_UNITARIO) VALUES
+  ('Bleeding Edge            ', 'Brawler de equipe.',
+  'Xbox Game Studios  ', '2020-03-24', 70, 99.99);
+
+  INSERT INTO PRODUTOS (NOME_PRODUTO, DESCRICAO, VENDIDO_POR,
+  DATA_CADASTRO, QUANTIDADE_ESTOQUE, VALOR_UNITARIO) VALUES
+  ('Everspace 2              ', 'Tiro espacial RPG.',
+  'ROCKFISH Games     ', '2023-04-06', 150, 129.99);
+
+  INSERT INTO PRODUTOS (NOME_PRODUTO, DESCRICAO, VENDIDO_POR,
+  DATA_CADASTRO, QUANTIDADE_ESTOQUE, VALOR_UNITARIO) VALUES
+  ('Deep Rock Galactic       ', 'Tiro cooperativo.',
+  'Coffee Stain Publi', '2020-05-13', 250, 89.99);
+
+  INSERT INTO PRODUTOS (NOME_PRODUTO, DESCRICAO, VENDIDO_POR,
+  DATA_CADASTRO, QUANTIDADE_ESTOQUE, VALOR_UNITARIO) VALUES
+  ('Valheim                  ', 'Sobrevivencia.',
+  'Coffee Stain Publi', '2021-02-02', 300, 69.99);
+
+  INSERT INTO PRODUTOS (NOME_PRODUTO, DESCRICAO, VENDIDO_POR,
+  DATA_CADASTRO, QUANTIDADE_ESTOQUE, VALOR_UNITARIO) VALUES
+  ('Phasmophobia             ', 'Terror cooperativo.',
+  'Kinetic Games      ', '2020-09-18', 200, 59.99);
+
+  INSERT INTO PRODUTOS (NOME_PRODUTO, DESCRICAO, VENDIDO_POR,
+  DATA_CADASTRO, QUANTIDADE_ESTOQUE, VALOR_UNITARIO) VALUES
+  ('Ready or Not             ', 'Tiro tatico.',
+  'VOID Interactive   ', '2021-12-17', 180, 109.99);
+
+  INSERT INTO PRODUTOS (NOME_PRODUTO, DESCRICAO, VENDIDO_POR,
+  DATA_CADASTRO, QUANTIDADE_ESTOQUE, VALOR_UNITARIO) VALUES
+  ('Escape from Tarkov       ', 'FPS tatico online.',
+  'Battlestate Games  ', '2017-07-27', 150, 150.00);
+
+  INSERT INTO PRODUTOS (NOME_PRODUTO, DESCRICAO, VENDIDO_POR,
+  DATA_CADASTRO, QUANTIDADE_ESTOQUE, VALOR_UNITARIO) VALUES
+  ('Rust                     ', 'Sobrevivencia multiplayer.',
+  'Facepunch Studios  ', '2018-02-08', 300, 120.00);
+
+  INSERT INTO PRODUTOS (NOME_PRODUTO, DESCRICAO, VENDIDO_POR,
+  DATA_CADASTRO, QUANTIDADE_ESTOQUE, VALOR_UNITARIO) VALUES
+  ('DayZ                     ', 'Sobrevivencia zumbi.',
+  'Bohemia Interactive', '2018-12-13', 200, 99.99);
+
+  INSERT INTO PRODUTOS (NOME_PRODUTO, DESCRICAO, VENDIDO_POR,
+  DATA_CADASTRO, QUANTIDADE_ESTOQUE, VALOR_UNITARIO) VALUES
+  ('ARK: Survival Evolved    ', 'Sobrevivencia dinossauros.',
+  'Studio Wildcard    ', '2017-08-29', 350, 89.99);
+
+  INSERT INTO PRODUTOS (NOME_PRODUTO, DESCRICAO, VENDIDO_POR,
+  DATA_CADASTRO, QUANTIDADE_ESTOQUE, VALOR_UNITARIO) VALUES
+  ('Conan Exiles             ', 'Sobrevivencia mundo aberto.',
+  'Funcom             ', '2018-05-08', 280, 79.99);
+
+  INSERT INTO PRODUTOS (NOME_PRODUTO, DESCRICAO, VENDIDO_POR,
+  DATA_CADASTRO, QUANTIDADE_ESTOQUE, VALOR_UNITARIO) VALUES
+  ('Garrys Mod               ', 'Sandbox de fisica.',
+  'Facepunch Studios  ', '2006-12-29', 500, 49.99);
+
+  INSERT INTO PRODUTOS (NOME_PRODUTO, DESCRICAO, VENDIDO_POR,
+  DATA_CADASTRO, QUANTIDADE_ESTOQUE, VALOR_UNITARIO) VALUES
+  ('Left 4 Dead 2            ', 'Tiro cooperativo zumbis.',
+  'Valve Corporation  ', '2009-11-17', 400, 39.99);
+
+  INSERT INTO PRODUTOS (NOME_PRODUTO, DESCRICAO, VENDIDO_POR,
+  DATA_CADASTRO, QUANTIDADE_ESTOQUE, VALOR_UNITARIO) VALUES
+  ('Payday 2                 ', 'Tiro cooperativo assaltos.',
+  'Starbreeze Studios ', '2013-08-13', 350, 49.99);
+
+  INSERT INTO PRODUTOS (NOME_PRODUTO, DESCRICAO, VENDIDO_POR,
+  DATA_CADASTRO, QUANTIDADE_ESTOQUE, VALOR_UNITARIO) VALUES
+  ('Borderlands 3            ', 'Loot shooter cartunesco.',
+  'Gearbox Software   ', '2019-09-13', 300, 149.99);
+
+  INSERT INTO PRODUTOS (NOME_PRODUTO, DESCRICAO, VENDIDO_POR,
+  DATA_CADASTRO, QUANTIDADE_ESTOQUE, VALOR_UNITARIO) VALUES
+  ('Tiny Tinas Wonderland    ', 'Loot shooter fantasia.',
+  'Gearbox Software   ', '2022-03-25', 250, 169.99);
+
+  INSERT INTO PRODUTOS (NOME_PRODUTO, DESCRICAO, VENDIDO_POR,
+  DATA_CADASTRO, QUANTIDADE_ESTOQUE, VALOR_UNITARIO) VALUES
+  ('Destiny 2: Lightfall     ', 'Expansao Destiny 2.',
+  'Bungie             ', '2023-02-28', 200, 100.00);
+
+  INSERT INTO PRODUTOS (NOME_PRODUTO, DESCRICAO, VENDIDO_POR,
+  DATA_CADASTRO, QUANTIDADE_ESTOQUE, VALOR_UNITARIO) VALUES
+  ('The Division 2           ', 'Tiro terceira pessoa RPG.',
+  'Ubisoft Store      ', '2019-03-15', 280, 99.99);
+
+  INSERT INTO PRODUTOS (NOME_PRODUTO, DESCRICAO, VENDIDO_POR,
+  DATA_CADASTRO, QUANTIDADE_ESTOQUE, VALOR_UNITARIO) VALUES
+  ('Ghost Recon Breakpoint   ', 'Tiro tatico mundo aberto.',
+  'Ubisoft Store      ', '2019-10-04', 180, 79.99);
+
+  INSERT INTO PRODUTOS (NOME_PRODUTO, DESCRICAO, VENDIDO_POR,
+  DATA_CADASTRO, QUANTIDADE_ESTOQUE, VALOR_UNITARIO) VALUES
+  ('Far Cry 6                ', 'Acao mundo aberto.',
+  'Ubisoft Store      ', '2021-10-07', 250, 149.99);
+
+  INSERT INTO PRODUTOS (NOME_PRODUTO, DESCRICAO, VENDIDO_POR,
+  DATA_CADASTRO, QUANTIDADE_ESTOQUE, VALOR_UNITARIO) VALUES
+  ('Watch Dogs: Legion       ', 'Acao mundo aberto Londres.',
+  'Ubisoft Store      ', '2020-10-29', 200, 129.99);
+
+  INSERT INTO PRODUTOS (NOME_PRODUTO, DESCRICAO, VENDIDO_POR,
+  DATA_CADASTRO, QUANTIDADE_ESTOQUE, VALOR_UNITARIO) VALUES
+  ('Immortals Fenyx Rising   ', 'Acao mitologia grega.',
+  'Ubisoft Store      ', '2020-12-03', 150, 99.99);
+
+  INSERT INTO PRODUTOS (NOME_PRODUTO, DESCRICAO, VENDIDO_POR,
+  DATA_CADASTRO, QUANTIDADE_ESTOQUE, VALOR_UNITARIO) VALUES
+  ('Prince of Persia: The S  ', 'Remake plataforma.',
+  'Ubisoft Store      ', '2024-01-01', 100, 129.99);
+
+  INSERT INTO PRODUTOS (NOME_PRODUTO, DESCRICAO, VENDIDO_POR,
+  DATA_CADASTRO, QUANTIDADE_ESTOQUE, VALOR_UNITARIO) VALUES
+  ('Beyond Good & Evil 2     ', 'Aventura espacial.',
+  'Ubisoft Store      ', '2025-01-01', 50, 0.00);
+
+  INSERT INTO PRODUTOS (NOME_PRODUTO, DESCRICAO, VENDIDO_POR,
+  DATA_CADASTRO, QUANTIDADE_ESTOQUE, VALOR_UNITARIO) VALUES
+  ('DokeV                    ', 'Aventura criaturas.',
+  'Pearl Abyss        ', '2025-01-01', 80, 0.00);
+
+  INSERT INTO PRODUTOS (NOME_PRODUTO, DESCRICAO, VENDIDO_POR,
+  DATA_CADASTRO, QUANTIDADE_ESTOQUE, VALOR_UNITARIO) VALUES
+  ('Crimson Desert           ', 'RPG acao mundo aberto.',
+  'Pearl Abyss        ', '2024-01-01', 70, 0.00);
+
+  INSERT INTO PRODUTOS (NOME_PRODUTO, DESCRICAO, VENDIDO_POR,
+  DATA_CADASTRO, QUANTIDADE_ESTOQUE, VALOR_UNITARIO) VALUES
+  ('Project TL (Throne and   ', 'MMORPG fantasia.',
+  'NCSoft             ', '2024-01-01', 60, 0.00);
+
+  INSERT INTO PRODUTOS (NOME_PRODUTO, DESCRICAO, VENDIDO_POR,
+  DATA_CADASTRO, QUANTIDADE_ESTOQUE, VALOR_UNITARIO) VALUES
+  ('Blue Protocol            ', 'MMORPG acao anime.',
+  'Bandai Namco Online', '2024-01-01', 90, 0.00);
+
+  INSERT INTO PRODUTOS (NOME_PRODUTO, DESCRICAO, VENDIDO_POR,
+  DATA_CADASTRO, QUANTIDADE_ESTOQUE, VALOR_UNITARIO) VALUES
+  ('Lost Ark                 ', 'MMORPG acao isometrico.',
+  'Smilegate RPG      ', '2022-02-11', 300, 0.00);
+
+  INSERT INTO PRODUTOS (NOME_PRODUTO, DESCRICAO, VENDIDO_POR,
+  DATA_CADASTRO, QUANTIDADE_ESTOQUE, VALOR_UNITARIO) VALUES
+  ('New World                ', 'MMORPG mundo aberto.',
+  'Amazon Games       ', '2021-09-28', 250, 99.99);
+
+  INSERT INTO PRODUTOS (NOME_PRODUTO, DESCRICAO, VENDIDO_POR,
+  DATA_CADASTRO, QUANTIDADE_ESTOQUE, VALOR_UNITARIO) VALUES
+  ('Final Fantasy XIV: Endw  ', 'Expansao FF14.',
+  'Square Enix Store  ', '2021-12-07', 200, 100.00);
+
+  INSERT INTO PRODUTOS (NOME_PRODUTO, DESCRICAO, VENDIDO_POR,
+  DATA_CADASTRO, QUANTIDADE_ESTOQUE, VALOR_UNITARIO) VALUES
+  ('Elder Scrolls Online: N  ', 'Expansao ESO.',
+  'Bethesda Store     ', '2023-06-05', 180, 80.00);
+
+  INSERT INTO PRODUTOS (NOME_PRODUTO, DESCRICAO, VENDIDO_POR,
+  DATA_CADASTRO, QUANTIDADE_ESTOQUE, VALOR_UNITARIO) VALUES
+  ('Guild Wars 2: Secrets o  ', 'Expansao Guild Wars 2.',
+  'ArenaNet           ', '2023-08-22', 150, 70.00);
+
+  INSERT INTO PRODUTOS (NOME_PRODUTO, DESCRICAO, VENDIDO_POR,
+  DATA_CADASTRO, QUANTIDADE_ESTOQUE, VALOR_UNITARIO) VALUES
+  ('World of Warcraft: Drag  ', 'Expansao WoW.',
+  'Blizzard Store     ', '2022-11-28', 250, 120.00);
+
+  INSERT INTO PRODUTOS (NOME_PRODUTO, DESCRICAO, VENDIDO_POR,
+  DATA_CADASTRO, QUANTIDADE_ESTOQUE, VALOR_UNITARIO) VALUES
+  ('Overwatch                ', 'Jogo de tiro em equipe.',
+  'Blizzard Store     ', '2016-05-24', 0, 0.00);
+
+  INSERT INTO PRODUTOS (NOME_PRODUTO, DESCRICAO, VENDIDO_POR,
+  DATA_CADASTRO, QUANTIDADE_ESTOQUE, VALOR_UNITARIO) VALUES
+  ('Star Wars Jedi: Surviv   ', 'Acao e aventura Star Wars.',
+  'EA Star Wars       ', '2023-04-28', 300, 269.99);
+
+  INSERT INTO PRODUTOS (NOME_PRODUTO, DESCRICAO, VENDIDO_POR,
+  DATA_CADASTRO, QUANTIDADE_ESTOQUE, VALOR_UNITARIO) VALUES
+  ('Star Wars Battlefront I  ', 'Tiro em 1a e 3a pessoa.',
+  'EA Star Wars       ', '2017-11-17', 200, 89.99);
+
+  INSERT INTO PRODUTOS (NOME_PRODUTO, DESCRICAO, VENDIDO_POR,
+  DATA_CADASTRO, QUANTIDADE_ESTOQUE, VALOR_UNITARIO) VALUES
+  ('Mass Effect Legendary E  ', 'Colecao remasterizada.',
+  'EA Games           ', '2021-05-14', 250, 149.99);
+
+  INSERT INTO PRODUTOS (NOME_PRODUTO, DESCRICAO, VENDIDO_POR,
+  DATA_CADASTRO, QUANTIDADE_ESTOQUE, VALOR_UNITARIO) VALUES
+  ('Dragon Age: Dreadwolf    ', 'Novo capitulo Dragon Age.',
+  'EA Games           ', '2025-01-01', 100, 289.99);
+
+  INSERT INTO PRODUTOS (NOME_PRODUTO, DESCRICAO, VENDIDO_POR,
+  DATA_CADASTRO, QUANTIDADE_ESTOQUE, VALOR_UNITARIO) VALUES
+  ('Skate Story              ', 'Jogo de skate.',
+  'Sam Eng            ', '2024-01-01', 50, 99.99);
+
+  INSERT INTO PRODUTOS (NOME_PRODUTO, DESCRICAO, VENDIDO_POR,
+  DATA_CADASTRO, QUANTIDADE_ESTOQUE, VALOR_UNITARIO) VALUES
+  ('The Plucky Squire        ', 'Aventura com livro.',
+  'Devolver Digital   ', '2024-01-01', 60, 119.99);
+
+  INSERT INTO PRODUTOS (NOME_PRODUTO, DESCRICAO, VENDIDO_POR,
+  DATA_CADASTRO, QUANTIDADE_ESTOQUE, VALOR_UNITARIO) VALUES
+  ('Replaced                 ', 'Acao plataforma pixel art.',
+  'Coatsink           ', '2024-01-01', 70, 99.99);
+
+  INSERT INTO PRODUTOS (NOME_PRODUTO, DESCRICAO, VENDIDO_POR,
+  DATA_CADASTRO, QUANTIDADE_ESTOQUE, VALOR_UNITARIO) VALUES
+  ('Little Devil Inside      ', 'Aventura sobrevivencia.',
+  'Neostream Interacti', '2024-01-01', 80, 139.99);
+
+  INSERT INTO PRODUTOS (NOME_PRODUTO, DESCRICAO, VENDIDO_POR,
+  DATA_CADASTRO, QUANTIDADE_ESTOQUE, VALOR_UNITARIO) VALUES
+  ('S.T.A.L.K.E.R. 2: Heart  ', 'Sobrevivencia terror.',
+  'GSC Game World     ', '2024-01-01', 100, 249.99);
+
+  INSERT INTO PRODUTOS (NOME_PRODUTO, DESCRICAO, VENDIDO_POR,
+  DATA_CADASTRO, QUANTIDADE_ESTOQUE, VALOR_UNITARIO) VALUES
+  ('F.I.S.T.: Forged In Sha  ', 'Metroidvania coelho.',
+  'TiGames            ', '2021-09-07', 150, 89.99);
+
+  INSERT INTO PRODUTOS (NOME_PRODUTO, DESCRICAO, VENDIDO_POR,
+  DATA_CADASTRO, QUANTIDADE_ESTOQUE, VALOR_UNITARIO) VALUES
+  ('Kena: Bridge of Spirits  ', 'Aventura acao graficos.',
+  'Ember Lab          ', '2021-09-21', 200, 129.99);
+
+  INSERT INTO PRODUTOS (NOME_PRODUTO, DESCRICAO, VENDIDO_POR,
+  DATA_CADASTRO, QUANTIDADE_ESTOQUE, VALOR_UNITARIO) VALUES
+  ('Stray                    ', 'Aventura com gato.',
+  'Annapurna Interacti', '2022-07-19', 250, 79.99);
+
+  INSERT INTO PRODUTOS (NOME_PRODUTO, DESCRICAO, VENDIDO_POR,
+  DATA_CADASTRO, QUANTIDADE_ESTOQUE, VALOR_UNITARIO) VALUES
+  ('Tunic                    ', 'Aventura acao isometrico.',
+  'Finji              ', '2022-03-16', 180, 89.99);
+
+  INSERT INTO PRODUTOS (NOME_PRODUTO, DESCRICAO, VENDIDO_POR,
+  DATA_CADASTRO, QUANTIDADE_ESTOQUE, VALOR_UNITARIO) VALUES
+  ('Neon White               ', 'FPS plataforma cartas.',
+  'Annapurna Interacti', '2022-06-16', 150, 69.99);
+
+  INSERT INTO PRODUTOS (NOME_PRODUTO, DESCRICAO, VENDIDO_POR,
+  DATA_CADASTRO, QUANTIDADE_ESTOQUE, VALOR_UNITARIO) VALUES
+  ('Cult of the Lamb         ', 'Gerenciamento culto.',
+  'Devolver Digital   ', '2022-08-11', 220, 79.99);
+
+  INSERT INTO PRODUTOS (NOME_PRODUTO, DESCRICAO, VENDIDO_POR,
+  DATA_CADASTRO, QUANTIDADE_ESTOQUE, VALOR_UNITARIO) VALUES
+  ('Vampire Survivors        ', 'Roguelite sobrevivencia.',
+  'poncle             ', '2022-10-20', 300, 20.00);
+
+  INSERT INTO PRODUTOS (NOME_PRODUTO, DESCRICAO, VENDIDO_POR,
+  DATA_CADASTRO, QUANTIDADE_ESTOQUE, VALOR_UNITARIO) VALUES
+  ('Dave the Diver           ', 'Aventura mergulho.',
+  'MINTROCKET         ', '2023-06-28', 280, 69.99);
+
+  INSERT INTO PRODUTOS (NOME_PRODUTO, DESCRICAO, VENDIDO_POR,
+  DATA_CADASTRO, QUANTIDADE_ESTOQUE, VALOR_UNITARIO) VALUES
+  ('Sea of Stars             ', 'RPG turnos retro.',
+  'Sabotage Studio    ', '2023-08-29', 200, 89.99);
+
+  INSERT INTO PRODUTOS (NOME_PRODUTO, DESCRICAO, VENDIDO_POR,
+  DATA_CADASTRO, QUANTIDADE_ESTOQUE, VALOR_UNITARIO) VALUES
+  ('Jusant                   ', 'Aventura escalada.',
+  'DON''T NOD          ', '2023-10-31', 150, 79.99);
+
+  INSERT INTO PRODUTOS (NOME_PRODUTO, DESCRICAO, VENDIDO_POR,
+  DATA_CADASTRO, QUANTIDADE_ESTOQUE, VALOR_UNITARIO) VALUES
+  ('Cocoon                   ', 'Quebra-cabeca aventura.',
+  'Geometric Interacti', '2023-09-29', 120, 89.99);
+
+  INSERT INTO PRODUTOS (NOME_PRODUTO, DESCRICAO, VENDIDO_POR,
+  DATA_CADASTRO, QUANTIDADE_ESTOQUE, VALOR_UNITARIO) VALUES
+  ('Thirsty Suitors          ', 'RPG narrativa.',
+  'Annapurna Interacti', '2023-11-02', 100, 69.99);
+
+  INSERT INTO PRODUTOS (NOME_PRODUTO, DESCRICAO, VENDIDO_POR,
+  DATA_CADASTRO, QUANTIDADE_ESTOQUE, VALOR_UNITARIO) VALUES
+  ('KarmaZoo                 ', 'Plataforma cooperativo.',
+  'Devolver Digital   ', '2023-11-07', 90, 59.99);
+
+  INSERT INTO PRODUTOS (NOME_PRODUTO, DESCRICAO, VENDIDO_POR,
+  DATA_CADASTRO, QUANTIDADE_ESTOQUE, VALOR_UNITARIO) VALUES
+  ('The Talos Principle 2    ', 'Quebra-cabeca 1a pessoa.',
+  'Croteam            ', '2023-11-02', 130, 119.99);
+
+  INSERT INTO PRODUTOS (NOME_PRODUTO, DESCRICAO, VENDIDO_POR,
+  DATA_CADASTRO, QUANTIDADE_ESTOQUE, VALOR_UNITARIO) VALUES
+  ('Inkulinati               ', 'Estrategia turnos.',
+  'Daedalic Entertainm', '2023-01-31', 110, 79.99);
+
+  INSERT INTO PRODUTOS (NOME_PRODUTO, DESCRICAO, VENDIDO_POR,
+  DATA_CADASTRO, QUANTIDADE_ESTOQUE, VALOR_UNITARIO) VALUES
+  ('Wild Hearts              ', 'RPG acao caca monstros.',
+  'EA Originals       ', '2023-02-17', 180, 219.99);
+
+  INSERT INTO PRODUTOS (NOME_PRODUTO, DESCRICAO, VENDIDO_POR,
+  DATA_CADASTRO, QUANTIDADE_ESTOQUE, VALOR_UNITARIO) VALUES
+  ('Wo Long: Fallen Dynasty  ', 'RPG acao desafiador.',
+  'Koei Tecmo Games   ', '2023-03-03', 200, 199.99);
+
+  INSERT INTO PRODUTOS (NOME_PRODUTO, DESCRICAO, VENDIDO_POR,
+  DATA_CADASTRO, QUANTIDADE_ESTOQUE, VALOR_UNITARIO) VALUES
+  ('Remnant II               ', 'Tiro terceira pessoa RPG.',
+  'Gearbox Publishing ', '2023-07-25', 220, 159.99);
+
+  INSERT INTO PRODUTOS (NOME_PRODUTO, DESCRICAO, VENDIDO_POR,
+  DATA_CADASTRO, QUANTIDADE_ESTOQUE, VALOR_UNITARIO) VALUES
+  ('Armored Core VI: Fires   ', 'Acao de mechas.',
+  'Bandai Namco Store ', '2023-08-25', 190, 249.99);
+
+  INSERT INTO PRODUTOS (NOME_PRODUTO, DESCRICAO, VENDIDO_POR,
+  DATA_CADASTRO, QUANTIDADE_ESTOQUE, VALOR_UNITARIO) VALUES
+  ('Lies of P                ', 'RPG acao Pinoquio.',
+  'Neowiz             ', '2023-09-19', 210, 209.99);
+
+  INSERT INTO PRODUTOS (NOME_PRODUTO, DESCRICAO, VENDIDO_POR,
+  DATA_CADASTRO, QUANTIDADE_ESTOQUE, VALOR_UNITARIO) VALUES
+  ('Mortal Kombat 1          ', 'Novo capitulo luta.',
+  'Warner Bros. Games ', '2023-09-19', 240, 269.99);
+
+  INSERT INTO PRODUTOS (NOME_PRODUTO, DESCRICAO, VENDIDO_POR,
+  DATA_CADASTRO, QUANTIDADE_ESTOQUE, VALOR_UNITARIO) VALUES
+  ('Forza Horizon 4          ', 'Corrida mundo aberto.',
+  'Xbox Game Studios  ', '2018-10-02', 300, 199.99);
+
+  INSERT INTO PRODUTOS (NOME_PRODUTO, DESCRICAO, VENDIDO_POR,
+  DATA_CADASTRO, QUANTIDADE_ESTOQUE, VALOR_UNITARIO) VALUES
+  ('Gears of War 4           ', 'Tiro terceira pessoa.',
+  'Xbox Game Studios  ', '2016-10-11', 250, 129.99);
+
+  INSERT INTO PRODUTOS (NOME_PRODUTO, DESCRICAO, VENDIDO_POR,
+  DATA_CADASTRO, QUANTIDADE_ESTOQUE, VALOR_UNITARIO) VALUES
+  ('Halo 5: Guardians        ', 'Tiro primeira pessoa.',
+  'Xbox Game Studios  ', '2015-10-27', 280, 99.99);
+
+  INSERT INTO PRODUTOS (NOME_PRODUTO, DESCRICAO, VENDIDO_POR,
+  DATA_CADASTRO, QUANTIDADE_ESTOQUE, VALOR_UNITARIO) VALUES
+  ('Ori and the Will of the  ', 'Plataforma aventura.',
+  'Xbox Game Studios  ', '2020-03-11', 300, 129.99);
+
+  INSERT INTO PRODUTOS (NOME_PRODUTO, DESCRICAO, VENDIDO_POR,
+  DATA_CADASTRO, QUANTIDADE_ESTOQUE, VALOR_UNITARIO) VALUES
+  ('Psychonauts 2            ', 'Plataforma aventura psiquica.',
+  'Xbox Game Studios  ', '2021-08-25', 250, 149.99);
+
+  INSERT INTO PRODUTOS (NOME_PRODUTO, DESCRICAO, VENDIDO_POR,
+  DATA_CADASTRO, QUANTIDADE_ESTOQUE, VALOR_UNITARIO) VALUES
+  ('Microsoft Flight Simul   ', 'Simulador de voo.',
+  'Xbox Game Studios  ', '2020-08-18', 300, 199.99);
+
+  INSERT INTO PRODUTOS (NOME_PRODUTO, DESCRICAO, VENDIDO_POR,
+  DATA_CADASTRO, QUANTIDADE_ESTOQUE, VALOR_UNITARIO) VALUES
+  ('Age of Empires II: Defi  ', 'Remaster estrategia.',
+  'Xbox Game Studios  ', '2019-11-14', 400, 99.99);
+
+  INSERT INTO PRODUTOS (NOME_PRODUTO, DESCRICAO, VENDIDO_POR,
+  DATA_CADASTRO, QUANTIDADE_ESTOQUE, VALOR_UNITARIO) VALUES
+  ('Age of Empires III: Def  ', 'Remaster terceiro Age.',
+  'Xbox Game Studios  ', '2020-10-15', 350, 99.99);
+
+  INSERT INTO PRODUTOS (NOME_PRODUTO, DESCRICAO, VENDIDO_POR,
+  DATA_CADASTRO, QUANTIDADE_ESTOQUE, VALOR_UNITARIO) VALUES
+  ('Halo Infinite            ', 'Novo capitulo Halo.',
+  'Xbox Game Studios  ', '2021-12-08', 450, 0.00);
+
+  INSERT INTO PRODUTOS (NOME_PRODUTO, DESCRICAO, VENDIDO_POR,
+  DATA_CADASTRO, QUANTIDADE_ESTOQUE, VALOR_UNITARIO) VALUES
+  ('Forza Horizon 5          ', 'Corrida mundo aberto Mexico.',
+  'Xbox Game Studios  ', '2021-11-09', 500, 229.99);
+
+  INSERT INTO PRODUTOS (NOME_PRODUTO, DESCRICAO, VENDIDO_POR,
+  DATA_CADASTRO, QUANTIDADE_ESTOQUE, VALOR_UNITARIO) VALUES
+  ('Gears 5                  ', 'Tiro terceira pessoa.',
+  'Xbox Game Studios  ', '2019-09-10', 380, 149.99);
+
+  INSERT INTO PRODUTOS (NOME_PRODUTO, DESCRICAO, VENDIDO_POR,
+  DATA_CADASTRO, QUANTIDADE_ESTOQUE, VALOR_UNITARIO) VALUES
+  ('State of Decay 2         ', 'Sobrevivencia zumbi.',
+  'Xbox Game Studios  ', '2018-05-22', 420, 119.99);
+
+  INSERT INTO PRODUTOS (NOME_PRODUTO, DESCRICAO, VENDIDO_POR,
+  DATA_CADASTRO, QUANTIDADE_ESTOQUE, VALOR_UNITARIO) VALUES
+  ('Forza Motorsport 7       ', 'Simulador de corrida.',
+  'Xbox Game Studios  ', '2017-10-03', 200, 99.99);
+
+  INSERT INTO PRODUTOS (NOME_PRODUTO, DESCRICAO, VENDIDO_POR,
+  DATA_CADASTRO, QUANTIDADE_ESTOQUE, VALOR_UNITARIO) VALUES
+  ('Ori and the Blind Fores  ', 'Plataforma aventura.',
+  'Xbox Game Studios  ', '2015-03-11', 250, 79.99);
+
+  INSERT INTO PRODUTOS (NOME_PRODUTO, DESCRICAO, VENDIDO_POR,
+  DATA_CADASTRO, QUANTIDADE_ESTOQUE, VALOR_UNITARIO) VALUES
+  ('Cuphead                  ', 'Plataforma de tiro.',
+  'Studio MDHR        ', '2017-09-29', 300, 69.99);
+
+  INSERT INTO PRODUTOS (NOME_PRODUTO, DESCRICAO, VENDIDO_POR,
+  DATA_CADASTRO, QUANTIDADE_ESTOQUE, VALOR_UNITARIO) VALUES
+  ('Hollow Knight            ', 'Metroidvania aclamado.',
+  'Team Cherry        ', '2017-02-24', 350, 59.99);
+
+  INSERT INTO PRODUTOS (NOME_PRODUTO, DESCRICAO, VENDIDO_POR,
+  DATA_CADASTRO, QUANTIDADE_ESTOQUE, VALOR_UNITARIO) VALUES
+  ('Dead Cells               ', 'Roguelike de acao.',
+  'Motion Twin        ', '2018-08-07', 280, 79.99);
+
+  INSERT INTO PRODUTOS (NOME_PRODUTO, DESCRICAO, VENDIDO_POR,
+  DATA_CADASTRO, QUANTIDADE_ESTOQUE, VALOR_UNITARIO) VALUES
+  ('Hades                    ', 'Roguelike de acao.',
+  'Supergiant Games   ', '2020-09-17', 320, 89.99);
+
+  INSERT INTO PRODUTOS (NOME_PRODUTO, DESCRICAO, VENDIDO_POR,
+  DATA_CADASTRO, QUANTIDADE_ESTOQUE, VALOR_UNITARIO) VALUES
+  ('Celeste                  ', 'Plataforma desafiador.',
+  'Extremely OK Games ', '2018-01-25', 270, 59.99);
+
+  INSERT INTO PRODUTOS (NOME_PRODUTO, DESCRICAO, VENDIDO_POR,
+  DATA_CADASTRO, QUANTIDADE_ESTOQUE, VALOR_UNITARIO) VALUES
+  ('Disco Elysium            ', 'RPG investigativo.',
+  'ZA/UM              ', '2019-10-15', 180, 119.99);
+
+  INSERT INTO PRODUTOS (NOME_PRODUTO, DESCRICAO, VENDIDO_POR,
+  DATA_CADASTRO, QUANTIDADE_ESTOQUE, VALOR_UNITARIO) VALUES
+  ('Divinity: Original Sin   ', 'RPG de fantasia.',
+  'Larian Studios     ', '2017-09-14', 220, 139.99);
+
+  INSERT INTO PRODUTOS (NOME_PRODUTO, DESCRICAO, VENDIDO_POR,
+  DATA_CADASTRO, QUANTIDADE_ESTOQUE, VALOR_UNITARIO) VALUES
+  ('Path of Exile            ', 'RPG de acao online.',
+  'Grinding Gear Game ', '2013-10-23', 900, 0.00);
+
+  INSERT INTO PRODUTOS (NOME_PRODUTO, DESCRICAO, VENDIDO_POR,
+  DATA_CADASTRO, QUANTIDADE_ESTOQUE, VALOR_UNITARIO) VALUES
+  ('War Thunder              ', 'Jogo de combate militar.',
+  'Gaijin Entertainmen', '2012-11-01', 700, 0.00);
+
+  INSERT INTO PRODUTOS (NOME_PRODUTO, DESCRICAO, VENDIDO_POR,
+  DATA_CADASTRO, QUANTIDADE_ESTOQUE, VALOR_UNITARIO) VALUES
+  ('World of Tanks           ', 'MMO de tanques.',
+  'Wargaming          ', '2010-08-12', 650, 0.00);
+
+  INSERT INTO PRODUTOS (NOME_PRODUTO, DESCRICAO, VENDIDO_POR,
+  DATA_CADASTRO, QUANTIDADE_ESTOQUE, VALOR_UNITARIO) VALUES
+  ('Dota Underlords          ', 'Auto Chess estrategico.',
+  'Valve Corporation  ', '2019-06-13', 500, 0.00);
+
+  INSERT INTO PRODUTOS (NOME_PRODUTO, DESCRICAO, VENDIDO_POR,
+  DATA_CADASTRO, QUANTIDADE_ESTOQUE, VALOR_UNITARIO) VALUES
+  ('Teamfight Tactics        ', 'Auto Chess estrategico.',
+  'Riot Games         ', '2019-06-26', 550, 0.00);
+
+  INSERT INTO PRODUTOS (NOME_PRODUTO, DESCRICAO, VENDIDO_POR,
+  DATA_CADASTRO, QUANTIDADE_ESTOQUE, VALOR_UNITARIO) VALUES
+  ('Legends of Runeterra     ', 'Jogo de cartas colecionaveis.',
+  'Riot Games         ', '2020-04-29', 600, 0.00);
+
+  INSERT INTO PRODUTOS (NOME_PRODUTO, DESCRICAO, VENDIDO_POR,
+  DATA_CADASTRO, QUANTIDADE_ESTOQUE, VALOR_UNITARIO) VALUES
+  ('Gwent: The Witcher Card  ', 'Jogo de cartas The Witcher.',
+  'CD Projekt Store   ', '2018-10-23', 400, 0.00);
+
+  INSERT INTO PRODUTOS (NOME_PRODUTO, DESCRICAO, VENDIDO_POR,
+  DATA_CADASTRO, QUANTIDADE_ESTOQUE, VALOR_UNITARIO) VALUES
+  ('Hearthstone              ', 'Jogo de cartas Blizzard.',
+  'Blizzard Store     ', '2014-03-11', 700, 0.00);
+
+  INSERT INTO PRODUTOS (NOME_PRODUTO, DESCRICAO, VENDIDO_POR,
+  DATA_CADASTRO, QUANTIDADE_ESTOQUE, VALOR_UNITARIO) VALUES
+  ('Magic: The Gathering Ar  ', 'Jogo de cartas digital.',
+  'Wizards of the Coas', '2019-09-26', 600, 0.00);
+
+  INSERT INTO PRODUTOS (NOME_PRODUTO, DESCRICAO, VENDIDO_POR,
+  DATA_CADASTRO, QUANTIDADE_ESTOQUE, VALOR_UNITARIO) VALUES
+  ('Slay the Spire           ', 'Roguelike de baralho.',
+  'MegaCrit           ', '2019-01-23', 300, 69.99);
+
+  INSERT INTO PRODUTOS (NOME_PRODUTO, DESCRICAO, VENDIDO_POR,
+  DATA_CADASTRO, QUANTIDADE_ESTOQUE, VALOR_UNITARIO) VALUES
+  ('Monster Hunter: World    ', 'RPG de acao caca monstros.',
+  'Capcom Store       ', '2018-01-26', 400, 159.99);
+
+  INSERT INTO PRODUTOS (NOME_PRODUTO, DESCRICAO, VENDIDO_POR,
+  DATA_CADASTRO, QUANTIDADE_ESTOQUE, VALOR_UNITARIO) VALUES
+  ('Monster Hunter Rise      ', 'RPG de acao caca monstros.',
+  'Capcom Store       ', '2021-03-26', 350, 179.99);
+
+  INSERT INTO PRODUTOS (NOME_PRODUTO, DESCRICAO, VENDIDO_POR,
+  DATA_CADASTRO, QUANTIDADE_ESTOQUE, VALOR_UNITARIO) VALUES
+  ('Death Stranding          ', 'Aventura pos-apocaliptica.',
+  'Kojima Productions ', '2019-11-08', 250, 169.99);
+
+  INSERT INTO PRODUTOS (NOME_PRODUTO, DESCRICAO, VENDIDO_POR,
+  DATA_CADASTRO, QUANTIDADE_ESTOQUE, VALOR_UNITARIO) VALUES
+  ('Control                  ', 'Acao e aventura paranormais.',
+  'Remedy Entertainmen', '2019-08-27', 280, 129.99);
+
+  INSERT INTO PRODUTOS (NOME_PRODUTO, DESCRICAO, VENDIDO_POR,
+  DATA_CADASTRO, QUANTIDADE_ESTOQUE, VALOR_UNITARIO) VALUES
+  ('Doom Eternal             ', 'Tiro em 1a pessoa.',
+  'Bethesda Store     ', '2020-03-20', 320, 159.99);
+
+  INSERT INTO PRODUTOS (NOME_PRODUTO, DESCRICAO, VENDIDO_POR,
+  DATA_CADASTRO, QUANTIDADE_ESTOQUE, VALOR_UNITARIO) VALUES
+  ('Wolfenstein II: The New  ', 'Tiro em 1a pessoa.',
+  'Bethesda Store     ', '2017-10-27', 200, 99.99);
+
+  INSERT INTO PRODUTOS (NOME_PRODUTO, DESCRICAO, VENDIDO_POR,
+  DATA_CADASTRO, QUANTIDADE_ESTOQUE, VALOR_UNITARIO) VALUES
+  ('Prey                     ', 'Tiro em 1a pessoa RPG.',
+  'Bethesda Store     ', '2017-05-05', 180, 89.99);
+
+  INSERT INTO PRODUTOS (NOME_PRODUTO, DESCRICAO, VENDIDO_POR,
+  DATA_CADASTRO, QUANTIDADE_ESTOQUE, VALOR_UNITARIO) VALUES
+  ('Dishonored 2             ', 'Acao furtiva sobrenatural.',
+  'Bethesda Store     ', '2016-11-11', 220, 79.99);
+
+  INSERT INTO PRODUTOS (NOME_PRODUTO, DESCRICAO, VENDIDO_POR,
+  DATA_CADASTRO, QUANTIDADE_ESTOQUE, VALOR_UNITARIO) VALUES
+  ('The Elder Scrolls V: Sk  ', 'RPG mundo aberto fantasia.',
+  'Bethesda Store     ', '2011-11-11', 600, 99.99);
+
+  INSERT INTO PRODUTOS (NOME_PRODUTO, DESCRICAO, VENDIDO_POR,
+  DATA_CADASTRO, QUANTIDADE_ESTOQUE, VALOR_UNITARIO) VALUES
+  ('Fallout 4                ', 'RPG mundo aberto pos-apocaliptico.',
+  'Bethesda Store     ', '2015-11-10', 500, 89.99);
+
+  INSERT INTO PRODUTOS (NOME_PRODUTO, DESCRICAO, VENDIDO_POR,
+  DATA_CADASTRO, QUANTIDADE_ESTOQUE, VALOR_UNITARIO) VALUES
+  ('Fallout 76               ', 'RPG online mundo aberto.',
+  'Bethesda Store     ', '2018-11-14', 400, 0.00);
+
+  INSERT INTO PRODUTOS (NOME_PRODUTO, DESCRICAO, VENDIDO_POR,
+  DATA_CADASTRO, QUANTIDADE_ESTOQUE, VALOR_UNITARIO) VALUES
+  ('No Mans Sky              ', 'Exploracao espacial.',
+  'Hello Games        ', '2016-08-09', 300, 119.99);
+
+  INSERT INTO PRODUTOS (NOME_PRODUTO, DESCRICAO, VENDIDO_POR,
+  DATA_CADASTRO, QUANTIDADE_ESTOQUE, VALOR_UNITARIO) VALUES
+  ('Elite Dangerous          ', 'Simulador espacial.',
+  'Frontier Developmen', '2014-12-16', 250, 89.99);
+
+  INSERT INTO PRODUTOS (NOME_PRODUTO, DESCRICAO, VENDIDO_POR,
+  DATA_CADASTRO, QUANTIDADE_ESTOQUE, VALOR_UNITARIO) VALUES
+  ('Star Citizen             ', 'Simulador espacial ambicioso.',
+  'Cloud Imperium Game', '2025-01-01', 100, 0.00);
+
+  INSERT INTO PRODUTOS (NOME_PRODUTO, DESCRICAO, VENDIDO_POR,
+  DATA_CADASTRO, QUANTIDADE_ESTOQUE, VALOR_UNITARIO) VALUES
+  ('Kerbal Space Program     ', 'Simulador engenharia espacial.',
+  'Private Division   ', '2015-04-27', 200, 79.99);
+
+  INSERT INTO PRODUTOS (NOME_PRODUTO, DESCRICAO, VENDIDO_POR,
+  DATA_CADASTRO, QUANTIDADE_ESTOQUE, VALOR_UNITARIO) VALUES
+  ('Subnautica               ', 'Aventura sobrevivencia.',
+  'Unknown Worlds Entr', '2018-01-23', 300, 89.99);
+
+  INSERT INTO PRODUTOS (NOME_PRODUTO, DESCRICAO, VENDIDO_POR,
+  DATA_CADASTRO, QUANTIDADE_ESTOQUE, VALOR_UNITARIO) VALUES
+  ('Subnautica: Below Zero   ', 'Continuacao aventura.',
+  'Unknown Worlds Entr', '2021-05-14', 280, 99.99);
+
+  INSERT INTO PRODUTOS (NOME_PRODUTO, DESCRICAO, VENDIDO_POR,
+  DATA_CADASTRO, QUANTIDADE_ESTOQUE, VALOR_UNITARIO) VALUES
+  ('Outer Wilds              ', 'Aventura exploracao espacial.',
+  'Mobius Digital     ', '2019-05-28', 200, 79.99);
+
+  INSERT INTO PRODUTOS (NOME_PRODUTO, DESCRICAO, VENDIDO_POR,
+  DATA_CADASTRO, QUANTIDADE_ESTOQUE, VALOR_UNITARIO) VALUES
+  ('Journey                  ', 'Aventura artistica.',
+  'Thatgamecompany    ', '2012-03-13', 150, 49.99);
+
+  INSERT INTO PRODUTOS (NOME_PRODUTO, DESCRICAO, VENDIDO_POR,
+  DATA_CADASTRO, QUANTIDADE_ESTOQUE, VALOR_UNITARIO) VALUES
+  ('Gris                     ', 'Plataforma artistica.',
+  'Nomada Studio      ', '2018-12-13', 180, 59.99);
+
+  INSERT INTO PRODUTOS (NOME_PRODUTO, DESCRICAO, VENDIDO_POR,
+  DATA_CADASTRO, QUANTIDADE_ESTOQUE, VALOR_UNITARIO) VALUES
+  ('Spiritfarer              ', 'Gerenciamento de recursos.',
+  'Thunder Lotus Game ', '2020-08-18', 220, 69.99);
+
+  INSERT INTO PRODUTOS (NOME_PRODUTO, DESCRICAO, VENDIDO_POR,
+  DATA_CADASTRO, QUANTIDADE_ESTOQUE, VALOR_UNITARIO) VALUES
+  ('Disco Elysium - The Fi   ', 'Versao definitiva RPG.',
+  'ZA/UM              ', '2021-03-30', 200, 129.99);
+
+  INSERT INTO PRODUTOS (NOME_PRODUTO, DESCRICAO, VENDIDO_POR,
+  DATA_CADASTRO, QUANTIDADE_ESTOQUE, VALOR_UNITARIO) VALUES
+  ('Cyberpunk 2077: Phanto   ', 'Expansao Cyberpunk.',
+  'CD Projekt Store   ', '2023-09-26', 300, 120.00);
+
+  INSERT INTO PRODUTOS (NOME_PRODUTO, DESCRICAO, VENDIDO_POR,
+  DATA_CADASTRO, QUANTIDADE_ESTOQUE, VALOR_UNITARIO) VALUES
+  ('Dying Light 2 Stay Huma  ', 'Acao sobrevivencia zumbi.',
+  'Techland           ', '2022-02-04', 280, 199.99);
+
+  INSERT INTO PRODUTOS (NOME_PRODUTO, DESCRICAO, VENDIDO_POR,
+  DATA_CADASTRO, QUANTIDADE_ESTOQUE, VALOR_UNITARIO) VALUES
+  ('Ghost of Tsushima        ', 'Acao e aventura Japao feudal.',
+  'PlayStation Store  ', '2020-07-17', 350, 189.99);
+
+  INSERT INTO PRODUTOS (NOME_PRODUTO, DESCRICAO, VENDIDO_POR,
+  DATA_CADASTRO, QUANTIDADE_ESTOQUE, VALOR_UNITARIO) VALUES
+  ('Marvels Spider-Man: Mi   ', 'Aventura super-herois.',
+  'PlayStation Store  ', '2020-11-12', 300, 169.99);
+
+  INSERT INTO PRODUTOS (NOME_PRODUTO, DESCRICAO, VENDIDO_POR,
+  DATA_CADASTRO, QUANTIDADE_ESTOQUE, VALOR_UNITARIO) VALUES
+  ('Horizon Forbidden West   ', 'Aventura mundo aberto.',
+  'PlayStation Store  ', '2022-02-18', 320, 249.99);
+
+  INSERT INTO PRODUTOS (NOME_PRODUTO, DESCRICAO, VENDIDO_POR,
+  DATA_CADASTRO, QUANTIDADE_ESTOQUE, VALOR_UNITARIO) VALUES
+  ('God of War (2018)        ', 'Aventura nordica.',
+  'PlayStation Store  ', '2018-04-20', 400, 129.99);
+
+  INSERT INTO PRODUTOS (NOME_PRODUTO, DESCRICAO, VENDIDO_POR,
+  DATA_CADASTRO, QUANTIDADE_ESTOQUE, VALOR_UNITARIO) VALUES
+  ('The Last of Us Part I    ', 'Remake sobrevivencia.',
+  'PlayStation Store  ', '2022-09-02', 280, 279.99);
+
+  INSERT INTO PRODUTOS (NOME_PRODUTO, DESCRICAO, VENDIDO_POR,
+  DATA_CADASTRO, QUANTIDADE_ESTOQUE, VALOR_UNITARIO) VALUES
+  ('Bloodborne               ', 'RPG acao desafiador.',
+  'PlayStation Store  ', '2015-03-24', 250, 99.99);
+
+  INSERT INTO PRODUTOS (NOME_PRODUTO, DESCRICAO, VENDIDO_POR,
+  DATA_CADASTRO, QUANTIDADE_ESTOQUE, VALOR_UNITARIO) VALUES
+  ('Demons Souls (Remake)    ', 'Remake RPG acao.',
+  'PlayStation Store  ', '2020-11-12', 200, 269.99);
+
+  INSERT INTO PRODUTOS (NOME_PRODUTO, DESCRICAO, VENDIDO_POR,
+  DATA_CADASTRO, QUANTIDADE_ESTOQUE, VALOR_UNITARIO) VALUES
+  ('Returnal                 ', 'Tiro terceira pessoa.',
+  'PlayStation Store  ', '2021-04-30', 180, 239.99);
+
+  INSERT INTO PRODUTOS (NOME_PRODUTO, DESCRICAO, VENDIDO_POR,
+  DATA_CADASTRO, QUANTIDADE_ESTOQUE, VALOR_UNITARIO) VALUES
+  ('Ratchet & Clank: Rift A  ', 'Plataforma acao.',
+  'PlayStation Store  ', '2021-06-11', 220, 259.99);
+
+  INSERT INTO PRODUTOS (NOME_PRODUTO, DESCRICAO, VENDIDO_POR,
+  DATA_CADASTRO, QUANTIDADE_ESTOQUE, VALOR_UNITARIO) VALUES
+  ('Astros Playroom          ', 'Plataforma divertido.',
+  'PlayStation Store  ', '2020-11-12', 999, 0.00);
+
+  INSERT INTO PRODUTOS (NOME_PRODUTO, DESCRICAO, VENDIDO_POR,
+  DATA_CADASTRO, QUANTIDADE_ESTOQUE, VALOR_UNITARIO) VALUES
+  ('Gran Turismo 7           ', 'Simulador corrida.',
+  'PlayStation Store  ', '2022-03-04', 280, 249.99);
+
+  INSERT INTO PRODUTOS (NOME_PRODUTO, DESCRICAO, VENDIDO_POR,
+  DATA_CADASTRO, QUANTIDADE_ESTOQUE, VALOR_UNITARIO) VALUES
+  ('Ghostwire: Tokyo         ', 'Acao e aventura Japao.',
+  'Bethesda Store     ', '2022-03-25', 180, 199.99);
+
+  INSERT INTO PRODUTOS (NOME_PRODUTO, DESCRICAO, VENDIDO_POR,
+  DATA_CADASTRO, QUANTIDADE_ESTOQUE, VALOR_UNITARIO) VALUES
+  ('Deathloop                ', 'Tiro primeira pessoa.',
+  'Bethesda Store     ', '2021-09-14', 200, 179.99);
+
+  INSERT INTO PRODUTOS (NOME_PRODUTO, DESCRICAO, VENDIDO_POR,
+  DATA_CADASTRO, QUANTIDADE_ESTOQUE, VALOR_UNITARIO) VALUES
+  ('Psychonauts              ', 'Plataforma aventura.',
+  'Xbox Game Studios  ', '2005-04-19', 150, 49.99);
+
+  INSERT INTO PRODUTOS (NOME_PRODUTO, DESCRICAO, VENDIDO_POR,
+  DATA_CADASTRO, QUANTIDADE_ESTOQUE, VALOR_UNITARIO) VALUES
+  ('Gears of War: Ultimate   ', 'Remaster Gears.',
+  'Xbox Game Studios  ', '2015-08-25', 180, 79.99);
+
+  INSERT INTO PRODUTOS (NOME_PRODUTO, DESCRICAO, VENDIDO_POR,
+  DATA_CADASTRO, QUANTIDADE_ESTOQUE, VALOR_UNITARIO) VALUES
+  ('Halo: The Master Chief   ', 'Colecao Halo.',
+  'Xbox Game Studios  ', '2014-11-11', 300, 149.99);
+
+  INSERT INTO PRODUTOS (NOME_PRODUTO, DESCRICAO, VENDIDO_POR,
+  DATA_CADASTRO, QUANTIDADE_ESTOQUE, VALOR_UNITARIO) VALUES
+  ('Sunset Overdrive         ', 'Acao mundo aberto.',
+  'Xbox Game Studios  ', '2014-10-28', 120, 69.99);
+
+  INSERT INTO PRODUTOS (NOME_PRODUTO, DESCRICAO, VENDIDO_POR,
+  DATA_CADASTRO, QUANTIDADE_ESTOQUE, VALOR_UNITARIO) VALUES
+  ('Ryse: Son of Rome        ', 'Acao e aventura Roma Antiga.',
+  'Xbox Game Studios  ', '2013-11-22', 100, 59.99);
+
+  INSERT INTO PRODUTOS (NOME_PRODUTO, DESCRICAO, VENDIDO_POR,
+  DATA_CADASTRO, QUANTIDADE_ESTOQUE, VALOR_UNITARIO) VALUES
+  ('Quantum Break            ', 'Acao e aventura.',
+  'Xbox Game Studios  ', '2016-04-05', 90, 69.99);
+
+  INSERT INTO PRODUTOS (NOME_PRODUTO, DESCRICAO, VENDIDO_POR,
+  DATA_CADASTRO, QUANTIDADE_ESTOQUE, VALOR_UNITARIO) VALUES
+  ('Crackdown 3              ', 'Acao mundo aberto.',
+  'Xbox Game Studios  ', '2019-02-15', 80, 79.99);
+
+  INSERT INTO PRODUTOS (NOME_PRODUTO, DESCRICAO, VENDIDO_POR,
+  DATA_CADASTRO, QUANTIDADE_ESTOQUE, VALOR_UNITARIO) VALUES
+  ('Bleeding Edge            ', 'Brawler de equipe.',
+  'Xbox Game Studios  ', '2020-03-24', 70, 99.99);
+
+  INSERT INTO PRODUTOS (NOME_PRODUTO, DESCRICAO, VENDIDO_POR,
+  DATA_CADASTRO, QUANTIDADE_ESTOQUE, VALOR_UNITARIO) VALUES
+  ('Everspace 2              ', 'Tiro espacial RPG.',
+  'ROCKFISH Games     ', '2023-04-06', 150, 129.99);
+
+  INSERT INTO PRODUTOS (NOME_PRODUTO, DESCRICAO, VENDIDO_POR,
+  DATA_CADASTRO, QUANTIDADE_ESTOQUE, VALOR_UNITARIO) VALUES
+  ('Deep Rock Galactic       ', 'Tiro cooperativo.',
+  'Coffee Stain Publi', '2020-05-13', 250, 89.99);
+
+  INSERT INTO PRODUTOS (NOME_PRODUTO, DESCRICAO, VENDIDO_POR,
+  DATA_CADASTRO, QUANTIDADE_ESTOQUE, VALOR_UNITARIO) VALUES
+  ('Valheim                  ', 'Sobrevivencia.',
+  'Coffee Stain Publi', '2021-02-02', 300, 69.99);
+
+  INSERT INTO PRODUTOS (NOME_PRODUTO, DESCRICAO, VENDIDO_POR,
+  DATA_CADASTRO, QUANTIDADE_ESTOQUE, VALOR_UNITARIO) VALUES
+  ('Phasmophobia             ', 'Terror cooperativo.',
+  'Kinetic Games      ', '2020-09-18', 200, 59.99);
+
+  INSERT INTO PRODUTOS (NOME_PRODUTO, DESCRICAO, VENDIDO_POR,
+  DATA_CADASTRO, QUANTIDADE_ESTOQUE, VALOR_UNITARIO) VALUES
+  ('Ready or Not             ', 'Tiro tatico.',
+  'VOID Interactive   ', '2021-12-17', 180, 109.99);
+
+  INSERT INTO PRODUTOS (NOME_PRODUTO, DESCRICAO, VENDIDO_POR,
+  DATA_CADASTRO, QUANTIDADE_ESTOQUE, VALOR_UNITARIO) VALUES
+  ('Escape from Tarkov       ', 'FPS tatico online.',
+  'Battlestate Games  ', '2017-07-27', 150, 150.00);
+
+  INSERT INTO PRODUTOS (NOME_PRODUTO, DESCRICAO, VENDIDO_POR,
+  DATA_CADASTRO, QUANTIDADE_ESTOQUE, VALOR_UNITARIO) VALUES
+  ('Rust                     ', 'Sobrevivencia multiplayer.',
+  'Facepunch Studios  ', '2018-02-08', 300, 120.00);
+
+  INSERT INTO PRODUTOS (NOME_PRODUTO, DESCRICAO, VENDIDO_POR,
+  DATA_CADASTRO, QUANTIDADE_ESTOQUE, VALOR_UNITARIO) VALUES
+  ('DayZ                     ', 'Sobrevivencia zumbi.',
+  'Bohemia Interactive', '2018-12-13', 200, 99.99);
+
+  INSERT INTO PRODUTOS (NOME_PRODUTO, DESCRICAO, VENDIDO_POR,
+  DATA_CADASTRO, QUANTIDADE_ESTOQUE, VALOR_UNITARIO) VALUES
+  ('ARK: Survival Evolved    ', 'Sobrevivencia dinossauros.',
+  'Studio Wildcard    ', '2017-08-29', 350, 89.99);
+
+  INSERT INTO PRODUTOS (NOME_PRODUTO, DESCRICAO, VENDIDO_POR,
+  DATA_CADASTRO, QUANTIDADE_ESTOQUE, VALOR_UNITARIO) VALUES
+  ('Conan Exiles             ', 'Sobrevivencia mundo aberto.',
+  'Funcom             ', '2018-05-08', 280, 79.99);
+
+  INSERT INTO PRODUTOS (NOME_PRODUTO, DESCRICAO, VENDIDO_POR,
+  DATA_CADASTRO, QUANTIDADE_ESTOQUE, VALOR_UNITARIO) VALUES
+  ('Garrys Mod               ', 'Sandbox de fisica.',
+  'Facepunch Studios  ', '2006-12-29', 500, 49.99);
+
+  INSERT INTO PRODUTOS (NOME_PRODUTO, DESCRICAO, VENDIDO_POR,
+  DATA_CADASTRO, QUANTIDADE_ESTOQUE, VALOR_UNITARIO) VALUES
+  ('Left 4 Dead 2            ', 'Tiro cooperativo zumbis.',
+  'Valve Corporation  ', '2009-11-17', 400, 39.99);
+
+  INSERT INTO PRODUTOS (NOME_PRODUTO, DESCRICAO, VENDIDO_POR,
+  DATA_CADASTRO, QUANTIDADE_ESTOQUE, VALOR_UNITARIO) VALUES
+  ('Payday 2                 ', 'Tiro cooperativo assaltos.',
+  'Starbreeze Studios ', '2013-08-13', 350, 49.99);
+
+  INSERT INTO PRODUTOS (NOME_PRODUTO, DESCRICAO, VENDIDO_POR,
+  DATA_CADASTRO, QUANTIDADE_ESTOQUE, VALOR_UNITARIO) VALUES
+  ('Borderlands 3            ', 'Loot shooter cartunesco.',
+  'Gearbox Software   ', '2019-09-13', 300, 149.99);
+
+  INSERT INTO PRODUTOS (NOME_PRODUTO, DESCRICAO, VENDIDO_POR,
+  DATA_CADASTRO, QUANTIDADE_ESTOQUE, VALOR_UNITARIO) VALUES
+  ('Tiny Tinas Wonderland    ', 'Loot shooter fantasia.',
+  'Gearbox Software   ', '2022-03-25', 250, 169.99);
+
+  INSERT INTO PRODUTOS (NOME_PRODUTO, DESCRICAO, VENDIDO_POR,
+  DATA_CADASTRO, QUANTIDADE_ESTOQUE, VALOR_UNITARIO) VALUES
+  ('Destiny 2: Lightfall     ', 'Expansao Destiny 2.',
+  'Bungie             ', '2023-02-28', 200, 100.00);
+
+  INSERT INTO PRODUTOS (NOME_PRODUTO, DESCRICAO, VENDIDO_POR,
+  DATA_CADASTRO, QUANTIDADE_ESTOQUE, VALOR_UNITARIO) VALUES
+  ('The Division 2           ', 'Tiro terceira pessoa RPG.',
+  'Ubisoft Store      ', '2019-03-15', 280, 99.99);
+
+  INSERT INTO PRODUTOS (NOME_PRODUTO, DESCRICAO, VENDIDO_POR,
+  DATA_CADASTRO, QUANTIDADE_ESTOQUE, VALOR_UNITARIO) VALUES
+  ('Ghost Recon Breakpoint   ', 'Tiro tatico mundo aberto.',
+  'Ubisoft Store      ', '2019-10-04', 180, 79.99);
+
+  INSERT INTO PRODUTOS (NOME_PRODUTO, DESCRICAO, VENDIDO_POR,
+  DATA_CADASTRO, QUANTIDADE_ESTOQUE, VALOR_UNITARIO) VALUES
+  ('Far Cry 6                ', 'Acao mundo aberto.',
+  'Ubisoft Store      ', '2021-10-07', 250, 149.99);
+
+  INSERT INTO PRODUTOS (NOME_PRODUTO, DESCRICAO, VENDIDO_POR,
+  DATA_CADASTRO, QUANTIDADE_ESTOQUE, VALOR_UNITARIO) VALUES
+  ('Watch Dogs: Legion       ', 'Acao mundo aberto Londres.',
+  'Ubisoft Store      ', '2020-10-29', 200, 129.99);
+
+  INSERT INTO PRODUTOS (NOME_PRODUTO, DESCRICAO, VENDIDO_POR,
+  DATA_CADASTRO, QUANTIDADE_ESTOQUE, VALOR_UNITARIO) VALUES
+  ('Immortals Fenyx Rising   ', 'Acao mitologia grega.',
+  'Ubisoft Store      ', '2020-12-03', 150, 99.99);
+
+  INSERT INTO PRODUTOS (NOME_PRODUTO, DESCRICAO, VENDIDO_POR,
+  DATA_CADASTRO, QUANTIDADE_ESTOQUE, VALOR_UNITARIO) VALUES
+  ('Prince of Persia: The S  ', 'Remake plataforma.',
+  'Ubisoft Store      ', '2024-01-01', 100, 129.99);
+
+  INSERT INTO PRODUTOS (NOME_PRODUTO, DESCRICAO, VENDIDO_POR,
+  DATA_CADASTRO, QUANTIDADE_ESTOQUE, VALOR_UNITARIO) VALUES
+  ('Beyond Good & Evil 2     ', 'Aventura espacial.',
+  'Ubisoft Store      ', '2025-01-01', 50, 0.00);
+
+  INSERT INTO PRODUTOS (NOME_PRODUTO, DESCRICAO, VENDIDO_POR,
+  DATA_CADASTRO, QUANTIDADE_ESTOQUE, VALOR_UNITARIO) VALUES
+  ('DokeV                    ', 'Aventura criaturas.',
+  'Pearl Abyss        ', '2025-01-01', 80, 0.00);
+
+  INSERT INTO PRODUTOS (NOME_PRODUTO, DESCRICAO, VENDIDO_POR,
+  DATA_CADASTRO, QUANTIDADE_ESTOQUE, VALOR_UNITARIO) VALUES
+  ('Crimson Desert           ', 'RPG acao mundo aberto.',
+  'Pearl Abyss        ', '2024-01-01', 70, 0.00);
+
+  INSERT INTO PRODUTOS (NOME_PRODUTO, DESCRICAO, VENDIDO_POR,
+  DATA_CADASTRO, QUANTIDADE_ESTOQUE, VALOR_UNITARIO) VALUES
+  ('Project TL (Throne and   ', 'MMORPG fantasia.',
+  'NCSoft             ', '2024-01-01', 60, 0.00);
+
+  INSERT INTO PRODUTOS (NOME_PRODUTO, DESCRICAO, VENDIDO_POR,
+  DATA_CADASTRO, QUANTIDADE_ESTOQUE, VALOR_UNITARIO) VALUES
+  ('Blue Protocol            ', 'MMORPG acao anime.',
+  'Bandai Namco Online', '2024-01-01', 90, 0.00);
+
+  INSERT INTO PRODUTOS (NOME_PRODUTO, DESCRICAO, VENDIDO_POR,
+  DATA_CADASTRO, QUANTIDADE_ESTOQUE, VALOR_UNITARIO) VALUES
+  ('Lost Ark                 ', 'MMORPG acao isometrico.',
+  'Smilegate RPG      ', '2022-02-11', 300, 0.00);
+
+  INSERT INTO PRODUTOS (NOME_PRODUTO, DESCRICAO, VENDIDO_POR,
+  DATA_CADASTRO, QUANTIDADE_ESTOQUE, VALOR_UNITARIO) VALUES
+  ('New World                ', 'MMORPG mundo aberto.',
+  'Amazon Games       ', '2021-09-28', 250, 99.99);
+
+  INSERT INTO PRODUTOS (NOME_PRODUTO, DESCRICAO, VENDIDO_POR,
+  DATA_CADASTRO, QUANTIDADE_ESTOQUE, VALOR_UNITARIO) VALUES
+  ('Final Fantasy XIV: Endw  ', 'Expansao FF14.',
+  'Square Enix Store  ', '2021-12-07', 200, 100.00);
+
+  INSERT INTO PRODUTOS (NOME_PRODUTO, DESCRICAO, VENDIDO_POR,
+  DATA_CADASTRO, QUANTIDADE_ESTOQUE, VALOR_UNITARIO) VALUES
+  ('Elder Scrolls Online: N  ', 'Expansao ESO.',
+  'Bethesda Store     ', '2023-06-05', 180, 80.00);
+
+  INSERT INTO PRODUTOS (NOME_PRODUTO, DESCRICAO, VENDIDO_POR,
+  DATA_CADASTRO, QUANTIDADE_ESTOQUE, VALOR_UNITARIO) VALUES
+  ('Guild Wars 2: Secrets o  ', 'Expansao Guild Wars 2.',
+  'ArenaNet           ', '2023-08-22', 150, 70.00);
+
+  INSERT INTO PRODUTOS (NOME_PRODUTO, DESCRICAO, VENDIDO_POR,
+  DATA_CADASTRO, QUANTIDADE_ESTOQUE, VALOR_UNITARIO) VALUES
+  ('World of Warcraft: Drag  ', 'Expansao WoW.',
+  'Blizzard Store     ', '2022-11-28', 250, 120.00);
+
+  INSERT INTO PRODUTOS (NOME_PRODUTO, DESCRICAO, VENDIDO_POR,
+  DATA_CADASTRO, QUANTIDADE_ESTOQUE, VALOR_UNITARIO) VALUES
+  ('Overwatch                ', 'Jogo de tiro em equipe.',
+  'Blizzard Store     ', '2016-05-24', 0, 0.00);
+
+  INSERT INTO PRODUTOS (NOME_PRODUTO, DESCRICAO, VENDIDO_POR,
+  DATA_CADASTRO, QUANTIDADE_ESTOQUE, VALOR_UNITARIO) VALUES
+  ('Star Wars Jedi: Surviv   ', 'Acao e aventura Star Wars.',
+  'EA Star Wars       ', '2023-04-28', 300, 269.99);
+
+  INSERT INTO PRODUTOS (NOME_PRODUTO, DESCRICAO, VENDIDO_POR,
+  DATA_CADASTRO, QUANTIDADE_ESTOQUE, VALOR_UNITARIO) VALUES
+  ('Star Wars Battlefront I  ', 'Tiro em 1a e 3a pessoa.',
+  'EA Star Wars       ', '2017-11-17', 200, 89.99);
+
+  INSERT INTO PRODUTOS (NOME_PRODUTO, DESCRICAO, VENDIDO_POR,
+  DATA_CADASTRO, QUANTIDADE_ESTOQUE, VALOR_UNITARIO) VALUES
+  ('Mass Effect Legendary E  ', 'Colecao remasterizada.',
+  'EA Games           ', '2021-05-14', 250, 149.99);
+
+  INSERT INTO PRODUTOS (NOME_PRODUTO, DESCRICAO, VENDIDO_POR,
+  DATA_CADASTRO, QUANTIDADE_ESTOQUE, VALOR_UNITARIO) VALUES
+  ('Dragon Age: Dreadwolf    ', 'Novo capitulo Dragon Age.',
+  'EA Games           ', '2025-01-01', 100, 289.99);
 
 
 

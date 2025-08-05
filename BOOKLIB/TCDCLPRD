@@ -40,11 +40,6 @@
            10 DCLPRD-VALOR-UNITARIO
               PIC S9(5)V9(2) USAGE COMP-3.
       ******************************************************************
-      * INDICATOR VARIABLE STRUCTURE                                   *
-      ******************************************************************
-       01  IPRODUTOS.
-           10 INDSTRUC           PIC S9(4) USAGE COMP OCCURS 7 TIMES.
-      ******************************************************************
       * THE NUMBER OF COLUMNS DESCRIBED BY THIS DECLARATION IS 7       *
       ******************************************************************
 
