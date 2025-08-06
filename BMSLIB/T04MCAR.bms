@@ -44,13 +44,15 @@ MAPCAR  DFHMDI SIZE=(24,80),LINE=1,COLUMN=1
                COLOR=DEFAULT,HILIGHT=REVERSE
          DFHMDF POS=(02,76),LENGTH=00,ATTRB=ASKIP
 * QUARTA LINHA
-         DFHMDF POS=(04,06),LENGTH=74,ATTRB=ASKIP,INITIAL='PRODUTO     *
-                                             VENDIDO POR      QTD  VALO*
-               R           '
+         DFHMDF POS=(04,02),LENGTH=06,ATTRB=ASKIP,INITIAL='ID'
+         DFHMDF POS=(04,10),LENGTH=25,ATTRB=ASKIP,INITIAL='PRODUTO'
+         DFHMDF POS=(04,37),LENGTH=20,ATTRB=ASKIP,INITIAL='VENDIDO POR'
+         DFHMDF POS=(04,59),LENGTH=4,ATTRB=ASKIP,INITIAL='QTD'
+         DFHMDF POS=(04,65),LENGTH=12,ATTRB=ASKIP,INITIAL='VALOR'
 * QUINTA LINHA
-         DFHMDF POS=(05,01),LENGTH=79,ATTRB=ASKIP,INITIAL='------------*
-               ----------------------------- ---------------- ---- ----*
-               ------------'
+         DFHMDF POS=(05,01),LENGTH=79,ATTRB=ASKIP,INITIAL='------  ----*
+               --------------------  --------------------  ----  ------*
+               ----------- '
 * SEXTA LINHA
 T3LINHA  DFHMDF POS=(06,01),LENGTH=79,ATTRB=(ASKIP,BRT,FSET),PICOUT='X(*
                79)',COLOR=DEFAULT,OCCURS=10

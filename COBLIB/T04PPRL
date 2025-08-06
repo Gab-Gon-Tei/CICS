@@ -77,8 +77,9 @@
            05 WS-CONT-CARR                 PIC 9(09).
            05 WS-ID-PEDIDO                 PIC 9(09).
            05 WS-ID-CONTA-BANCARIA         PIC 9(09).
-           05 WS-PAGA                      PIC 9(02).
-           05 WS-PAGT                      PIC 9(02).
+
+       77  WS-PAGA                      PIC 9(02).
+       77  WS-PAGT                      PIC 9(02).    
            
            
        77  WS-EIBRESP                      PIC X(30).
@@ -91,6 +92,7 @@
        77  WS-RESP                         PIC S9(08) COMP.
        77  WS-RESTO                        PIC 9(01).
        77  WS-INDEX                        PIC 9(02).
+       77  WS-ATIVO                  PIC X(01) VALUE 'A'.
 
        01  WS-ENDFILE-AUX                  PIC X(01).
            88 ENDFILE-YES                          VALUE 'S'.
@@ -123,12 +125,16 @@
            COPY DFHBMSCA.
 
            EXEC SQL
-              INCLUDE TCDCLPRD
+              INCLUDE TCDCLPRP
+           END-EXEC.
+           EXEC SQL
+              INCLUDE TCDCLPDD
            END-EXEC.
 
            EXEC SQL
               INCLUDE SQLCA
            END-EXEC.
+
 
       *----------------------------------------------------------------*
        LINKAGE                             SECTION.
@@ -207,6 +213,7 @@
                PF5     (250-PF5)
                PF7     (270-PF7)
                PF8     (280-PF8)
+               PF10    (290-PF10)
                PF12    (212-PF12)
               ANYKEY   (240-ANYKEY)
            END-EXEC
@@ -266,7 +273,7 @@
               MOVE 'POSICAO INVALIDA DO CURSOR'
                                            TO MSGO
              PERFORM 999-TRATA-FASE2
-      *      PERFORM 999-CHAMA-CURSOR
+
            END-IF
 
            COMPUTE WS-INDEX = EIBCPOSN / 80 - 6
@@ -276,23 +283,15 @@
               MOVE 'POSICAO NAO CONTEM PRODUTO'
                                            TO MSGO
               PERFORM 999-TRATA-FASE2
-      *       PERFORM 999-CHAMA-CURSOR
-      *    ELSE
-      *    STRING 'PRODUTO '                   DELIMITED BY SIZE
-      *           LD-PRODUTO                   DELIMITED BY SPACES
-      *           ' SELECIONADO PARA CONSULTA' DELIMITED BY SIZE
-      *      INTO MSGO
+
            END-IF
 
            MOVE '1'                            TO WS-FASE-AUX
            MOVE WS-CPF-DFHCOMMAREA             TO WS-ID-CPF
-      *    STRING WS-INDEX  DELIMITED BY SPACE
-      *    '/'                                   DELIMITED BY SIZE
-      *    LD-ID                                 DELIMITED BY SIZE    
-      *    INTO MSGO
+
 
            MOVE LD-ID                          TO WS-ID-PROD
-      *    PERFORM 999-TRATA-FASE2
+
 
            EXEC CICS XCTL
                 PROGRAM('T04PDTL')
@@ -367,6 +366,24 @@
                LENGTH(LENGTH OF WS-DFHCOMMAREA)
            END-EXEC.
 
+        290-PF10.
+           EXEC SQL
+               SELECT ID_PEDIDO
+               INTO :DCLPDD-ID-PEDIDO
+               FROM PEDIDOS
+               WHERE CPF = :WS-CPF-DFHCOMMAREA
+                 AND ATIVO = :WS-ATIVO
+           END-EXEC
+
+           MOVE '1'                        TO WS-FASE
+           MOVE DCLPDD-ID-PEDIDO           TO WS-ID-PEDIDO
+
+           EXEC CICS XCTL
+               PROGRAM('T04PCAR')
+               COMMAREA(WS-DFHCOMMAREA)
+               LENGTH(LENGTH OF WS-DFHCOMMAREA)
+           END-EXEC
+           .
       *----------------------------------------------------------------*
       *    SETOR SQL                                                   *
       *----------------------------------------------------------------*

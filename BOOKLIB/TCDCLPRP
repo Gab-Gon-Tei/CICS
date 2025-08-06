@@ -1,19 +1,19 @@
       ******************************************************************
       * DCLGEN TABLE(PRODUTOS)                                         *
-      *        LIBRARY(FS.FSYS050.DB2LIB(TCDCLPRD))                    *
+      *        LIBRARY(FS.FSYS004.BOOKLIB(TCDCLPRP))                   *
       *        ACTION(REPLACE)                                         *
       *        LANGUAGE(COBOL)                                         *
       *        NAMES(DCLPRD-)                                          *
+      *        STRUCTURE(DCL-PRODUTOS)                                 *
       *        QUOTE                                                   *
       *        COLSUFFIX(YES)                                          *
-      *        INDVAR(YES)                                             *
       * ... IS THE DCLGEN COMMAND THAT MADE THE FOLLOWING STATEMENTS   *
       ******************************************************************
            EXEC SQL DECLARE PRODUTOS TABLE
            ( ID_PRODUTO                     INTEGER NOT NULL,
              NOME_PRODUTO                   CHAR(25) NOT NULL,
              DESCRICAO                      CHAR(255) NOT NULL,
-             VENDIDO_POR                    CHAR(19) NOT NULL,
+             VENDIDO_POR                    CHAR(20) NOT NULL,
              DATA_CADASTRO                  DATE NOT NULL,
              QUANTIDADE_ESTOQUE             INTEGER NOT NULL,
              VALOR_UNITARIO                 DECIMAL(7, 2)
@@ -21,7 +21,7 @@
       ******************************************************************
       * COBOL DECLARATION FOR TABLE PRODUTOS                           *
       ******************************************************************
-       01  DCLPRODUTOS.
+       01  DCL-PRODUTOS.
       *                       ID_PRODUTO
            10 DCLPRD-ID-PRODUTO    PIC S9(9) USAGE COMP.
       *                       NOME_PRODUTO
@@ -29,7 +29,7 @@
       *                       DESCRICAO
            10 DCLPRD-DESCRICAO     PIC X(255).
       *                       VENDIDO_POR
-           10 DCLPRD-VENDIDO-POR   PIC X(19).
+           10 DCLPRD-VENDIDO-POR   PIC X(20).
       *                       DATA_CADASTRO
            10 DCLPRD-DATA-CADASTRO
               PIC X(10).

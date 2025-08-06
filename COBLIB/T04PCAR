@@ -23,20 +23,23 @@
       *    IMPRESSAO DO MAPA                           *
       *----------------------------------------------------------------*
        01  LD-LINDET.
-           05 FILLER                       PIC X(05) VALUE SPACES.
+           05 FILLER                       PIC X(01) VALUE SPACES.
+
+           05 LD-ID                        PIC ZZZZZ9.
+           05 FILLER                       PIC X(02) VALUE SPACES.
 
            05 LD-PRODUTO                   PIC X(25).
-           05 FILLER                       PIC X(03) VALUE SPACES.
+           05 FILLER                       PIC X(02) VALUE SPACES.
 
            05 LD-VNDDPOR                   PIC X(20).
-           05 FILLER                       PIC X(03) VALUE SPACES. 
+           05 FILLER                       PIC X(02) VALUE SPACES. 
 
-           05 LD-QTD                       PIC X(20).
-           05 FILLER                       PIC X(03) VALUE SPACES.
+           05 LD-QTD                       PIC ZZZ9.
+           05 FILLER                       PIC X(02) VALUE SPACES.
 
            05 FILLER                       PIC X(02) VALUE 'R$'.
            05 LD-VALOR                     PIC Z.ZZZ.ZZ9,99.
-           05 FILLER                       PIC X(05) VALUE SPACES.
+           05 FILLER                       PIC X(01) VALUE SPACES.
 
       *----------------------------------------------------------------*
       *    VARIAVEIS DE DATA
@@ -105,16 +108,16 @@
            05  WS-VENDIDO-POR               PIC X(19).
            05  WS-VENDIDO-POR-AUX           PIC X(19).
            05  WS-VENDIDO-MAIN              PIC X(20).
-           05  WS-ID                        PIC 9(9).
+           05  WS-ID                        PIC S9(9) COMP.
            05  WS-VALOR-MINIMO              PIC S9(7) USAGE COMP-3.
            05  WS-VALOR-MAXIMO              PIC S9(7) USAGE COMP-3.
 
        01  WS-DFHCOMMAREA-AUX.
-           05 WS-FASE-AUX                  PIC X(01).
-           05 WS-ID-CPF                    PIC X(11).
-           05 WS-ID-PROD                   PIC 9(09).
-           05 WS-CONT-CARR                 PIC 9(09).
-           05 WS-ID-PEDIDO                 PIC 9(09).
+           05 WS-FASE-AUX                   PIC X(01).
+           05 WS-ID-CPF-AUX                 PIC X(11).
+           05 WS-ID-PROD-AUX                PIC 9(09).
+           05 WS-CONT-CARR-AUX              PIC 9(09).
+           05 WS-ID-PEDIDO-AUX              PIC 9(09).
 
            COPY T04MCAR.
 
@@ -125,7 +128,7 @@
               INCLUDE TCDCLPDD
            END-EXEC.
              EXEC SQL
-               INCLUDE TCDCLPRD
+               INCLUDE TCDCLPRP
              END-EXEC.
              EXEC SQL
                INCLUDE TCDCLCAR
@@ -173,18 +176,18 @@
 
         100-FASE1.
            MOVE '1'                        TO WS-FASE
-      *    MOVE -1                         TO PRDL
 
-           INITIALIZE WS-AUXILIARES
+           MOVE WS-ID-PEDIDO               TO DCLCAR-ID-PEDIDO
 
            EXEC SQL
                DECLARE LISTADB2 CURSOR FOR
                SELECT PR.NOME_PRODUTO, CR.QTD_PRODUTO, 
-                      CR.VALOR_UNITARIO_PEDIDO, PR.VENDIDO_POR
+                      CR.VALOR_UNITARIO_PEDIDO, PR.VENDIDO_POR,
+                      PR.ID_PRODUTO
                FROM PEDIDOS PD
                JOIN CARRINHO CR ON PD.ID_PEDIDO = CR.ID_PEDIDO
                JOIN PRODUTOS PR ON CR.ID_PRODUTO = PR.ID_PRODUTO
-               WHERE PD.ID_PEDIDO = :WS-ID-PEDIDO
+               WHERE PD.ID_PEDIDO = :DCLCAR-ID-PEDIDO
            END-EXEC
 
            PERFORM 999-CHAMA-CURSOR
@@ -197,125 +200,84 @@
         200-FASE2.
            MOVE '2'                        TO WS-FASE
            EXEC CICS HANDLE AID
-               ENTER   (200-ENTER)
+               ENTER   (210-ENTER)
                PF1     (210-PF1)
+               PF3     (230-PF3)
                PF7     (270-PF7)
                PF8     (280-PF8)
+               PF12    (212-PF12)
               ANYKEY   (240-ANYKEY)
            END-EXEC
 
            EXEC CICS RECEIVE
-              MAP   ('T04MPRL')
-              MAPSET('T04MPRL')
-              INTO  (T04MPRLI)
+              MAP   ('MAPCAR')
+              MAPSET('T04MCAR')
+              INTO  (MAPCARO)
            END-EXEC
            .
 
-        200-ENTER.
-           INITIALIZE WS-AUXILIARES
+        210-ENTER.
+      *    MOVE WS-DFHCOMMAREA             TO WS-DFHCOMMAREA-AUX
+      *    MOVE '1'                        TO WS-FASE-AUX
+      *    EXEC CICS XCTL
+      *        PROGRAM('T04PETG')
+      *        COMMAREA(WS-DFHCOMMAREA-AUX)
+      *        LENGTH(LENGTH OF WS-DFHCOMMAREA-AUX)
+      *    END-EXEC
 
-           IF PRDL EQUAL 0 OR PRDI EQUAL SPACES
-               MOVE '%'                TO WS-PRODUTO
-           ELSE
-               IF PRDI(1:1) = SPACE
-                   MOVE PRDI                   TO WS-PRODUTO
-                   INSPECT WS-PRODUTO REPLACING LEADING SPACES BY '%'
-               ELSE
-                   MOVE PRDI                   TO WS-PRODUTO
-               END-IF
-           END-IF
-
-           IF VLRMINL EQUAL 0 OR VLRMINI EQUAL ZEROES
-               MOVE 0                      TO WS-VALOR-MINIMO
-           ELSE
-               EXEC CICS BIF DEEDIT FIELD(VLRMINI)END-EXEC
-               MOVE VLRMINI                TO WS-VALOR-MINIMO
-           END-IF
-
-           IF VLRMAXL EQUAL 0 OR VLRMAXI EQUAL ZEROES
-               MOVE 99999                     TO WS-VALOR-MAXIMO
-           ELSE
-               EXEC CICS BIF DEEDIT FIELD(VLRMAXI)END-EXEC
-               MOVE VLRMAXI                TO WS-VALOR-MAXIMO
-           END-IF
-
-           IF FTVDDPRL EQUAL 0 OR FTVDDPRI EQUAL SPACES
-              MOVE ALL '%'                 TO WS-VENDIDO-POR
-           ELSE
-               IF FTVDDPRI(1:1) = SPACE
-                  MOVE FTVDDPRI               TO WS-VENDIDO-POR
-                  INSPECT WS-VENDIDO-POR REPLACING LEADING SPACES BY '%'
-               ELSE
-                  MOVE '%'                    TO WS-VENDIDO-POR(1:1)
-                  MOVE FTVDDPRI               TO WS-VENDIDO-POR(2:18)
-               END-IF
-           END-IF
-
-           PERFORM 999-CHAMA-CURSOR
-           .
-
-        210-PF1.
-           IF EIBCPOSN <= 560 OR EIBCPOSN >= 1520
-              MOVE 'POSICAO INVALIDA DO CURSOR'
-                                           TO MSGO
-             PERFORM 999-TRATA-FASE2
-      *      PERFORM 999-CHAMA-CURSOR
-           END-IF
-
-           COMPUTE WS-INDEX = EIBCPOSN / 80 - 6
-           MOVE LINDETI(WS-INDEX)         TO LD-LINDET
-
-           IF LD-PRODUTO EQUAL SPACES
-              MOVE 'POSICAO NAO CONTEM PRODUTO'
-                                           TO MSGO
-              PERFORM 999-TRATA-FASE2
-      *       PERFORM 999-CHAMA-CURSOR
-      *    ELSE
-      *    STRING 'PRODUTO '                   DELIMITED BY SIZE
-      *           LD-PRODUTO                   DELIMITED BY SPACES
-      *           ' SELECIONADO PARA CONSULTA' DELIMITED BY SIZE
-      *      INTO MSGO
-           END-IF
-
-           MOVE '1'                            TO WS-FASE-AUX
-           MOVE WS-CPF-DFHCOMMAREA             TO WS-ID-CPF
-      *    STRING WS-INDEX  DELIMITED BY SPACE
-      *    '/'                                   DELIMITED BY SIZE
-      *    LD-ID                                 DELIMITED BY SIZE    
-      *    INTO MSGO
-
-           MOVE LD-ID                          TO WS-ID-PROD
-      *    PERFORM 999-TRATA-FASE2
-
-           EXEC CICS XCTL
-                PROGRAM('T04PDTL')
-                COMMAREA(WS-DFHCOMMAREA-AUX)
-                LENGTH(LENGTH OF WS-DFHCOMMAREA-AUX)
-           END-EXEC
-           .
-
-        220-PF2.
-           MOVE '1'                          TO WS-FASE
-
-           EXEC CICS XCTL
-               PROGRAM('T04PLOG')
-               COMMAREA(WS-DFHCOMMAREA)
-               LENGTH(LENGTH OF WS-DFHCOMMAREA)
-           END-EXEC
-           .
-
-        240-ANYKEY.
-           MOVE 'TECLA PRESSIONADA INVALIDA!'
-                                           TO MSGO
-           PERFORM 999-CARREGA-DETALHES
+           MOVE 'FOI PRO PROGRAMA DE ENTREGA'
+                                           TO T3MSGO
            PERFORM 999-TRATA-FASE2
            .
 
-        250-PF5.
-           MOVE '1'                        TO WS-FASE
+        210-PF1.
+           IF EIBCPOSN <= 400 OR EIBCPOSN >= 1440
+              MOVE 'POSICAO INVALIDA DO CURSOR'
+                                           TO T3MSGO
+             PERFORM 999-TRATA-FASE2
+           END-IF
 
-           MOVE 'LIMPEZA DE TELA EXECUTADA' TO MSGO
-           MOVE -1                          TO PRDL
+           COMPUTE WS-INDEX = EIBCPOSN / 80 - 6
+           MOVE T3LINHAI(WS-INDEX)         TO LD-LINDET
+
+           IF LD-PRODUTO EQUAL SPACES
+              MOVE 'POSICAO NAO CONTEM PRODUTO'
+                                           TO T3MSGO
+              PERFORM 999-TRATA-FASE2
+           END-IF
+
+           MOVE LD-PRODUTO                TO WS-PRODUTO
+           MOVE LD-ID                     TO WS-ID
+           MOVE WS-ID-PEDIDO              TO DCLCAR-ID-PEDIDO
+
+           EXEC SQL
+             DELETE FROM CARRINHO 
+               WHERE ID_PEDIDO = :DCLCAR-ID-PEDIDO
+                 AND ID_PRODUTO = :WS-ID
+           END-EXEC
+
+           EVALUATE SQLCODE
+               WHEN 0
+                    STRING 'PRODUTO' DELIMITED BY SIZE 
+                    WS-PRODUTO  DELIMITED BY SPACE
+                    'REMOVIDO DO CARRINHO' DELIMITED BY SIZE
+                                           INTO T3MSGO
+                    PERFORM 999-CHAMA-CURSOR
+               WHEN +100
+                    MOVE 'PRODUTO NAO ENCONTRADO NO CARRINHO'
+                                           TO T3MSGO
+                    PERFORM 999-TRATA-FASE2
+               WHEN OTHER
+                    MOVE 'ERRO AO REMOVER PRODUTO DO CARRINHO'
+                                           TO T3MSGO
+                    PERFORM 999-ERROR
+           END-EVALUATE
+           PERFORM 999-TRATA-FASE2
+           .
+
+        230-PF3.
+           MOVE '1'                       TO WS-FASE
+
            EXEC CICS XCTL
                PROGRAM('T04PPRL')
                COMMAREA(WS-DFHCOMMAREA)
@@ -323,10 +285,17 @@
            END-EXEC
            .
 
+        240-ANYKEY.
+           MOVE 'TECLA PRESSIONADA INVALIDA!'
+                                           TO T3MSGO
+           PERFORM 999-CARREGA-DETALHES
+           PERFORM 999-TRATA-FASE2
+           .
+
         270-PF7.
            IF WS-PAGA = 1
               MOVE 'TETO DA PAGINA ANTIGIDA'
-                                          TO MSGO
+                                          TO T3MSGO
               PERFORM 999-CARREGA-DETALHES
            ELSE
               SUBTRACT 1 FROM WS-PAGA
@@ -334,13 +303,12 @@
            END-IF
 
            PERFORM 999-TRATA-FASE2
-           MOVE -1                        TO PRDL
            .
 
         280-PF8.
            IF WS-PAGA = WS-PAGT
               MOVE 'ULTIMA PAGINA ANTIGIDA'
-                                          TO MSGO
+                                          TO T3MSGO
               PERFORM 999-CARREGA-DETALHES
            ELSE
               ADD 1 TO WS-PAGA
@@ -348,7 +316,6 @@
            END-IF
 
            PERFORM 999-TRATA-FASE2
-           MOVE -1                        TO PRDL
            .
 
         212-PF12.
@@ -368,14 +335,16 @@
            EXEC SQL
                FETCH LISTADB2 INTO
                     :DCLPRD-NOME-PRODUTO,
-                    :DCLPRD-VENDIDO-POR,
                     :DCLCAR-QTD-PRODUTO,
-                    :DCLCAR-VALOR-UNITARIO-PEDIDO
+                    :DCLCAR-VALOR-UNITARIO-PEDIDO,
+                    :DCLPRD-VENDIDO-POR,
+                    :DCLPRD-ID-PRODUTO
            END-EXEC
 
            EVALUATE SQLCODE
                WHEN 0
                     ADD 1                       TO WS-ITEM
+                    MOVE DCLPRD-ID-PRODUTO      TO LD-ID 
                     MOVE DCLPRD-NOME-PRODUTO    TO LD-PRODUTO
                     MOVE DCLPRD-VENDIDO-POR     TO LD-VNDDPOR
                     MOVE DCLCAR-VALOR-UNITARIO-PEDIDO
@@ -400,6 +369,10 @@
                 ELSE
                    SET ENDFILE-YES TO TRUE
                 END-IF
+               WHEN OTHER
+                    MOVE 'ERRO AO CARREGAR CARRINHO'
+                                           TO WS-MSG-ERRO
+                    PERFORM 999-ERROR
             .
 
         999-CHAMA-CURSOR.
@@ -516,7 +489,7 @@
            MOVE '2'                        TO WS-FASE
 
            EXEC CICS RETURN
-               TRANSID('FT4F')
+               TRANSID('FT4E')
                COMMAREA(WS-DFHCOMMAREA)
                LENGTH(LENGTH OF WS-DFHCOMMAREA)
            END-EXEC

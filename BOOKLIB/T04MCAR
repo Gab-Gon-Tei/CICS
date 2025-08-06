@@ -59,6 +59,24 @@
              03 L1ENTA    PICTURE X.
            02  FILLER   PICTURE X(2).
            02  L1ENTI  PIC X(5).
+           02  T3PAGAL    COMP  PIC  S9(4).
+           02  T3PAGAF    PICTURE X.
+           02  FILLER REDEFINES T3PAGAF.
+             03 T3PAGAA    PICTURE X.
+           02  FILLER   PICTURE X(2).
+           02  T3PAGAI  PIC X(2).
+           02  T3PAGTL    COMP  PIC  S9(4).
+           02  T3PAGTF    PICTURE X.
+           02  FILLER REDEFINES T3PAGTF.
+             03 T3PAGTA    PICTURE X.
+           02  FILLER   PICTURE X(2).
+           02  T3PAGTI  PIC X(2).
+           02  LPAGAL    COMP  PIC  S9(4).
+           02  LPAGAF    PICTURE X.
+           02  FILLER REDEFINES LPAGAF.
+             03 LPAGAA    PICTURE X.
+           02  FILLER   PICTURE X(2).
+           02  LPAGAI  PIC X(5).
        01  MAPCARO REDEFINES MAPCARI.
            02  FILLER PIC X(12).
            02  DFHMS1 OCCURS 10 TIMES.
@@ -103,4 +121,16 @@
            02  L1ENTC    PICTURE X.
            02  L1ENTH    PICTURE X.
            02  L1ENTO  PIC X(5).
+           02  FILLER PICTURE X(3).
+           02  T3PAGAC    PICTURE X.
+           02  T3PAGAH    PICTURE X.
+           02  T3PAGAO PIC 9(2).
+           02  FILLER PICTURE X(3).
+           02  T3PAGTC    PICTURE X.
+           02  T3PAGTH    PICTURE X.
+           02  T3PAGTO PIC 9(2).
+           02  FILLER PICTURE X(3).
+           02  LPAGAC    PICTURE X.
+           02  LPAGAH    PICTURE X.
+           02  LPAGAO  PIC X(5).
 
