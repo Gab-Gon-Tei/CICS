@@ -77,11 +77,9 @@
            05 WS-CONT-CARR                 PIC 9(09).
            05 WS-ID-PEDIDO                 PIC 9(09).
            05 WS-ID-CONTA-BANCARIA         PIC 9(09).
-
-       77  WS-PAGA                      PIC 9(02).
-       77  WS-PAGT                      PIC 9(02).    
-           
-           
+           05 WS-PAGA                      PIC 9(02).
+           05 WS-PAGT                      PIC 9(02).
+                 
        77  WS-EIBRESP                      PIC X(30).
        77  WS-SQLCODE                      PIC +9(9).
        77  WS-FILE-NAME                    PIC X(08)
@@ -313,7 +311,7 @@
         240-ANYKEY.
            MOVE 'TECLA PRESSIONADA INVALIDA!'
                                            TO MSGO
-           PERFORM 999-CARREGA-DETALHES
+      *    PERFORM 999-CARREGA-DETALHES
            PERFORM 999-TRATA-FASE2
            .
 

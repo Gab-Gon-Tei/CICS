@@ -79,9 +79,9 @@
            05 WS-ID-PRODUTO                PIC 9(09).
            05 WS-CONT-CARR                 PIC 9(09).
            05 WS-ID-PEDIDO                 PIC 9(09).
-
-       77  WS-PAGA                         PIC 9(02).
-       77  WS-PAGT                         PIC 9(02).
+           05 WS-PAGA                      PIC 9(02).
+           05 WS-PAGT                      PIC 9(02).
+       
                       
        77  WS-EIBRESP                      PIC X(30).
        77  WS-SQLCODE                      PIC +9(9).
@@ -108,7 +108,7 @@
            05  WS-VENDIDO-POR               PIC X(19).
            05  WS-VENDIDO-POR-AUX           PIC X(19).
            05  WS-VENDIDO-MAIN              PIC X(20).
-           05  WS-ID                        PIC S9(9) COMP.
+           05  WS-ID                        PIC 9(9).
            05  WS-VALOR-MINIMO              PIC S9(7) USAGE COMP-3.
            05  WS-VALOR-MAXIMO              PIC S9(7) USAGE COMP-3.
 
@@ -231,13 +231,13 @@
            .
 
         210-PF1.
-           IF EIBCPOSN <= 400 OR EIBCPOSN >= 1440
+           IF EIBCPOSN <= 400 OR EIBCPOSN >= 1360
               MOVE 'POSICAO INVALIDA DO CURSOR'
                                            TO T3MSGO
              PERFORM 999-TRATA-FASE2
            END-IF
 
-           COMPUTE WS-INDEX = EIBCPOSN / 80 - 6
+           COMPUTE WS-INDEX = EIBCPOSN / 80 + 1 - 5
            MOVE T3LINHAI(WS-INDEX)         TO LD-LINDET
 
            IF LD-PRODUTO EQUAL SPACES
@@ -248,20 +248,24 @@
 
            MOVE LD-PRODUTO                TO WS-PRODUTO
            MOVE LD-ID                     TO WS-ID
+           MOVE WS-ID                     TO DCLCAR-ID-PRODUTO
            MOVE WS-ID-PEDIDO              TO DCLCAR-ID-PEDIDO
+           MOVE LD-VALOR                TO DCLCAR-VALOR-UNITARIO-PEDIDO
 
            EXEC SQL
              DELETE FROM CARRINHO 
                WHERE ID_PEDIDO = :DCLCAR-ID-PEDIDO
-                 AND ID_PRODUTO = :WS-ID
+                 AND ID_PRODUTO = :DCLCAR-ID-PRODUTO
            END-EXEC
 
            EVALUATE SQLCODE
                WHEN 0
-                    STRING 'PRODUTO' DELIMITED BY SIZE 
+                    STRING 'PRODUTO ' DELIMITED BY SIZE 
                     WS-PRODUTO  DELIMITED BY SPACE
-                    'REMOVIDO DO CARRINHO' DELIMITED BY SIZE
+                    ' REMOVIDO DO CARRINHO' DELIMITED BY SIZE
                                            INTO T3MSGO
+                    SUBTRACT 1 FROM WS-CONT-CARR
+                    PERFORM 999-UPDATE-PEDIDO
                     PERFORM 999-CHAMA-CURSOR
                WHEN +100
                     MOVE 'PRODUTO NAO ENCONTRADO NO CARRINHO'
@@ -288,7 +292,7 @@
         240-ANYKEY.
            MOVE 'TECLA PRESSIONADA INVALIDA!'
                                            TO T3MSGO
-           PERFORM 999-CARREGA-DETALHES
+      *    PERFORM 999-CAR
            PERFORM 999-TRATA-FASE2
            .
 
@@ -330,7 +334,25 @@
       *----------------------------------------------------------------*
       *    SETOR SQL                                                   *
       *----------------------------------------------------------------*
-
+        999-UPDATE-PEDIDO.
+           EXEC SQL
+               UPDATE PEDIDOS
+               SET VALOR_TOTAL = 
+               VALOR_TOTAL - :DCLCAR-VALOR-UNITARIO-PEDIDO
+               WHERE ID_PEDIDO = :DCLCAR-ID-PEDIDO
+           END-EXEC
+             EVALUATE SQLCODE
+                WHEN 0
+                     CONTINUE
+                WHEN +100
+                     MOVE 'PEDIDO NAO ENCONTRADO'
+                                              TO T3MSGO
+                WHEN OTHER
+                     MOVE 'ERRO AO ATUALIZAR PEDIDO'
+                                              TO T3MSGO
+                     PERFORM 999-ERROR
+             END-EVALUATE
+           .
         999-CARREGA-TS.
            EXEC SQL
                FETCH LISTADB2 INTO
@@ -364,8 +386,10 @@
 
                WHEN +100
                 IF WS-ITEM = 0
-                   MOVE 'CARRINHO VAZIO'     TO T3MSGO
+                   MOVE LOW-VALUES           TO MAPCARO
+                   MOVE 'CARRINHO VAZIO'     TO T3MSGO 
                    PERFORM 999-TRATA-FASE2
+                   
                 ELSE
                    SET ENDFILE-YES TO TRUE
                 END-IF
@@ -479,7 +503,7 @@
            MOVE '1'                        TO WS-FASE
 
            EXEC CICS XCTL
-               PROGRAM('T04PPRL')
+               PROGRAM('T04PCAR')
                COMMAREA(WS-DFHCOMMAREA)
                LENGTH(LENGTH OF WS-DFHCOMMAREA)
            END-EXEC

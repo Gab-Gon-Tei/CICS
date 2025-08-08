@@ -61,7 +61,7 @@
            COPY DFHBMSCA.
       *BOOK DAS VARIAVEIS HOSPEDEIRAS
            EXEC SQL
-           INCLUDE TCDCLPRD
+           INCLUDE TCDCLPRP
            END-EXEC.
            EXEC SQL
            INCLUDE TCDCLCAR
