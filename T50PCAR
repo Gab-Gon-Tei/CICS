@@ -1,7 +1,7 @@
       *----------------------------------------------------------------*
        IDENTIFICATION                      DIVISION.
       *----------------------------------------------------------------*
-       PROGRAM-ID.                         T04PCAR.
+       PROGRAM-ID.                         T50PCAR.
        AUTHOR.                             GABRIEL/GUILHERME.
 
       *----------------------------------------------------------------*
@@ -86,7 +86,7 @@
        77  WS-EIBRESP                      PIC X(30).
        77  WS-SQLCODE                      PIC +9(9).
        77  WS-FILE-NAME                    PIC X(08)
-                                                   VALUE 'T04MPRLT'.
+                                                   VALUE 'T50MPRLT'.
        77  WS-QUEUE-NAME                   PIC X(08)
                                                    VALUE 'QT3PCAR'.
        77  WS-ITEM                         PIC S9(04) COMP.
@@ -119,7 +119,7 @@
            05 WS-CONT-CARR-AUX              PIC 9(09).
            05 WS-ID-PEDIDO-AUX              PIC 9(09).
 
-           COPY T04MCAR.
+           COPY T50MCAR.
 
            COPY DFHAID.
            COPY DFHBMSCA.
@@ -211,23 +211,25 @@
 
            EXEC CICS RECEIVE
               MAP   ('MAPCAR')
-              MAPSET('T04MCAR')
+              MAPSET('T50MCAR')
               INTO  (MAPCARO)
            END-EXEC
            .
 
         210-ENTER.
-           MOVE WS-DFHCOMMAREA             TO WS-DFHCOMMAREA-AUX
-           MOVE '1'                        TO WS-FASE-AUX
-           EXEC CICS XCTL
-               PROGRAM('T50PENT')
-               COMMAREA(WS-DFHCOMMAREA-AUX)
-               LENGTH(LENGTH OF WS-DFHCOMMAREA-AUX)
-           END-EXEC.
-      *    MOVE 'FOI PRO PROGRAMA DE ENTREGA'
-      *                                    TO T3MSGO
-      *    PERFORM 999-TRATA-FASE2
-      *    .
+      *    MOVE WS-DFHCOMMAREA             TO WS-DFHCOMMAREA-AUX
+      *    MOVE '1'                        TO WS-FASE-AUX
+      *    EXEC CICS XCTL
+      *        PROGRAM('T50PETG')
+      *        COMMAREA(WS-DFHCOMMAREA-AUX)
+      *        LENGTH(LENGTH OF WS-DFHCOMMAREA-AUX)
+      *    END-EXEC
+
+           MOVE 'FOI PRO PROGRAMA DE ENTREGA'
+                                           TO T3MSGO
+           PERFORM 999-TRATA-FASE2
+           .
+
         210-PF1.
            IF EIBCPOSN <= 400 OR EIBCPOSN >= 1360
               MOVE 'POSICAO INVALIDA DO CURSOR'
@@ -281,7 +283,7 @@
            MOVE '1'                       TO WS-FASE
 
            EXEC CICS XCTL
-               PROGRAM('T04PPRL')
+               PROGRAM('T50PPRL')
                COMMAREA(WS-DFHCOMMAREA)
                LENGTH(LENGTH OF WS-DFHCOMMAREA)
            END-EXEC
@@ -324,7 +326,7 @@
            MOVE '1'                          TO WS-FASE
 
            EXEC CICS XCTL
-               PROGRAM('T04PLOG')
+               PROGRAM('T50PLOG')
                COMMAREA(WS-DFHCOMMAREA)
                LENGTH(LENGTH OF WS-DFHCOMMAREA)
            END-EXEC.
@@ -491,7 +493,7 @@
 
            EXEC CICS SEND
                MAP ('MAPCAR')
-               MAPSET('T04MCAR')
+               MAPSET('T50MCAR')
                FROM(MAPCARO)
                ERASE FREEKB ALARM CURSOR
            END-EXEC
@@ -501,7 +503,7 @@
            MOVE '1'                        TO WS-FASE
 
            EXEC CICS XCTL
-               PROGRAM('T04PCAR')
+               PROGRAM('T50PCAR')
                COMMAREA(WS-DFHCOMMAREA)
                LENGTH(LENGTH OF WS-DFHCOMMAREA)
            END-EXEC

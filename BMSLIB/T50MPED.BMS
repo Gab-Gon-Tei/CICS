@@ -1,0 +1,520 @@
+T50MPED  DFHMSD TYPE=(MAP,DSECT),                                      X
+               MODE=INOUT,                                             X
+               LANG=COBOL,                                             X
+               STORAGE=AUTO,                                           X
+               MAPATTS=(COLOR,HILIGHT),                                X
+               DSATTS=(COLOR,HILIGHT),                                 X
+               CTRL=(FREEKB,ALARM,FRSET),                              X
+               TIOAPFX=YES
+MAPAPED  DFHMDI SIZE=(24,80),                                          X
+               LINE=1,                                                 X
+               COLUMN=1
+*
+* CAMPO CONSTANTE
+*
+         DFHMDF POS=(01,01),                                           X
+               LENGTH=10,                                              X
+               ATTRB=ASKIP,                                            X
+               COLOR=BLUE,                                             X
+               INITIAL='LOJA 4SHOP'
+*
+* CAMPO CONSTANTE
+*
+         DFHMDF POS=(01,60),                                           X
+               LENGTH=03,                                              X
+               ATTRB=(ASKIP,BRT,FSET),                                 X
+               HILIGHT=REVERSE,                                        X
+               INITIAL='F10'
+*
+* CAMPO VARIAVEL
+*
+CARPED   DFHMDF POS=(01,64),                                           X
+               LENGTH=06,                                              X
+               ATTRB=(PROT,BRT,FSET),                                  X
+               HILIGHT=REVERSE,                                        X
+               COLOR=PINK,                                             X
+               PICOUT='9(06)'
+*
+* CAMPO CONSTANTE
+*
+         DFHMDF POS=(01,72),                                           X
+               LENGTH=05,                                              X
+               ATTRB=(ASKIP,BRT,FSET),                                 X
+               HILIGHT=REVERSE,                                        X
+               INITIAL='F12'
+*
+* CAMPO CONSTANTE
+*
+         DFHMDF POS=(01,78),                                           X
+               LENGTH=00,                                              X
+               ATTRB=ASKIP
+*
+* CAMPO CONSTANTE
+*
+         DFHMDF POS=(02,01),                                           X
+               LENGTH=29,                                              X
+               ATTRB=ASKIP,                                            X
+               COLOR=BLUE,                                             X
+               INITIAL='CONECTE IDEIAS, MOVA MERCADOS'
+*
+* CAMPO CONSTANTE
+*
+         DFHMDF POS=(02,60),                                           X
+               LENGTH=08,                                              X
+               ATTRB=(ASKIP,BRT,FSET),                                 X
+               HILIGHT=REVERSE,                                        X
+               INITIAL='CARRINHO'
+*
+* CAMPO CONSTANTE
+*
+         DFHMDF POS=(02,72),                                           X
+               LENGTH=06,                                              X
+               ATTRB=(ASKIP,BRT,FSET),                                 X
+               HILIGHT=REVERSE,                                        X
+               INITIAL='LOGOUT'
+*
+* CAMPO CONSTANTE
+*
+         DFHMDF POS=(02,79),                                           X
+               LENGTH=00,                                              X
+               ATTRB=ASKIP
+*
+* CAMPO CONSTANTE
+*
+         DFHMDF POS=(03,36),                                           X
+               LENGTH=06,                                              X
+               ATTRB=ASKIP,                                            X
+               COLOR=BLUE,                                             X
+               INITIAL='FILTRO'
+*
+* CAMPO CONSTANTE
+*
+         DFHMDF POS=(04,01),                                           X
+               LENGTH=06,                                              X
+               ATTRB=(ASKIP,BRT,FSET),                                 X
+               INITIAL='PEDIDO'
+*
+* CAMPO CONSTANTE
+*
+         DFHMDF POS=(04,13),                                           X
+               LENGTH=12,                                              X
+               ATTRB=(ASKIP,BRT,FSET),                                 X
+               INITIAL='DATA INICIAL'
+*
+* CAMPO CONSTANTE
+*
+         DFHMDF POS=(04,30),                                           X
+               LENGTH=10,                                              X
+               ATTRB=(ASKIP,BRT,FSET),                                 X
+               INITIAL='DATA FINAL'
+*
+* CAMPO CONSTANTE
+*
+         DFHMDF POS=(04,46),                                           X
+               LENGTH=15,                                              X
+               ATTRB=(ASKIP,BRT,FSET),                                 X
+               INITIAL='VALOR TOTAL ATE'
+*
+* CAMPO VARIAVEL
+*
+PEDPED   DFHMDF POS=(05,01),                                           X
+               LENGTH=09,                                              X
+               ATTRB=(UNPROT,BRT),                                     X
+               PICIN='X(09)'
+*
+* CAMPO CONSTANTE
+*
+         DFHMDF POS=(05,11),                                           X
+               LENGTH=00,                                              X
+               ATTRB=ASKIP
+*
+* CAMPO VARIAVEL
+*
+DIPED    DFHMDF POS=(05,13),                                           X
+               LENGTH=02,                                              X
+               ATTRB=(UNPROT,BRT),                                     X
+               PICIN='9(02)'
+*
+* CAMPO CONSTANTE
+*
+         DFHMDF POS=(05,16),                                           X
+               LENGTH=01,                                              X
+               ATTRB=ASKIP,                                            X
+               INITIAL='/'
+*
+* CAMPO VARIAVEL
+*
+MEPED    DFHMDF POS=(05,18),                                           X
+               LENGTH=02,                                              X
+               ATTRB=(UNPROT,BRT),                                     X
+               PICIN='9(02)'
+*
+* CAMPO CONSTANTE
+*
+         DFHMDF POS=(05,21),                                           X
+               LENGTH=01,                                              X
+               ATTRB=ASKIP,                                            X
+               INITIAL='/'
+*
+* CAMPO VARIAVEL
+*
+ANPED    DFHMDF POS=(05,23),                                           X
+               LENGTH=04,                                              X
+               ATTRB=(UNPROT,BRT),                                     X
+               PICIN='9(04)'
+*
+* CAMPO CONSTANTE DELIMITADOR
+*
+         DFHMDF POS=(05,28),                                           X
+               LENGTH=00,                                              X
+               ATTRB=ASKIP
+*
+* CAMPO VARIAVEL
+*
+DFPED    DFHMDF POS=(05,30),                                           X
+               LENGTH=02,                                              X
+               ATTRB=(UNPROT,BRT),                                     X
+               PICIN='9(02)'
+*
+* CAMPO CONSTANTE
+*
+         DFHMDF POS=(05,33),                                           X
+               LENGTH=01,                                              X
+               ATTRB=ASKIP,                                            X
+               INITIAL='/'
+*
+* CAMPO VARIAVEL
+*
+MFPED    DFHMDF POS=(05,35),                                           X
+               LENGTH=02,                                              X
+               ATTRB=(UNPROT,BRT),                                     X
+               PICIN='9(02)'
+*
+* CAMPO CONSTANTE
+*
+         DFHMDF POS=(05,38),                                           X
+               LENGTH=01,                                              X
+               ATTRB=ASKIP,                                            X
+               INITIAL='/'
+*
+* CAMPO VARIAVEL
+*
+AFPED    DFHMDF POS=(05,40),                                           X
+               LENGTH=04,                                              X
+               ATTRB=(UNPROT,BRT),                                     X
+               PICIN='9(04)'
+*
+* CAMPO CONSTANTE
+*
+         DFHMDF POS=(05,46),                                           X
+               LENGTH=02,                                              X
+               ATTRB=(ASKIP,BRT,FSET),                                 X
+               INITIAL='R$'
+*
+* CAMPO VARIAVEL
+*
+VTPED    DFHMDF POS=(05,49),                                           X
+               LENGTH=12,                                              X
+               ATTRB=(UNPROT,BRT),                                     X
+               PICIN='9(12)',                                          X
+               PICOUT='9.999.999,99'
+*
+* CAMPO CONSTANTE DELIMITADOR
+*
+         DFHMDF POS=(05,62),                                           X
+               LENGTH=00,                                              X
+               ATTRB=ASKIP
+*
+* CAMPO CONSTANTE
+*
+         DFHMDF POS=(05,64),                                           X
+               LENGTH=05,                                              X
+               ATTRB=(ASKIP,BRT,FSET),                                 X
+               INITIAL='PAG.:'
+*
+* CAMPO VARIAVEL
+*
+PAGPED   DFHMDF POS=(05,70),                                           X
+               LENGTH=02,                                              X
+               ATTRB=(PROT,BRT),                                       X
+               PICIN='9(02)'
+*
+* CAMPO CONSTANTE DELIMITADOR
+*
+         DFHMDF POS=(05,73),                                           X
+               LENGTH=00,                                              X
+               ATTRB=ASKIP
+*
+* CAMPO CONSTANTE
+*
+         DFHMDF POS=(05,74),                                           X
+               LENGTH=03,                                              X
+               ATTRB=(ASKIP,BRT,FSET),                                 X
+               INITIAL='DE:'
+*
+* CAMPO VARIAVEL
+*
+DEPED   DFHMDF POS=(05,78),                                            X
+               LENGTH=02,                                              X
+               ATTRB=(PROT,BRT),                                       X
+               PICIN='9(02)'
+*
+* CAMPO CONSTANTE
+*
+         DFHMDF POS=(07,05),                                           X
+               LENGTH=06,                                              X
+               ATTRB=(ASKIP,BRT,FSET),                                 X
+               INITIAL='PEDIDO'
+*
+* CAMPO CONSTANTE
+*
+         DFHMDF POS=(07,15),                                           X
+               LENGTH=05,                                              X
+               ATTRB=(ASKIP,BRT,FSET),                                 X
+               INITIAL='ITENS'
+*
+* CAMPO CONSTANTE
+*
+         DFHMDF POS=(07,43),                                           X
+               LENGTH=04,                                              X
+               ATTRB=(ASKIP,BRT,FSET),                                 X
+               INITIAL='DATA'
+*
+* CAMPO CONSTANTE
+*
+         DFHMDF POS=(07,56),                                           X
+               LENGTH=05,                                              X
+               ATTRB=(ASKIP,BRT,FSET),                                 X
+               INITIAL='VALOR'
+*
+* CAMPO CONSTANTE
+*
+         DFHMDF POS=(08,05),                                           X
+               LENGTH=09,                                              X
+               ATTRB=(ASKIP,BRT,FSET),                                 X
+               INITIAL='---------'
+*
+* CAMPO CONSTANTE
+*
+         DFHMDF POS=(08,15),                                           X
+               LENGTH=25,                                              X
+               ATTRB=(ASKIP,BRT,FSET),                                 X
+               INITIAL='-------------------------'
+*
+* CAMPO CONSTANTE
+*
+         DFHMDF POS=(08,43),                                           X
+               LENGTH=10,                                              X
+               ATTRB=(ASKIP,BRT,FSET),                                 X
+               INITIAL='----------'
+*
+* CAMPO CONSTANTE
+*
+         DFHMDF POS=(08,56),                                           X
+               LENGTH=13,                                              X
+               ATTRB=(ASKIP,BRT,FSET),                                 X
+               INITIAL='-------------'
+*
+* CAMPO VARIAVEL
+*
+LINPED  DFHMDF POS=(09,01),                                            X
+               LENGTH=79,                                              X
+               ATTRB=(PROT,BRT),                                       X
+               PICIN='X(79)',                                          X
+               OCCURS=10
+*
+* CAMPO CONSTANTE
+*
+         DFHMDF POS=(20,06),                                           X
+               LENGTH=08,                                              X
+               ATTRB=ASKIP,                                            X
+               INITIAL='ANTERIOR',                                     X
+               COLOR=BLUE
+*
+* CAMPO CONSTANTE
+*
+         DFHMDF POS=(20,37),                                           X
+               LENGTH=08,                                              X
+               ATTRB=ASKIP,                                            X
+               INITIAL='RETORNAR',                                     X
+               COLOR=GREEN
+*
+* CAMPO CONSTANTE
+*
+         DFHMDF POS=(20,67),                                           X
+               LENGTH=07,                                              X
+               ATTRB=ASKIP,                                            X
+               INITIAL='PROXIMO',                                      X
+               COLOR=BLUE
+*
+* CAMPO CONSTANTE
+*
+         DFHMDF POS=(21,09),                                           X
+               LENGTH=02,                                              X
+               ATTRB=ASKIP,                                            X
+               INITIAL='F7',                                           X
+               COLOR=BLUE
+*
+* CAMPO CONSTANTE
+*
+         DFHMDF POS=(21,40),                                           X
+               LENGTH=02,                                              X
+               ATTRB=ASKIP,                                            X
+               INITIAL='F3',                                           X
+               COLOR=GREEN
+*
+* CAMPO CONSTANTE
+*
+         DFHMDF POS=(21,69),                                           X
+               LENGTH=02,                                              X
+               ATTRB=ASKIP,                                            X
+               INITIAL='F8',                                           X
+               COLOR=BLUE
+*
+* CAMPO CONSTANTE
+*
+         DFHMDF POS=(23,02),                                           X
+               LENGTH=09,                                              X
+               ATTRB=(ASKIP,BRT,FSET),                                 X
+               INITIAL='MENSAGEM:'
+*
+* CAMPO VARIAVEL
+*
+MSGPED   DFHMDF POS=(23,12),                                           X
+               LENGTH=60,                                              X
+               ATTRB=(PROT,BRT),                                       X
+               PICOUT='X(60)',                                         X
+               COLOR=YELLOW
+*
+* CAMPO CONSTANTE  DELIMITADOR
+*
+         DFHMDF POS=(23,74),                                           X
+               LENGTH=0,                                               X
+               ATTRB=ASKIP
+*
+* CAMPO VARIAVEL
+*
+DIADAT   DFHMDF POS=(24,02),                                           X
+               LENGTH=02,                                              X
+               ATTRB=(PROT,BRT,FSET),                                  X
+               PICOUT='9(02)'
+*
+* CAMPO CONSTANTE
+*
+         DFHMDF POS=(24,05),                                           X
+               LENGTH=01,                                              X
+               ATTRB=(ASKIP,BRT,FSET),                                 X
+               INITIAL='/'
+*
+* CAMPO VARIAVEL
+*
+MESDAT   DFHMDF POS=(24,07),                                           X
+               LENGTH=02,                                              X
+               ATTRB=(PROT,BRT,FSET),                                  X
+               PICOUT='9(02)'
+*
+* CAMPO CONSTANTE
+*
+         DFHMDF POS=(24,10),                                           X
+               LENGTH=01,                                              X
+               ATTRB=(ASKIP,BRT,FSET),                                 X
+               INITIAL='/'
+*
+* CAMPO VARIAVEL
+*
+ANODAT   DFHMDF POS=(24,12),                                           X
+               LENGTH=04,                                              X
+               ATTRB=(PROT,BRT,FSET),                                  X
+               PICOUT='9(04)'
+*
+* CAMPO CONSTANTE
+*
+         DFHMDF POS=(24,17),                                           X
+               LENGTH=00,                                              X
+               ATTRB=ASKIP
+*
+* CAMPO VARIAVEL
+*
+HORADAT  DFHMDF POS=(24,19),                                           X
+               LENGTH=02,                                              X
+               ATTRB=(PROT,BRT,FSET),                                  X
+               PICOUT='9(02)'
+*
+* CAMPO CONSTANTE
+*
+         DFHMDF POS=(24,22),                                           X
+               LENGTH=01,                                              X
+               ATTRB=(ASKIP,BRT,FSET),                                 X
+               INITIAL=':'
+*
+* CAMPO VARIAVEL
+*
+MINDAT   DFHMDF POS=(24,24),                                           X
+               LENGTH=02,                                              X
+               ATTRB=(PROT,BRT,FSET),                                  X
+               PICOUT='9(02)'
+*
+* CAMPO CONSTANTE
+*
+         DFHMDF POS=(24,27),                                           X
+               LENGTH=05,                                              X
+               ATTRB=(ASKIP,BRT,FSET),                                 X
+               INITIAL='FASE:'
+*
+* CAMPO VARIAVEL
+*
+FASEPED  DFHMDF POS=(24,33),                                           X
+               LENGTH=02,                                              X
+               ATTRB=(PROT,BRT,FSET),                                  X
+               PICOUT='9(02)'
+*
+* CAMPO CONSTANTE
+*
+         DFHMDF POS=(24,36),                                           X
+               LENGTH=05,                                              X
+               ATTRB=(ASKIP,BRT,FSET),                                 X
+               INITIAL='TASK:'
+*
+* CAMPO VARIAVEL
+*
+TASKPED  DFHMDF POS=(24,42),                                           X
+               LENGTH=06,                                              X
+               ATTRB=(PROT,BRT,FSET),                                  X
+               PICOUT='9(06)'
+*
+* CAMPO CONSTANTE
+*
+         DFHMDF POS=(24,49),                                           X
+               LENGTH=00,                                              X
+               ATTRB=ASKIP
+*
+* CAMPO CONSTANTE
+*
+         DFHMDF POS=(24,50),                                           X
+               LENGTH=09,                                              X
+               ATTRB=(ASKIP,BRT,FSET),                                 X
+               INITIAL='TERMINAL:'
+*
+* CAMPO VARIAVEL
+*
+TERMPED  DFHMDF POS=(24,60),                                           X
+               LENGTH=04,                                              X
+               ATTRB=(PROT,BRT,FSET),                                  X
+               PICOUT='9(04)'
+*
+* CAMPO CONSTANTE
+*
+         DFHMDF POS=(24,65),                                           X
+               LENGTH=10,                                              X
+               ATTRB=(ASKIP,BRT,FSET),                                 X
+               INITIAL='TRANSACAO:'
+*
+* CAMPO VARIAVEL
+*
+TRANSPED DFHMDF POS=(24,76),                                           X
+               LENGTH=04,                                              X
+               ATTRB=(ASKIP,BRT,FSET),                                 X
+               PICOUT='9(04)'
+
+         DFHMSD TYPE=FINAL
+         END
