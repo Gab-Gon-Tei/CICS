@@ -15,7 +15,7 @@
 * 
 *
 ***********************************************************************
-T04MCAR  DFHMSD TYPE=MAP(MAP,DSECT),MODE=INOUT,LANG=COBOL,             *
+T50MCAR  DFHMSD TYPE=MAP(MAP,DSECT),MODE=INOUT,LANG=COBOL,             *
                STORAGE=AUTO,MAPATTS=(COLOR,HILIGHT),DSATTS=(COLOR,     *
                HILIGHT),CTRL=(FREEKB,ALARM,FRSET),TIOAPFX=YES
 MAPCAR  DFHMDI SIZE=(24,80),LINE=1,COLUMN=1
@@ -23,31 +23,32 @@ MAPCAR  DFHMDI SIZE=(24,80),LINE=1,COLUMN=1
          DFHMDF POS=(01,02),LENGTH=10,ATTRB=ASKIP,INITIAL='LOJA 4SHOP',*
                COLOR=BLUE
 
-         DFHMDF POS=(01,64),LENGTH=03,ATTRB=ASKIP,INITIAL='F11',       *
+         DFHMDF POS=(01,64),LENGTH=03,ATTRB=(ASKIP,BRT),INITIAL='F11', *
                COLOR=DEFAULT,HILIGHT=REVERSE
          DFHMDF POS=(01,68),LENGTH=00,ATTRB=ASKIP
-         DFHMDF POS=(01,72),LENGTH=03,ATTRB=ASKIP,INITIAL='F12',       *
+         DFHMDF POS=(01,72),LENGTH=03,ATTRB=(ASKIP,BRT),INITIAL='F12', *
                COLOR=DEFAULT,HILIGHT=REVERSE
          DFHMDF POS=(01,76),LENGTH=00,ATTRB=ASKIP
 * SEGUNDA LINHA
          DFHMDF POS=(02,02),LENGTH=28,ATTRB=ASKIP,INITIAL='CONECTE IDEI*
                AS MOVA MERCADOS',COLOR=BLUE
-         DFHMDF POS=(02,60),LENGTH=07,ATTRB=ASKIP,INITIAL='PEDIDOS',   *
-               COLOR=DEFAULT,HILIGHT=REVERSE
-         DFHMDF POS=(02,68),LENGTH=00,ATTRB=ASKIP
-         DFHMDF POS=(02,69),LENGTH=06,ATTRB=ASKIP,INITIAL='LOGOUT',    *
-               COLOR=DEFAULT,HILIGHT=REVERSE
+         DFHMDF POS=(02,60),LENGTH=07,ATTRB=(ASKIP,BRT),               *
+               HILIGHT=REVERSE,INITIAL='PEDIDOS'
+         DFHMDF POS=(02,69),LENGTH=06,ATTRB=(ASKIP,BRT),               *
+               COLOR=DEFAULT,HILIGHT=REVERSE,INITIAL='LOGOUT'
          DFHMDF POS=(02,76),LENGTH=00,ATTRB=ASKIP
 * QUARTA LINHA
-         DFHMDF POS=(04,02),LENGTH=06,ATTRB=ASKIP,INITIAL='ID'
-         DFHMDF POS=(04,10),LENGTH=25,ATTRB=ASKIP,INITIAL='PRODUTO'
-         DFHMDF POS=(04,37),LENGTH=20,ATTRB=ASKIP,INITIAL='VENDIDO POR'
-         DFHMDF POS=(04,59),LENGTH=4,ATTRB=ASKIP,INITIAL='QTD'
-         DFHMDF POS=(04,65),LENGTH=12,ATTRB=ASKIP,INITIAL='VALOR'
+         DFHMDF POS=(04,02),LENGTH=06,ATTRB=(ASKIP,BRT),INITIAL='ID'
+         DFHMDF POS=(04,10),LENGTH=25,ATTRB=(ASKIP,BRT),               *
+               INITIAL='PRODUTO'
+         DFHMDF POS=(04,37),LENGTH=20,ATTRB=(ASKIP,BRT),               *
+               INITIAL='VENDIDO POR'
+         DFHMDF POS=(04,59),LENGTH=4,ATTRB=(ASKIP,BRT),INITIAL='QTD'
+         DFHMDF POS=(04,65),LENGTH=12,ATTRB=(ASKIP,BRT),INITIAL='VALOR'
 * QUINTA LINHA
-         DFHMDF POS=(05,01),LENGTH=79,ATTRB=ASKIP,INITIAL='------  ----*
-               --------------------  --------------------  ----  ------*
-               ----------- '
+         DFHMDF POS=(05,01),LENGTH=79,ATTRB=(ASKIP,BRT)                *
+               INITIAL='------  ------------------------  -------------*
+               -------  --------------------  ----  ----------------- '
 * SEXTA LINHA
 T3LINHA  DFHMDF POS=(06,01),LENGTH=79,ATTRB=(ASKIP,BRT,FSET),PICOUT='X(*
                79)',COLOR=DEFAULT,OCCURS=10
@@ -89,29 +90,29 @@ T3HORA   DFHMDF POS=(24,13),                                           X
 * CAMPO CONSTANTE
          DFHMDF POS=(24,22),                                           X
                LENGTH=05,                                              X
-               ATTRB=ASKIP,                                            X
+               ATTRB=(ASKIP,BRT),                                      X
                INITIAL='FASE:',                                        X
                COLOR=RED
 * CAMPO VARIAVEL
 T3FASE   DFHMDF POS=(24,28),                                           X
                LENGTH=01,                                              X
-               ATTRB=ASKIP,                                            X
+               ATTRB=(ASKIP,BRT),                                      X
                PICOUT='9(01)'
 * CAMPO CONSTANTE
          DFHMDF POS=(24,34),                                           X
                LENGTH=05,                                              X
-               ATTRB=ASKIP,                                            X
+               ATTRB=(ASKIP,BRT),                                      X
                INITIAL='TASK:',                                        X
                COLOR=RED
 * CAMPO VARIAVEL
 T3TASK   DFHMDF POS=(24,40),                                           X
                LENGTH=07,                                              X
-               ATTRB=ASKIP,                                            X
+               ATTRB=(ASKIP,BRT),                                      X
                PICOUT='9(07)'
 * CAMPO CONSTANTE
          DFHMDF POS=(24,49),                                           X
                LENGTH=09,                                              X
-               ATTRB=ASKIP,                                            X
+               ATTRB=(ASKIP,BRT),                                      X
                INITIAL='TERMINAL:',                                    X
                COLOR=RED
 * CAMPO VARIAVEL
@@ -122,7 +123,7 @@ T3TERM   DFHMDF POS=(24,59),                                           X
 * CAMPO CONSTANTE
          DFHMDF POS=(24,65),                                           X
                LENGTH=10,                                              X
-               ATTRB=ASKIP,                                            X
+               ATTRB=(ASKIP,BRT),                                      X
                INITIAL='TRANSACAO:',                                   X
                COLOR=RED
 * CAMPO VARIAVEL
@@ -147,14 +148,14 @@ T3PAGA   DFHMDF POS=(21,68),LENGTH=02,ATTRB=(ASKIP,BRT,FSET),PICOUT='9(*
 *
          DFHMDF POS=(21,71),                                           X
                LENGTH=03,                                              X
-               ATTRB=ASKIP,                                            X
+               ATTRB=(ASKIP,BRT),                                      X
                INITIAL='DE:'
 *
 * CAMPO VARIAVEL
 *
 T3PAGT   DFHMDF POS=(21,75),LENGTH=02,ATTRB=(ASKIP,BRT,FSET),PICOUT='9(*
                2)'
-LPAGA    DFHMDF POS=(21,62),LENGTH=5,ATTRB=ASKIP,                      *
-                INITIAL='PAG.:'
+LPAGA    DFHMDF POS=(21,62),LENGTH=5,ATTRB=(ASKIP,BRT),                *
+               INITIAL='PAG.:'
          DFHMSD TYPE=FINAL
          END

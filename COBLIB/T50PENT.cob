@@ -22,7 +22,15 @@
            05 WS-CONT-CARR                 PIC 9(09).
            05 WS-ID-PEDIDO                 PIC 9(09).   
            05 WS-CONTA-BANCARIA            PIC 9(09).   
-           05 WS-EMAIL-COMMAREA            PIC X(40).        
+           05 WS-EMAIL-COMMAREA            PIC X(40).  
+
+       01  WS-DFHCOMMAREA-AUX.
+           05 WS-FASE-AUX                  PIC X(01).
+           05 WS-ID-CPF-AUX                PIC X(11).
+           05 WS-ID-PROD-AUX               PIC 9(09).
+           05 WS-CONT-CARR-AUX             PIC 9(09).
+           05 WS-ID-PEDIDO-AUX             PIC 9(09).   
+           05 WS-CONTA-BANCARIA-AUX        PIC 9(09).          
 
       *
        01  WS-VAR-TEMPO.
@@ -132,7 +140,7 @@
               ENTER  (210-ENTER)
       *       PF3    (220-PF3)
               PF2    (250-PF2)
-              PF1    (250-PF1)
+      *        PF1    (250-PF1)
               PF10   (250-PF10)
       *       PF11   (230-PF11)
               PF12   (290-PF12)
@@ -147,12 +155,13 @@
            END-EXEC
            .
        210-ENTER.
-           MOVE 1                          TO WS-FASE
+           PERFORM 250-PF1
+           MOVE WS-DFHCOMMAREA             TO WS-DFHCOMMAREA-AUX
       *    MOVE +80                        TO WS-LENGHT
            EXEC CICS XCTL
               PROGRAM('T50PPAG')
-              COMMAREA(WS-DFHCOMMAREA)
-              LENGTH(LENGTH OF WS-DFHCOMMAREA)
+              COMMAREA(WS-DFHCOMMAREA-AUX)
+              LENGTH(LENGTH OF WS-DFHCOMMAREA-AUX)
            END-EXEC
            .
        250-PF1.
@@ -209,7 +218,7 @@
                                             TO MSGENTO
               END-IF
            END-IF
-           PERFORM 999-TRATA-FASE2
+      *     PERFORM 999-TRATA-FASE2
            .
       *--------------------------------------------------------------*
        250-PF10.

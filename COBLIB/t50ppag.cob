@@ -22,8 +22,8 @@
            05 WS-ID-CPF                    PIC X(11).
            05 WS-ID-PROD                   PIC 9(09).
            05 WS-ID-PEDIDO                 PIC 9(09).
-           05 WS-CONT-CARR                 PIC S9(09).
-           05 WS-ID-CONTA-BANCARIA         PIC S9(09).
+           05 WS-CONT-CARR                 PIC 9(09).
+           05 WS-ID-CONTA-BANCARIA         PIC 9(09).
            05 WS-TIPO                      PIC X(01).
            05 WS-NUMERO-CARTAO             PIC X(16).
 

@@ -1,0 +1,173 @@
+T50MCAV  DFHMSD TYPE=MAP(MAP,DSECT),                                   X
+               MODE=INOUT,                                             X
+               LANG=COBOL,                                             X
+               STORAGE=AUTO,                                           X
+               MAPATTS=(COLOR,HILIGHT),                                X
+               DSATTS=(COLOR,HILIGHT),                                 X
+               CTRL=(FREEKB,ALARM,FRSET),                              X
+               TIOAPFX=YES
+MAPACAV  DFHMDI SIZE=(11,40),                                          X
+               LINE=8,                                                 X
+               COLUMN=22
+* 1A     LINHA
+         DFHMDF POS=(01,01),                                           X
+               LENGTH=36,                                              X
+               ATTRB=ASKIP,                                            X
+               COLOR=DEFAULT,                                          X
+               INITIAL='|----------------------------------|'
+* 2A   LINHA
+         DFHMDF POS=(02,01),                                           X
+               LENGTH=01,                                              X
+               ATTRB=ASKIP,                                            X
+               COLOR=DEFAULT,                                          X
+               INITIAL='|'
+* 2A   LINHA FILLER DRK
+         DFHMDF POS=(02,03),                                           X
+               LENGTH=32,                                              X
+               ATTRB=(ASKIP,PROT,DRK),                                 X
+               INITIAL='                                '
+         DFHMDF POS=(02,36),                                           X
+               LENGTH=01,                                              X
+               ATTRB=ASKIP,                                            X
+               COLOR=DEFAULT,                                          X
+               INITIAL='|'
+* 3A     LINHA
+         DFHMDF POS=(03,01),                                           X
+               LENGTH=01,                                              X
+               ATTRB=ASKIP,                                            X
+               COLOR=DEFAULT,                                          X
+               INITIAL='|'
+* 3A LINHA INVISIVEL
+         DFHMDF POS=(03,03),                                           X
+               LENGTH=02,                                              X
+               ATTRB=(ASKIP,PROT,DRK),                                 X
+               INITIAL='  '
+         DFHMDF POS=(03,06),                                           X
+               LENGTH=26,                                              X
+               ATTRB=ASKIP,                                            X
+               COLOR=DEFAULT,                                          X
+               INITIAL='CARTAO INVALIDO. POR FAVOR'
+         DFHMDF POS=(03,36),                                           X
+               LENGTH=01,                                              X
+               ATTRB=ASKIP,                                            X
+               COLOR=DEFAULT,                                          X
+               INITIAL='|'
+* 4A        LINHA
+         DFHMDF POS=(04,01),                                           X
+               LENGTH=01,                                              X
+               ATTRB=ASKIP,                                            X
+               INITIAL='|'
+         DFHMDF POS=(04,03),                                           X
+               LENGTH=00,                                              X
+               ATTRB=(DRK,ASKIP)
+         DFHMDF POS=(04,04),                                           X
+               LENGTH=29,                                              X
+               ATTRB=ASKIP,                                            X
+               COLOR=DEFAULT,                                          X
+               INITIAL='VERIFIQUE OS DADOS INFORMADOS'
+         DFHMDF POS=(04,36),                                           X
+               LENGTH=01,                                              X
+               ATTRB=ASKIP,                                            X
+               COLOR=DEFAULT,                                          X
+               INITIAL='|'
+* 5A LINHA
+         DFHMDF POS=(05,01),                                           X
+               LENGTH=01,                                              X
+               ATTRB=ASKIP,                                            X
+               COLOR=DEFAULT,                                          X
+               INITIAL='|'
+* 5A LINHA INVISIVEL
+         DFHMDF POS=(05,03),                                           X
+               LENGTH=32,                                              X
+               ATTRB=(ASKIP,PROT,DRK),                                 X
+               COLOR=DEFAULT,                                          X
+               INITIAL='                                   '
+         DFHMDF POS=(05,36),                                           X
+               LENGTH=01,                                              X
+               ATTRB=ASKIP,                                            X
+               COLOR=DEFAULT,                                          X
+               INITIAL='|'
+* 6A LINHA
+         DFHMDF POS=(06,01),                                           X
+               LENGTH=01,                                              X
+               ATTRB=ASKIP,                                            X
+               COLOR=DEFAULT,                                          X
+               INITIAL='|'
+* 6A LINHA INVISIVEL
+         DFHMDF POS=(06,03),                                           X
+               LENGTH=11,                                              X
+               ATTRB=(ASKIP,PROT,DRK),                                 X
+               INITIAL='           '
+         DFHMDF POS=(06,15),                                           X
+               LENGTH=08,                                              X
+               ATTRB=ASKIP,                                            X
+               INITIAL='F3      ',                                     X
+               COLOR=DEFAULT,                                          X
+               HILIGHT=REVERSE
+         DFHMDF POS=(06,24),                                           X
+               LENGTH=00,                                              X
+               ATTRB=ASKIP
+* 6A LINHA INVISIVEL
+         DFHMDF POS=(06,25),                                           X
+               LENGTH=10,                                              X
+               ATTRB=(ASKIP,PROT,DRK),                                 X
+               INITIAL='          '
+         DFHMDF POS=(06,36),                                           X
+               LENGTH=01,                                              X
+               ATTRB=ASKIP,                                            X
+               COLOR=DEFAULT,                                          X
+               INITIAL='|'
+* 7A LINHA
+         DFHMDF POS=(07,01),                                           X
+               LENGTH=01,                                              X
+               ATTRB=ASKIP,                                            X
+               COLOR=DEFAULT,                                          X
+               INITIAL='|'
+* 7A LINHA INVISIVEL
+         DFHMDF POS=(07,03),                                           X
+               LENGTH=11,                                              X
+               ATTRB=(ASKIP,PROT,DRK),                                 X
+               INITIAL='           '
+         DFHMDF POS=(07,15),                                           X
+               LENGTH=08,                                              X
+               ATTRB=ASKIP,                                            X
+               INITIAL='RETORNAR',                                     X
+               COLOR=DEFAULT,                                          X
+               HILIGHT=REVERSE
+         DFHMDF POS=(07,24),                                           X
+               LENGTH=00,                                              X
+               ATTRB=ASKIP
+* 7A LINHA INVISIVEL
+         DFHMDF POS=(07,25),                                           X
+               LENGTH=10,                                              X
+               ATTRB=(ASKIP,PROT,DRK),                                 X
+               INITIAL='          '
+         DFHMDF POS=(07,36),                                           X
+               LENGTH=01,                                              X
+               ATTRB=ASKIP,                                            X
+               COLOR=DEFAULT,                                          X
+               INITIAL='|'
+* 8A LINHA
+         DFHMDF POS=(08,01),                                           X
+               LENGTH=01,                                              X
+               ATTRB=ASKIP,                                            X
+               COLOR=DEFAULT,                                          X
+               INITIAL='|'
+* 8A LINHA INVISIVEL
+         DFHMDF POS=(08,03),                                           X
+               LENGTH=32,                                              X
+               ATTRB=(ASKIP,PROT,DRK),                                 X
+               INITIAL='                                '
+         DFHMDF POS=(08,36),                                           X
+               LENGTH=01,                                              X
+               ATTRB=ASKIP,                                            X
+               COLOR=DEFAULT,                                          X
+               INITIAL='|'
+* 9A LINHA
+         DFHMDF POS=(09,01),                                           X
+               LENGTH=36,                                              X
+               ATTRB=ASKIP,                                            X
+               COLOR=DEFAULT,                                          X
+               INITIAL='|----------------------------------|'
+         DFHMSD TYPE=FINAL
+         END

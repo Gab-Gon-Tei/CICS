@@ -19,9 +19,16 @@
 
        01  WS-DFHCOMMAREA.
            05 WS-FASE                      PIC X(01).
+           05 WS-ID-CPF                    PIC X(11).
+           05 WS-ID-PROD                   PIC 9(09).
+           05 WS-ID-PEDIDO                 PIC 9(09).
+           05 WS-CONT-CARR                 PIC 9(09).
+           05 WS-ID-CONTA-BANCARIA         PIC 9(09).
+           05 WS-FILL                      PIC 9(04).
+      * TALVEZ SEJA INTERESSANTE TIRARA ESSAS DUAS DA DFH
            05 WS-PEDPAG                    PIC 9(02).
            05 WS-PEDPAGD                   PIC 9(02).
-           05 WS-IDPROD-COMMAREA           PIC 9(09).
+           
        01  WS-DFHCOMMAREA-AUX.
            05 WS-FASE-COMMAREA             PIC X(01).
        77  WS-TEXTO-LIMPO                  PIC X(30) VALUE SPACES.
@@ -93,6 +100,7 @@
       *
        77  WS-DATA-INICIAL-F               PIC X(10).
        77  WS-DATA-FINAL-F                 PIC X(10).
+       77  WS-FECHADO                      PIC X(1) VALUE 'F'.
 
        01  WS-DFHCOMMAREA-DATA.
            05 DIA                             PIC 9(02).
@@ -182,11 +190,13 @@
       *
            EXEC CICS RECEIVE
                 MAP     ('MAPAPED')
-                MAPSET  ('T08MPED')
+                MAPSET  ('T50MPED')
                 INTO    (MAPAPEDI)
            END-EXEC
            .
        210-ENTER.
+      *TROCAR CPF HARDCODE PARA O DA DFH
+           MOVE WS-ID-CPF                  TO DCLPDD-CPF
            IF PEDPEDL <= 0
               MOVE 0                       TO WS-FILTRO-P
            END-IF
@@ -272,7 +282,8 @@
                      P.ID_PEDIDO,
                      PR.NOME_PRODUTO,
                      P.DATA_PEDIDO,
-                     C.VALOR_UNITARIO_PEDIDO
+                     C.VALOR_UNITARIO_PEDIDO,
+                     P.CPF
                   FROM
                      PEDIDOS AS P
                   INNER JOIN
@@ -280,11 +291,12 @@
                   INNER JOIN
                      PRODUTOS AS PR ON C.ID_PRODUTO = PR.ID_PRODUTO
                   WHERE
+                      (P.CPF = :DCLPDD-CPF) AND
                       (P.DATA_PEDIDO BETWEEN :WS-DATA-INICIAL-F
                        AND  :WS-DATA-FINAL-F) AND
                       (:WS-FILTRO-P   = P.ID_PEDIDO OR :WS-FILTRO-P
                        = 0             ) AND (C.VALOR_UNITARIO_PEDIDO
-                       <= :WS-VALOR)
+                       <= :WS-VALOR) AND (P.ATIVO = :WS-FECHADO)
                   ORDER BY P.ID_PEDIDO
            END-EXEC
            EXEC SQL
@@ -332,7 +344,7 @@
       *    MOVE 'P'                        TO WS-IDPROD-COMMAREA
       *
       *    EXEC CICS XTCL
-      *        PROGRAM('T08PPRD')
+      *        PROGRAM('T50PPRD')
       *        COMMAREA(WS-DFHCOMMAREA)
       *        LENGTH(LENGTH OF WS-DFHCOMMAREA)
       *    END-EXEC
@@ -342,7 +354,7 @@
            MOVE '1'                        TO WS-FASE
       *
            EXEC CICS XCTL
-               PROGRAM('T50PLOG')
+               PROGRAM('T50PCAR')
                COMMAREA(WS-DFHCOMMAREA)
                LENGTH(LENGTH OF WS-DFHCOMMAREA)
            END-EXEC
@@ -352,12 +364,22 @@
       *    MOVE '1'                        TO WS-FASE
       *
       *    EXEC CICS XCTL
-      *        PROGRAM('T08PLOG')
+      *        PROGRAM('T50PLOG')
       *        COMMAREA(WS-DFHCOMMAREA)
       *        LENGTH(LENGTH OF WS-DFHCOMMAREA)
       *    END-EXEC
       *
       *    .
+       203-PF3.
+           MOVE '1'                        TO WS-FASE
+      *
+           EXEC CICS XCTL
+               PROGRAM('T50PPRL')
+               COMMAREA(WS-DFHCOMMAREA)
+               LENGTH(LENGTH OF WS-DFHCOMMAREA)
+           END-EXEC
+      *
+           .
        290-PF12.
            MOVE '1'                        TO WS-FASE
       *
@@ -397,11 +419,6 @@
            PERFORM 999-TRATA-FASE2
            .
       *
-
-      *230-PF3.
-      *    MOVE 'TERMINO NORMAL DA TRANSCAO' TO WS-MSG-ERRO
-      *    PERFORM 999-ENCERRA-TRANSACAO
-      *    .
        240-ANYKEY.
            MOVE 'TECLA PRESSIONADA INVALIDA'
                                            TO MSGPEDO
@@ -456,7 +473,7 @@
            MOVE '2'                        TO WS-FASE
       *
            EXEC CICS RETURN
-               TRANSID('FTMN')
+               TRANSID('FTMM')
                COMMAREA(WS-DFHCOMMAREA)
                LENGTH (LENGTH OF WS-DFHCOMMAREA)
            END-EXEC
@@ -488,18 +505,18 @@
            EXEC SQL
                FETCH CURPED
                INTO  :DCLCAR-ID-PRODUTO
-                    ,:DCLPROD-NOME-PRODUTO
-                    ,:DCLPED-DATA-PEDIDO
-                    ,:DCLPROD-VALOR-UNITARIO
+                    ,:DCLPRD-NOME-PRODUTO
+                    ,:DCLPDD-DATA-PEDIDO
+                    ,:DCLPRD-VALOR-UNITARIO
            END-EXEC
 
            EVALUATE SQLCODE
               WHEN 0
                  ADD 1 TO WS-ITEM
                  MOVE DCLCAR-ID-PRODUTO          TO LD-ID-PED
-                 MOVE DCLPROD-NOME-PRODUTO       TO LD-ITEM
-                 MOVE DCLPED-DATA-PEDIDO         TO LD-DATA
-                 MOVE DCLPROD-VALOR-UNITARIO     TO LD-VALORPROD
+                 MOVE DCLPRD-NOME-PRODUTO        TO LD-ITEM
+                 MOVE DCLPDD-DATA-PEDIDO         TO LD-DATA
+                 MOVE DCLPRD-VALOR-UNITARIO      TO LD-VALORPROD
 
                  EXEC CICS WRITEQ TS
                     QUEUE(WS-QUEUE-NAME)
