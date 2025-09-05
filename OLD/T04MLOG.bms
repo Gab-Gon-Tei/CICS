@@ -15,7 +15,7 @@
 * 
 *
 ***********************************************************************
-T4MLOGN  DFHMSD TYPE=(MAP,DSECT),MODE=INOUT,LANG=COBOL,                X
+T34MLOG  DFHMSD TYPE=(MAP,DSECT),MODE=INOUT,LANG=COBOL,                X
                STORAGE=AUTO,TIOAPFX=YES,DSATTS=(COLOR,HILIGHT),        X 
                MAPATTS=(COLOR,HILIGHT),CTRL=(FREEKB,ALARM,FRSET)
 MAPLOG   DFHMDI SIZE=(24,80),                                          X
@@ -98,5 +98,5 @@ LTRANS   DFHMDF POS=(24,65),LENGTH=10,ATTRB=(ASKIP,BRT),HILIGHT=OFF,   *
                COLOR=,INITIAL='TRANSACAO:'
 T1TRANS  DFHMDF POS=(24,76),LENGTH=4,ATTRB=(ASKIP,BRT,FSET),           *
                HILIGHT=OFF,COLOR=GREEN,PICOUT='9(4)'
-T4MLOGN  DFHMSD TYPE=FINAL
+T34MLOG  DFHMSD TYPE=FINAL
          END

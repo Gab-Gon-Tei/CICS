@@ -1,7 +1,7 @@
       *----------------------------------------------------------------*
        IDENTIFICATION                      DIVISION.
       *----------------------------------------------------------------*
-       PROGRAM-ID.                         T04PLOG.
+       PROGRAM-ID.                         T34PLOG.
        AUTHOR.                             GABRIEL
 
       *----------------------------------------------------------------*
@@ -49,7 +49,7 @@
 
 
       *MAPA REFERENTE A TELA DE CADASTRO
-           COPY T04MLOG.
+           COPY T34MLOG.
       *COMANDO TECLAS PRESSIONADAS
            COPY DFHAID.
       *CARACTERES E ATRIBUTOS
@@ -112,13 +112,13 @@
               PF3     (220-PF3)
               PF5     (230-PF5)
               CLEAR   (230-PF5)
-              PF2     (240-PF2)
+      *       PF2     (240-PF2)
               ANYKEY  (250-ANYKEY)
            END-EXEC
 
            EXEC CICS RECEIVE
               MAP   ('MAPLOG')
-              MAPSET('T04MLOG')
+              MAPSET('T34MLOG')
               INTO  (MAPLOGI)
            END-EXEC
            .
@@ -135,7 +135,11 @@
            PERFORM 210-VALIDA-USUARIO
            PERFORM 210-VALIDA-SENHA
            MOVE DCLCLI-CPF                 TO WS-ID-CPF
-           PERFORM 260-LISTAGEM-DE-PRODUTOS
+      *    PERFORM 260-LISTAGEM-DE-PRODUTOS
+           MOVE +80                        TO WS-LENGTH
+           MOVE 'LOGIN EFETUADO COM SUCESSO'
+                                           TO WS-MSG-ERRO
+           PERFORM 999-ENCERRA-TRANSACAO
            .
 
        210-VALIDA-USUARIO.
@@ -176,7 +180,7 @@
            MOVE '1'                       TO WS-FASE
 
            EXEC CICS XCTL
-               PROGRAM('T04PPRL')
+               PROGRAM('T34PPRL')
                COMMAREA(WS-DFHCOMMAREA)
                LENGTH(LENGTH OF WS-DFHCOMMAREA)
            END-EXEC
@@ -184,7 +188,7 @@
 
        220-PF3.
            MOVE +80                        TO WS-LENGTH
-           MOVE 'FIM NORMAL DA TRANSACAO FT4A'
+           MOVE 'FIM NORMAL DA TRANSACAO FD34'
                                            TO WS-MSG-ERRO
            PERFORM 999-ENCERRA-TRANSACAO
            .
@@ -197,7 +201,7 @@
            MOVE '1'                       TO WS-FASE
 
            EXEC CICS XCTL
-               PROGRAM('T04PCAD')
+               PROGRAM('T34PCAD')
                COMMAREA(WS-DFHCOMMAREA)
                LENGTH(LENGTH OF WS-DFHCOMMAREA)
            END-EXEC
@@ -243,7 +247,7 @@
 
            EXEC CICS SEND
               MAP ('MAPLOG')
-              MAPSET('T04MLOG')
+              MAPSET('T34MLOG')
               FROM(MAPLOGO)
               ERASE FREEKB ALARM CURSOR
            END-EXEC
@@ -255,7 +259,7 @@
            MOVE 'DIGITE USUARIO E SENHA PARA ENTRAR OU EFETUE CADASTRO'
                                           TO T1MSGO
            EXEC CICS XCTL
-              PROGRAM('T04PLOG')
+              PROGRAM('T34PLOG')
               COMMAREA(WS-DFHCOMMAREA)
               LENGTH(LENGTH OF WS-DFHCOMMAREA)
            END-EXEC
@@ -265,7 +269,7 @@
            MOVE '2'                       TO WS-FASE
 
            EXEC CICS RETURN
-               TRANSID('FT4A')
+               TRANSID('FD34')
                COMMAREA(WS-DFHCOMMAREA)
                LENGTH(LENGTH OF WS-DFHCOMMAREA)
            END-EXEC
@@ -280,7 +284,7 @@
            .
 
        999-MAPFAIL.
-           MOVE 'ERRO MAPA T04MLOG'        TO WS-MSG-ERRO
+           MOVE 'ERRO MAPA T34MLOG'        TO WS-MSG-ERRO
            PERFORM 999-ENCERRA-TRANSACAO
            .
 

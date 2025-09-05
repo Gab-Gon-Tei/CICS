@@ -1,30 +1,30 @@
       *----------------------------------------------------------------*
-       IDENTIFICATION                      DIVISION.
+       IDENTIFICATION                  DIVISION.
       *----------------------------------------------------------------*
-       PROGRAM-ID.                         FS04PGMG.
-       AUTHOR.                             GABRIEL
+       PROGRAM-ID.                     FS04PGMG.
+       AUTHOR.                         GABRIEL
 
       *----------------------------------------------------------------*
-       ENVIRONMENT                         DIVISION.
+       ENVIRONMENT                     DIVISION.
       *----------------------------------------------------------------*
-       CONFIGURATION                       SECTION.
+       CONFIGURATION                   SECTION.
        SPECIAL-NAMES.
            DECIMAL-POINT IS COMMA.
 
       *----------------------------------------------------------------*
-       DATA                                DIVISION.
+       DATA                            DIVISION.
       *----------------------------------------------------------------*
-       WORKING-STORAGE                     SECTION.
+       WORKING-STORAGE                 SECTION.
       *----------------------------------------------------------------*
-       77  WS-MSG-ERRO                     PIC X(80).
-       77  WS-LENGTH                       PIC S9(04) COMP.
+       77  WS-MSG-ERRO                 PIC X(80).
+       77  WS-LENGTH                   PIC S9(04) COMP.
 
        01  WS-VAR-TEMPO.
-           05 WS-DATA                      PIC X(10).
-           05 WS-HORARIO                   PIC X(08).
+           05 WS-DATA                  PIC X(10).
+           05 WS-HORARIO               PIC X(08).
 
        01  WS-DFHCOMMAREA.
-           05 WS-FASE                      PIC X(01).
+           05 WS-FASE                  PIC X(01).
 
       *MAPA REFERENTE A TELA DE CADASTRO
            COPY FS04CAD.
@@ -41,13 +41,14 @@
            INCLUDE SQLCA
            END-EXEC.
       *----------------------------------------------------------------*
-       LINKAGE                             SECTION.
+       LINKAGE                         SECTION.
       *----------------------------------------------------------------*
        01  DFHCOMMAREA.
-           05 OCCURS 0 TO 24579 TIMES DEPENDING ON EIBCALEN
-                                           PIC X(01).
+           05 OCCURS 0                 TO 24579 
+                                       TIMES DEPENDING ON EIBCALEN
+                                       PIC X(01).
       *----------------------------------------------------------------*
-       PROCEDURE                           DIVISION.
+       PROCEDURE                       DIVISION.
       *----------------------------------------------------------------*
       *ROTINA DEFINIDA PARA LIDAR COM ERROS DE MAPA E GENERICOS--------*
            EXEC CICS HANDLE CONDITION
@@ -61,34 +62,34 @@
       *    FASE 3 - TRATA OS DEMAIS CAMPOS DO PRODUTO
       *    FASE 4 - TRATA O CAMPO T2CONF
       *
-           MOVE DFHCOMMAREA                TO WS-DFHCOMMAREA
+           MOVE DFHCOMMAREA             TO WS-DFHCOMMAREA
 
            IF EIBCALEN EQUAL 0
-              MOVE +80                     TO WS-LENGTH
+              MOVE +80                  TO WS-LENGTH
               MOVE 'UTILIZE A OPCAO G DA TRANSACAO F04M'
-                                           TO WS-MSG-ERRO
+                                        TO WS-MSG-ERRO
                  PERFORM 999-ENCERRA-TRANSACAO
            END-IF
 
            EVALUATE WS-FASE
-              WHEN '1' PERFORM 100-FASE1
-              WHEN '2' PERFORM 200-FASE2
-              WHEN '3' PERFORM 300-FASE3
-              WHEN '4' PERFORM 400-FASE4
-              WHEN OTHER
-                 MOVE +80                  TO WS-LENGTH
+               WHEN '1' PERFORM 100-FASE1
+               WHEN '2' PERFORM 200-FASE2
+               WHEN '3' PERFORM 300-FASE3
+               WHEN '4' PERFORM 400-FASE4
+               WHEN OTHER
+                 MOVE +80               TO WS-LENGTH
                  MOVE 'ERRO NO NUMERO DA FASE'
-                                           TO WS-MSG-ERRO
+                                        TO WS-MSG-ERRO
                  PERFORM 999-ENCERRA-TRANSACAO
            END-EVALUATE
            .
 
        100-FASE1.
-           MOVE LOW-VALUES                 TO MAPACADO
-           MOVE -1                         TO T2CODL
+           MOVE LOW-VALUES              TO MAPACADO
+           MOVE -1                      TO T2CODL
            MOVE 'ENTRE O CODIGO DO PRODUTO PARA INCLUIR'
-                                           TO T2MSGO
-           MOVE 'INCLUSAO - DB2'           TO T2TELAO
+                                        TO T2MSGO
+           MOVE 'INCLUSAO - DB2'        TO T2TELAO
            PERFORM 999-PROTECAO-FASE2
            PERFORM 999-MANDA-TELA
            PERFORM 999-CHAMA-FASE2
@@ -113,11 +114,11 @@
        210-ENTER.
            IF T2CODL EQUAL 0 OR T2CODI EQUAL SPACES
               MOVE 'CODIGO NAO INFORMADO - TENTE NOVAMENTE'
-                                           TO T2MSGO
+                                        TO T2MSGO
               PERFORM 999-TRATA-FASE2
            END-IF
 
-           MOVE T2CODI                     TO CODPROD
+           MOVE T2CODI                  TO CODPROD
 
            EXEC SQL
               SELECT CODPROD
@@ -127,12 +128,12 @@
            END-EXEC
 
            IF SQLCODE = 0
-              MOVE LOW-VALUES                 TO MAPACADO
+              MOVE LOW-VALUES           TO MAPACADO
               STRING 'O PRODUTO '  DELIMITED BY SIZE
                       CODPROD    DELIMITED BY SPACE
                     ' JA EXISTE.' DELIMITED BY SIZE
                                   INTO T2MSGO
-              MOVE LOW-VALUES                 TO T2CODO
+              MOVE LOW-VALUES           TO T2CODO
            ELSE
               IF SQLCODE = +100
                  PERFORM 999-NOTFND
@@ -142,7 +143,7 @@
            .
 
        220-PF3.
-           MOVE '1'                       TO WS-FASE
+           MOVE '1'                     TO WS-FASE
 
            EXEC CICS XCTL
                PROGRAM('FS04PGMM')
@@ -157,7 +158,7 @@
 
        240-ANYKEY.
            MOVE 'TECLA PRESSIONADA INVALIDA!'
-                                           TO T2MSGO
+                                        TO T2MSGO
            PERFORM 999-TRATA-FASE2
            .
 

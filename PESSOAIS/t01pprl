@@ -44,7 +44,7 @@
            05 WS-SEG                       PIC X(02).
 
        01  WS-VAR-TEMPO.
-           05 WS-DATA                      PIC X(10).
+       05 WS-DATA                      PIC X(10).
            05 WS-HORARIO                   PIC X(08).
       *
        77  WS-QUEUE-NAME                   PIC X(08)
